@@ -1,0 +1,24 @@
+# Cofigurations
+spring:
+  datasource:
+    url: jdbc:mysql://localhost/salarix?createDatabaseIfNotExist=true
+    username: root
+    password:
+  jpa:
+    show-sql: true
+    properties:
+      hibernate:
+        format_sql: true
+# Server configurations
+server:
+  error:
+    include-stacktrace: never
+
+# JWT
+api:
+  security:
+    secret: TZAG6XvmNpGjyPqPZro+Dsq2XORanQ+AwBTSvyKxUQU=
+
+cors:
+  allowed:
+    origins: http://127.0.0.1:5500
