@@ -1,14 +1,14 @@
 # Cofigurations
 spring:
   datasource:
-    url: jdbc:mysql://localhost/salarix?createDatabaseIfNotExist=true
-    username: root
-    password:
+    url: jdbc:mysql://root:rDYSWZIFEnyiHQUqagsVFkzbkJZUuouB@junction.proxy.rlwy.net:12773/railway
   jpa:
     show-sql: true
     properties:
       hibernate:
         format_sql: true
+    hibernate:
+      ddl-auto: update
 # Server configurations
 server:
   error:

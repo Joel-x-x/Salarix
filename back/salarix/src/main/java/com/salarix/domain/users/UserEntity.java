@@ -1,11 +1,9 @@
-package com.salarix.domain.usuarios;
+package com.salarix.domain.users;
 
-import com.salarix.domain.usuarios.service.GenerateCodeEmployeeService;
 import jakarta.persistence.*;
 import lombok.*;
 import org.hibernate.annotations.JdbcTypeCode;
 import org.hibernate.type.SqlTypes;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
@@ -16,7 +14,7 @@ import java.util.List;
 import java.util.UUID;
 
 @Entity
-@Table(name = "usuarios")
+@Table(name = "users")
 @Getter
 @NoArgsConstructor
 @AllArgsConstructor
@@ -41,7 +39,6 @@ public class UserEntity implements UserDetails {
     private String address;
     private LocalDateTime birthday;
     private String phone;
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
     private String codeEmployee;
     private LocalDateTime created;
     private LocalDateTime updated;
@@ -58,7 +55,7 @@ public class UserEntity implements UserDetails {
         this.firstname = saveDataUser.firstname();
         this.lastname = saveDataUser.lastname();
         this.email = saveDataUser.email();
-        this.password = saveDataUser.password();
+        this.password = password;
         this.identification = saveDataUser.identification();
         this.birthday = saveDataUser.birthday();
         this.sex = saveDataUser.sex();
@@ -66,38 +63,24 @@ public class UserEntity implements UserDetails {
         this.phone = saveDataUser.phone();
         this.codeEmployee = codeEmployee;
         this.created = LocalDateTime.now();
+        this.updated = LocalDateTime.now();
         this.status = true;
         this.role = Role.EMPLEADO;
     }
 
+    // Save user with rol
     public UserEntity(SaveDataUser saveDataUser, String password){
         this.firstname = saveDataUser.firstname();
         this.lastname = saveDataUser.lastname();
         this.email = saveDataUser.email();
         this.password = password;
         this.created = LocalDateTime.now();
+        this.updated = LocalDateTime.now();
         this.status = true;
         this.role = saveDataUser.role();
     }
 
-    public void updateUser(UpdateDataUser updateDataUser) {
-        if(updateDataUser.firstname() != null) {
-            this.firstname = updateDataUser.firstname();
-        }
-
-        if(updateDataUser.email() != null) {
-            this.email = updateDataUser.email();
-        }
-
-        if(updateDataUser.lastname() != null) {
-            this.lastname = updateDataUser.lastname();
-        }
-
-        if(updateDataUser.role() != null) {
-            this.role = updateDataUser.role();
-        }
-    }
-
+    // Update user or employee
     public void updatePartnerData(UpdateDataUser updateDataUser) {
         if(updateDataUser.firstname() != null) {
             this.firstname = updateDataUser.firstname();
@@ -125,6 +108,10 @@ public class UserEntity implements UserDetails {
 
         if(updateDataUser.sex() != null) {
             this.sex = updateDataUser.sex();
+        }
+
+        if(updateDataUser.role() != null) {
+            this.role = updateDataUser.role();
         }
     }
 

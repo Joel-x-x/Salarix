@@ -1,4 +1,4 @@
-package com.salarix.domain.usuarios;
+package com.salarix.domain.users;
 
 public enum Role {
     SUPERADMINISTRADOR, ADMINISTRADOR, EMPLEADO

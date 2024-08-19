@@ -1,17 +1,17 @@
-package com.salarix.domain.usuarios;
+package com.salarix.domain.users;
 
 import java.time.LocalDateTime;
+import java.util.UUID;
 
-public record SaveDataUser(
+public record UpdateDataUser(
+        UUID id,
         String firstname,
         String lastname,
         String email,
-        String password,
         String identification,
         Boolean sex,
         String address,
         LocalDateTime birthday,
         String phone,
-        String codeEmployee,
         Role role
 ) {}

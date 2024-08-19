@@ -1,9 +1,9 @@
-package com.salarix.domain.usuarios.autenticacion;
+package com.salarix.domain.users.autenticacion;
 
 import jakarta.validation.constraints.Email;
 import jakarta.validation.constraints.NotBlank;
 
-public record AuthDataUser(
+public record LoginDataUser(
         @Email
         String email,
         @NotBlank

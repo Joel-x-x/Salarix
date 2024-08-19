@@ -1,7 +1,6 @@
-package com.salarix.domain.usuarios.service;
+package com.salarix.domain.users.service;
 
-import com.salarix.domain.usuarios.UserEntity;
-import com.salarix.domain.usuarios.UserRepository;
+import com.salarix.domain.users.UserRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 

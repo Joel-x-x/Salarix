@@ -1,4 +1,4 @@
-package com.salarix.domain.usuarios.autenticacion;
+package com.salarix.domain.users.autenticacion;
 
 import org.springframework.security.core.GrantedAuthority;
 
