@@ -35,37 +35,34 @@ public class SecurityConfigurations implements WebMvcConfigurer {
         registry.addMapping("/**")
                 .allowedOrigins(corsOrigin)
                 .allowedMethods("GET", "POST", "PUT", "DELETE")
-                .allowedHeaders("Content-Type", "Authorization", "usuarioId");
+                .allowedHeaders("Content-Type", "Authorization");
     }
+
+    // For the development
 //    @Bean
 //    public SecurityFilterChain securityFilterChain(HttpSecurity httpSecurity) throws Exception {
-//        // return httpSecurity.csrf().disable().sessionManagement().sessionCreationPolicy(SessionCreationPolicy.STATELESS).and().build();
 //        return httpSecurity
-//                .csrf(AbstractHttpConfigurer::disable)
-//                .sessionManagement(sess ->
-//                        sess.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
-//                .authorizeHttpRequests((authorize) ->
-//                        authorize.requestMatchers(HttpMethod.POST,"auth/**").permitAll()
-//                                .requestMatchers("/swagger-ui.html", "/v3/api-docs/**", "/swagger-ui/**").permitAll()
-//                                .anyRequest().authenticated()
+//                .csrf(csrf -> csrf.disable())  // Deshabilita CSRF
+//                .authorizeHttpRequests(authorize ->
+//                        authorize.anyRequest().permitAll()  // Permite todas las solicitudes sin autenticación
 //                )
-//                .addFilterBefore(securityFilter, UsernamePasswordAuthenticationFilter.class)
 //                .build();
 //    }
 
     @Bean
     public SecurityFilterChain securityFilterChain(HttpSecurity httpSecurity) throws Exception {
+        // return httpSecurity.csrf().disable().sessionManagement().sessionCreationPolicy(SessionCreationPolicy.STATELESS).and().build();
         return httpSecurity
-                .csrf(csrf -> csrf.disable())
+                .csrf(AbstractHttpConfigurer::disable)
                 .sessionManagement(sess ->
                         sess.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
                 .authorizeHttpRequests((authorize) ->
-                        authorize.requestMatchers("/**").permitAll()
-                                .requestMatchers("/swagger-ui.html", "/v3/api-docs/*", "/swagger-ui/*").permitAll()
+                        authorize.requestMatchers(HttpMethod.POST,"api/v1/auth/**").permitAll()
+                                .requestMatchers("/swagger-ui.html", "/v3/api-docs/**", "/swagger-ui/**").permitAll()
                                 .anyRequest().authenticated()
                 )
+                .addFilterBefore(securityFilter, UsernamePasswordAuthenticationFilter.class)
                 .build();
-
     }
 
     @Bean

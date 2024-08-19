@@ -3,6 +3,7 @@ package com.salarix.infra.error;
 import jakarta.persistence.EntityNotFoundException;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.authorization.AuthorizationDeniedException;
 import org.springframework.validation.FieldError;
 import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.annotation.ExceptionHandler;
@@ -30,6 +31,11 @@ public class GlobalExceptionHandler {
     public ResponseEntity<?> handleError400(MethodArgumentNotValidException e) {
         List<DataErrorValidation> dataErrorValidation = e.getFieldErrors().stream().map(DataErrorValidation::new).toList();
         return ResponseEntity.badRequest().body(dataErrorValidation);
+    }
+
+    @ExceptionHandler(AuthorizationDeniedException.class)
+    public ResponseEntity<?> handleError403(Exception e) {
+        return ResponseEntity.notFound().build();
     }
 
     @ExceptionHandler(Exception.class)

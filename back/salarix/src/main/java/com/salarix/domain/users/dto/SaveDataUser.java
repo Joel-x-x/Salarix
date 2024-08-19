@@ -1,6 +1,8 @@
-package com.salarix.domain.users;
+package com.salarix.domain.users.dto;
 
-import java.time.LocalDateTime;
+import com.salarix.domain.users.Role;
+
+import java.time.LocalDate;
 
 public record SaveDataUser(
         String firstname,
@@ -10,7 +12,7 @@ public record SaveDataUser(
         String identification,
         Boolean sex,
         String address,
-        LocalDateTime birthday,
+        LocalDate birthday,
         String phone,
         String codeEmployee,
         Role role

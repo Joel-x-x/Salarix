@@ -1,5 +1,7 @@
 package com.salarix.domain.users;
 
+import com.salarix.domain.users.dto.SaveDataUser;
+import com.salarix.domain.users.dto.UpdateDataUser;
 import jakarta.persistence.*;
 import lombok.*;
 import org.hibernate.annotations.JdbcTypeCode;
@@ -8,6 +10,7 @@ import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
 
+import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.Collection;
 import java.util.List;
@@ -37,7 +40,7 @@ public class UserEntity implements UserDetails {
     private String identification;
     private Boolean sex;
     private String address;
-    private LocalDateTime birthday;
+    private LocalDate birthday;
     private String phone;
     private String codeEmployee;
     private LocalDateTime created;
@@ -81,7 +84,9 @@ public class UserEntity implements UserDetails {
     }
 
     // Update user or employee
-    public void updatePartnerData(UpdateDataUser updateDataUser) {
+    public void updateData(UpdateDataUser updateDataUser) {
+        this.updated = LocalDateTime.now(); // Updated
+
         if(updateDataUser.firstname() != null) {
             this.firstname = updateDataUser.firstname();
         }

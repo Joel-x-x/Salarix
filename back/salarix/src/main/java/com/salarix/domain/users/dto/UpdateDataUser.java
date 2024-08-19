@@ -1,6 +1,8 @@
-package com.salarix.domain.users;
+package com.salarix.domain.users.dto;
 
-import java.time.LocalDateTime;
+import com.salarix.domain.users.Role;
+
+import java.time.LocalDate;
 import java.util.UUID;
 
 public record UpdateDataUser(
@@ -11,7 +13,7 @@ public record UpdateDataUser(
         String identification,
         Boolean sex,
         String address,
-        LocalDateTime birthday,
+        LocalDate birthday,
         String phone,
         Role role
 ) {}
