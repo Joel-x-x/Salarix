@@ -10,30 +10,20 @@ $Usuarios = new User;
 switch ($_GET["op"]) {
     /*TODO: Procedimiento para listar todos los registros */
     case 'todos':
-        $datos = array();
+        // Llamada a la función para obtener todos los usuarios
         $datos = $Usuarios->todos();
-        while ($row = mysqli_fetch_assoc($datos)) {
-            $todos[] = $row;
-        }
-        echo json_encode($todos);
+        
+        // Convertir los datos a formato JSON y enviar la respuesta
+        echo json_encode($datos);
         break;
 
     /*TODO: Procedimiento para listar un registros */
     case 'uno':
         $id = $_POST["id"];
-        $datos = array();
         $datos = $Usuarios->uno($id);
-        $res = mysqli_fetch_assoc($datos);
-        echo json_encode($res);
-        break;
-
-    /*TODO: Procedimiento para sacar un registro */
-    // case 'uno':
-        $idUsuarios = $_POST["idUsuarios"];
-        $datos = array();
-        $datos = $Usuarios->uno($idUsuarios);
-        $res = mysqli_fetch_assoc($datos);
-        echo json_encode($res);
+        
+        // Convertir los datos a formato JSON
+        echo json_encode($datos);
         break;
 
     /*TODO: Procedimiento para insertar */
@@ -67,7 +57,11 @@ switch ($_GET["op"]) {
             $datos = $Usuarios->actualizar($id, $firstname, $lastname, $email, $role);
             echo json_encode($datos);
         } else {
-            echo json_encode(['error' => 'ID de usuario requerido']);
+            echo json_encode([
+                "status" => "404", // 404 Bad request
+                "message" => "El id es requerido.",
+                "data" => null    
+            ]);
         }
         break;
 
@@ -83,50 +77,62 @@ switch ($_GET["op"]) {
     case 'login':
         $email = $_POST['email'];
         $password = $_POST['password'];
-
-        if (empty($email) or empty($password)) {
-            header("Location:../login.php?op=4");
-            exit();
+    
+        // Verificar si los campos están vacíos
+        if (empty($email) || empty($password)) {
+            echo json_encode([
+                "status" => "404", // 404 Bad request
+                "message" => "Los campos no pueden ir vacios.",
+                "data" => null    
+            ]);
+            return;
         }
-
+    
         try {
-            $datos = array();
-            $datos = $Usuarios->login($email);
-            $res = mysqli_fetch_assoc($datos);
-        } catch (Throwable $th) {
-            header("Location:../login.php?op=1");
-            exit();
-        }
-
-        try {
-            if (is_array($res) and count($res) > 0) {
-
+            // Llamar al método de login
+            $response = $Usuarios->login($email);
+    
+            // Verificar el estado de la respuesta
+            if ($response["status"] == "200") {
+                $res = $response["data"];
+                
+                // Verificar la contraseña
                 if (password_verify($password, $res["password"])) {
-                    $_SESSION["id"] = $res["id"];
-                    $_SESSION["firstname"] = $res["firstname"];
-                    $_SESSION["lastname"] = $res["lastname"];
-                    $_SESSION["email"] = $res["email"];
-                    $_SESSION["role"] = $res["role"];
+                    echo json_encode($response);
 
-                    // header("Location:../views/home.php");
-                    echo "paso";
-                    exit();
                 } else {
-                    // header("Location:../login.php?op=1");
-                    echo "no paso";
-                    exit();
+                    // Contraseña incorrecta
+                    echo json_encode([
+                        "status" => "404", // 404 Bad request
+                        "message" => "Credenciales incorrectas.",
+                        "data" => null    
+                    ]);
                 }
             } else {
-                header("Location:../login.php?op=1");
-                exit();
+                // Error en el proceso de login
+                echo json_encode([
+                    "status" => "500", // 500 Internal Server Error
+                    "message" => "Ocurrio un error en el proceso del login.",
+                    "data" => null    
+                ]);
             }
-        } catch (Exception $th) {
-            echo ($th->getMessage());
+        } catch (Throwable $th) {
+            // Manejar errores inesperados
+            echo json_encode([
+                "status" => "500", // 500 Internal Server Error
+                "message" => 'Error al procesar la solicitud: ' . $th->getMessage(),
+                "data" => null,
+            ]);
         }
         break;
+    
 
     default:
-        echo json_encode(['error' => 'Operación no válida']);
+        return json_encode([
+            "status" => "404", // 404 Not found
+            "message" => 'Url no encontrada.',
+            "data" => null,
+        ]);
         break;
 }
 ?>
