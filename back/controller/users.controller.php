@@ -80,12 +80,12 @@ switch ($_GET["op"]) {
         break;
 
     /*TODO: Procedimiento para login */
-    // case 'login':
+    case 'login':
         $email = $_POST['email'];
         $password = $_POST['password'];
 
         if (empty($email) or empty($password)) {
-            header("Location:../login.php?op=2");
+            header("Location:../login.php?op=4");
             exit();
         }
 
@@ -100,17 +100,20 @@ switch ($_GET["op"]) {
 
         try {
             if (is_array($res) and count($res) > 0) {
-                if (($password == $res["password"])) {
-                    $_SESSION["idUsuarios"] = $res["id"];
-                    $_SESSION["Usuarios_Nombres"] = $res["firstname"];
-                    $_SESSION["Usuarios_Apellidos"] = $res["lastname"];
-                    $_SESSION["Usuarios_email"] = $res["email"];
-                    $_SESSION["Usuario_Rol"] = $res["role"];
 
-                    header("Location:../views/home.php");
+                if (password_verify($password, $res["password"])) {
+                    $_SESSION["id"] = $res["id"];
+                    $_SESSION["firstname"] = $res["firstname"];
+                    $_SESSION["lastname"] = $res["lastname"];
+                    $_SESSION["email"] = $res["email"];
+                    $_SESSION["role"] = $res["role"];
+
+                    // header("Location:../views/home.php");
+                    echo "paso";
                     exit();
                 } else {
-                    header("Location:../login.php?op=1");
+                    // header("Location:../login.php?op=1");
+                    echo "no paso";
                     exit();
                 }
             } else {

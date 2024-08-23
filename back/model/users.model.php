@@ -7,13 +7,19 @@ class User {
     /*TODO: Procedimiento para insertar un usuario*/
     public function insertar($firstname, $lastname, $email, $password, $role, $status) {
         // Hashear password
-        $password = password_hash($password, PASSWORD_DEFAULT);
+        $passwordHash = password_hash($password, PASSWORD_DEFAULT);
 
         $con = new ClaseConectar();
         $con = $con->ProcedimientoConectar();
-        $cadena = "INSERT INTO users (firstname, lastname, email, password, role, status) VALUES ('$firstname', '$lastname', '$email', '$password', '$role', '$status')";
+        $cadena = "INSERT INTO users (firstname, lastname, email, password, role, status) VALUES ('$firstname', '$lastname', '$email', '$passwordHash', '$role', '$status')";
         if (mysqli_query($con, $cadena)) {
-            return mysqli_insert_id($con);
+            return 
+            // Response
+            $response = [
+                "status" => "201",
+                "message" => "Usuario creado.",
+                "data" => "User",
+            ];
         } else {
             return 'Error al insertar en la base de datos';
         }
@@ -75,4 +81,20 @@ class User {
         return $datos;
         $con->close();
     }
+
+    /*TODO: Procedimiento logear al usuario */
+    public function login($email)
+    {
+        try {
+            $con = new ClaseConectar();
+            $con = $con->ProcedimientoConectar();
+            $cadena = "SELECT firstname, lastname, role, status, email, password FROM users WHERE email ='$email'";
+            $datos = mysqli_query($con, $cadena);
+            return $datos;
+        } catch (Throwable $th) {
+            return $th->getMessage();
+        }
+        $con->close();
+    }
+
 }
