@@ -296,7 +296,7 @@ class User
                 $response = [
                     "status" => "200", // OK
                     "message" => "Inicio de sesión exitoso.",
-                    "data" => null,
+                    "data" => $datos,
                 ];
             } else {
                 $response["message"] = "Correo electrónico no encontrado.";

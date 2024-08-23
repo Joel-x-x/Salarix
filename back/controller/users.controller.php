@@ -94,11 +94,21 @@ switch ($_GET["op"]) {
     
             // Verificar el estado de la respuesta
             if ($response["status"] == "200") {
-                $res = $response["data"];
-                
+                $data = $response["data"];
+
                 // Verificar la contraseña
-                if (password_verify($password, $res["password"])) {
-                    echo json_encode($response);
+                if (password_verify($password, $data["password"])) {
+                    echo json_encode([
+                        "status" => $response["status"], // 200 ok
+                        "message" => $response["message"],
+                        "data" => [
+                            "firstname" => $data["firstname"],
+                            "lastname" => $data["lastname"],
+                            "email" => $data["email"],
+                            "role" => $data["role"],
+                            "status" => (bool)$data["status"]
+                        ],
+                        ]);
 
                 } else {
                     // Contraseña incorrecta
