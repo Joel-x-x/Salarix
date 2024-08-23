@@ -8,23 +8,53 @@ class User {
     public function insertar($firstname, $lastname, $email, $password, $role, $status) {
         // Hashear password
         $passwordHash = password_hash($password, PASSWORD_DEFAULT);
-
+    
         $con = new ClaseConectar();
         $con = $con->ProcedimientoConectar();
-        $cadena = "INSERT INTO users (firstname, lastname, email, password, role, status) VALUES ('$firstname', '$lastname', '$email', '$passwordHash', '$role', '$status')";
-        if (mysqli_query($con, $cadena)) {
-            return 
-            // Response
+    
+        // Verificar si el email ya existe
+        $query = "SELECT email FROM users WHERE email = '$email'";
+        $result = mysqli_query($con, $query);
+    
+        if (mysqli_num_rows($result) > 0) {
+            // El email ya existe
             $response = [
-                "status" => "201",
-                "message" => "Usuario creado.",
-                "data" => "User",
+                "status" => "409", // 409 Conflict
+                "message" => "El email ya está registrado.",
+                "data" => null,
             ];
         } else {
-            return 'Error al insertar en la base de datos';
+            // El email no existe, proceder con la inserción
+            $cadena = "INSERT INTO users (firstname, lastname, email, password, role, status) 
+                       VALUES ('$firstname', '$lastname', '$email', '$passwordHash', '$role', '$status')";
+            if (mysqli_query($con, $cadena)) {
+                $response = [
+                    "status" => "201", // 201 Created
+                    "message" => "Usuario creado.",
+                    "data" => [
+                        "firstname" => $firstname,
+                        "lastname" => $lastname,
+                        "email" => $email,
+                        "role" => $role,
+                        "status" => $status
+                    ],
+                ];
+            } else {
+                $response = [
+                    "status" => "500", // 500 Internal Server Error
+                    "message" => "Error inesperado, no se pudo crear el usuario.",
+                    "data" => null,
+                ];
+            }
         }
+    
+        // Cerrar la conexión
         $con->close();
+    
+        // Retornar la respuesta como JSON
+        return json_encode($response);
     }
+    
 
     /*TODO: Procedimiento para actualizar un usuario*/
     public function actualizar($id, $firstname, $lastname, $email, $role) {
