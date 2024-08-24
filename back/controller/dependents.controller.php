@@ -1,6 +1,6 @@
 <?php
 
-error_reporting(0);
+//error_reporting(0);
 
 /*TODO: Requerimientos */
 
@@ -42,21 +42,35 @@ switch ($_GET["op"]) {
         break;
 
     case 'insertar':
-        $name = $_POST["name"];
-        $lastname = $_POST["lastname"];
-        $relation = $_POST["relation"];
-        $disability = $_POST["disability"];
-        $birthday = $_POST["birthday"];
+        $name = isset($_POST["name"]) ? $_POST["name"] : null;
+        $lastname = isset($_POST["lastname"]) ? $_POST["lastname"] : null;
+        $relation = isset($_POST["relation"]) ? $_POST["relation"] : null;
+        $disability = isset($_POST["disability"]) ? $_POST["disability"] : null;
+        $birthday = isset($_POST["birthday"]) ? $_POST["birthday"] : null;
         $status = true; // default to active
-        $id_user = $_POST["id_user"];
+        $id_user = isset($_POST["id_user"]) ? $_POST["id_user"] : null;
 
-        if ($name && $lastname && $relation && $disability && $birthday && $id_user) {
+        // Verificar que todos los campos están presentes
+        if ($name !== null && $lastname !== null && $relation !== null && $disability !== null && $birthday !== null && $id_user !== null) {
             $data = $Dependientes->insertar($name, $lastname, $relation, $disability, $birthday, $status, $id_user);
             echo json_encode($data);
         } else {
-            echo json_encode(['error' => 'all fields are required']);
+            // Mensajes de depuración para identificar el campo faltante
+            $missing_fields = [];
+            if ($name === null) $missing_fields[] = 'name';
+            if ($lastname === null) $missing_fields[] = 'lastname';
+            if ($relation === null) $missing_fields[] = 'relation';
+            if ($disability === null) $missing_fields[] = 'disability';
+            if ($birthday === null) $missing_fields[] = 'birthday';
+            if ($id_user === null) $missing_fields[] = 'id_user';
+
+            echo json_encode([
+                'error' => 'all fields are required',
+                'missing_fields' => $missing_fields
+            ]);
         }
         break;
+
 
     case 'actualizar':
 

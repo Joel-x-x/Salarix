@@ -6,9 +6,12 @@ class Dependent{
 
     /*TODO: Procedimiento para insertar un dependiente*/
 
-    public function insertar($name, $lastname, $relation, $disabillity, $birthday, $status, $id_user){
+    public function insertar($name, $lastname, $relation, $disability, $birthday, $status, $id_user){
         $con = new ClaseConectar();
         $con = $con->ProcedimientoConectar();
+
+        // Convertir el valor de disability a booleano y luego a entero
+        $disability = filter_var($disability, FILTER_VALIDATE_BOOLEAN) ? 1 : 0;
 
         // Verificar si el dependiente ya existe con name y lastname
         $query = "SELECT * FROM dependents WHERE name = '$name' AND lastname = '$lastname'";
@@ -22,8 +25,8 @@ class Dependent{
             ];
         } else {
             // El dependiente no existe, proceder con la inserción
-            $cadena = "INSERT INTO dependents (name, lastname, relation, disabillity, birthday, status, id_user) 
-                       VALUES ('$name', '$lastname', '$relation', '$disabillity', '$birthday', '$status', '$id_user')";
+            $cadena = "INSERT INTO dependents (name, lastname, relation, disability, birthday, status, id_user) 
+                       VALUES ('$name', '$lastname', '$relation', $disability, '$birthday', '$status', '$id_user')";
             if (mysqli_query($con, $cadena)) {
                 $response = [
                     "status" => "201", // 201 Created
@@ -32,7 +35,7 @@ class Dependent{
                         "name" => $name,
                         "lastname" => $lastname,
                         "relation" => $relation,
-                        "disabillity" => $disabillity,
+                        "disability" => $disability,
                         "birthday" => $birthday,
                         "status" => $status,
                         "id_user" => $id_user
@@ -55,11 +58,11 @@ class Dependent{
     }
 
     /*TODO: Procedimiento para actualizar un dependiente*/
-    public function actualizar($id, $name, $lastname, $relation, $disabillity, $birthday, $id_user){
+    public function actualizar($id, $name, $lastname, $relation, $disability, $birthday, $id_user){
         $con = new ClaseConectar();
         $con = $con->ProcedimientoConectar();
 
-        $cadena = "UPDATE dependents SET name = '$name', lastname = '$lastname', relation = '$relation', disabillity = '$disabillity', birthday = '$birthday', id_user = '$id_user' WHERE id = '$id'";
+        $cadena = "UPDATE dependents SET name = '$name', lastname = '$lastname', relation = '$relation', disability = '$disability', birthday = '$birthday', id_user = '$id_user' WHERE id = '$id'";
         if (mysqli_query($con, $cadena)) {
             $response = [
                 "status" => "200", // 200 OK
@@ -68,7 +71,7 @@ class Dependent{
                     "name" => $name,
                     "lastname" => $lastname,
                     "relation" => $relation,
-                    "disabillity" => $disabillity,
+                    "disabillity" => $disability,
                     "birthday" => $birthday,
                     "id_user" => $id_user
                 ],
