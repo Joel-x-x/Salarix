@@ -5,7 +5,7 @@ error_reporting(0);
 /*TODO: Requerimientos */
 
 require_once('../config/sesiones.php');
-require_once("../model/dependent.model.php");
+require_once("../model/dependents.model.php");
 
 $Dependientes = new Dependent;
 

@@ -2,7 +2,6 @@
 error_reporting(0);
 
 /*TODO: Requerimientos */
-require_once('../config/sesiones.php');
 require_once("../model/users.model.php");
 
 $Usuarios = new User;
@@ -40,7 +39,10 @@ switch ($_GET["op"]) {
         $data = $Usuarios->insertar($firstname, $lastname, $email, $password, $role, $status);
           echo json_encode($data);
       } else {
-          echo json_encode(['error' => 'all fields are required']);
+        echo json_encode([
+            "status" => "404", // 404 Bad request
+            "message" => "Todos los campos son requeridos."
+        ]);
       }
       break;
 

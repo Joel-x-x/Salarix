@@ -2,8 +2,7 @@
 
 require_once '../config/conexion.php';
 
-class User
-{
+class User {
 
     /*TODO: Procedimiento para insertar un usuario*/
     public function insertar($firstname, $lastname, $email, $password, $role, $status)
@@ -66,12 +65,12 @@ class User
 
         // Cerrar la conexión
         $con->close();
-
-        // Retornar la respuesta como JSON
     }
 
 
     /*TODO: Procedimiento para actualizar un usuario*/
+
+    // TODO: Agregar todos los atributos para actualizar
     public function actualizar($id, $firstname, $lastname, $email, $role)
     {
         $con = new ClaseConectar();

@@ -10,7 +10,7 @@ CREATE TABLE railway.users (
     firstname VARCHAR(50) NOT NULL,
     lastname VARCHAR(50) NOT NULL,
     email VARCHAR(100) NOT NULL UNIQUE,
-    password VARCHAR(50) NOT NULL,
+    password VARCHAR(250) NOT NULL,
     role ENUM('ADMINISTRADOR', 'SUPERADMINISTRADOR', 'EMPLEADO', 'CONTADOR') NOT NULL,
     identification VARCHAR(20) UNIQUE,
     sex BOOLEAN,
@@ -25,7 +25,7 @@ CREATE TABLE railway.users (
 
 -- Table departments
 CREATE TABLE railway.departments (
-    id CHAR(36) PRIMARY KEY,
+    id CHAR(36) PRIMARY KEY DEFAULT (UUID()),
     name VARCHAR(255) NOT NULL,
     description TEXT
 );
@@ -41,14 +41,14 @@ CREATE TABLE railway.user_departments (
 
 -- Table position
 CREATE TABLE railway.positions (
-    id CHAR(36) PRIMARY KEY,
+    id CHAR(36) PRIMARY KEY DEFAULT (UUID()),
     name VARCHAR(255) NOT NULL UNIQUE,
     description TEXT
 );
 
 -- Table salary plan
 CREATE TABLE railway.salary_plans (
-    id CHAR(36) PRIMARY KEY,
+    id CHAR(36) PRIMARY KEY DEFAULT (UUID()),
     position_id CHAR(36),
     baseSalary DOUBLE NOT NULL,
     description TEXT,
@@ -61,12 +61,12 @@ CREATE TABLE railway.salary_plans (
 
 -- Table registers
 CREATE TABLE railway.registers (
-    id CHAR(36) PRIMARY KEY,
+    id CHAR(36) PRIMARY KEY DEFAULT (UUID()),
     start DATETIME NOT NULL,
-    finish DATETIME NOT NULL,
-    ordinary_time DOUBLE NOT NULL,
-    overtime DOUBLE NOT NULL COMMENT '50% add for hour',
-    night_overtime DOUBLE NOT NULL COMMENT '100% add for hour',
+    finish DATETIME,
+    ordinary_time DOUBLE,
+    overtime DOUBLE COMMENT '50% add for hour',
+    night_overtime DOUBLE COMMENT '100% add for hour',
     user_id CHAR(36),
     FOREIGN KEY (user_id) REFERENCES users(id) ON DELETE SET NULL
 ); 
