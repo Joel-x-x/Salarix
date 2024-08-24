@@ -71,6 +71,22 @@ CREATE TABLE railway.registers (
     FOREIGN KEY (user_id) REFERENCES users(id) ON DELETE SET NULL
 ); 
 
+CREATE TABLE `railway`.`dependents` (
+  `id` CHAR(36) NOT NULL DEFAULT (UUID()), 
+  `name` VARCHAR(50) NOT NULL,
+  `lastname` VARCHAR(100) NOT NULL,
+  `relation` VARCHAR(45) NOT NULL,
+  `disability` TINYINT NOT NULL,
+  `birthday` DATE NOT NULL,
+  `status` BOOLEAN NOT NULL DEFAULT TRUE,  
+  `id_user` CHAR(36) NOT NULL, 
+  PRIMARY KEY (`id`),  
+  CONSTRAINT `fk_iduser_dependents`
+    FOREIGN KEY (`id_user`) 
+    REFERENCES `users` (`id`)
+    ON DELETE CASCADE 
+    ON UPDATE CASCADE  
+);
 
 
 
