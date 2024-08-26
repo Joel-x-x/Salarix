@@ -5,8 +5,9 @@ require_once '../config/conexion.php';
 class Employee
 {
 
-    /*TODO: Procedimiento para insertar un usuario*/
-    public function insertar($firstname, $lastname, $email, $password, $identification, $sex, $address, $birthday, $phone, $status) {
+    /*TODO: Procedimiento para insertar un empleado*/
+    public function insertar($firstname, $lastname, $email, $password, $identification, $sex, $address, $birthday, $phone, $status)
+    {
         // Asignar rol de empleado
         $role = "EMPLEADO";
 
@@ -76,7 +77,7 @@ class Employee
                 return
                     $response = [
                         "status" => "500", // 500 Internal Server Error
-                        "message" => "Error inesperado, no se pudo crear el usuario."
+                        "message" => "Error inesperado, no se pudo crear el empleado."
                     ];
             }
         }
@@ -85,37 +86,40 @@ class Employee
         $con->close();
     }
 
-    /*TODO: Procedimiento para obtener un usuario por ID*/
-    public function uno($id)
-    {
+    /*TODO: Procedimiento para obtener un empleado por ID*/
+    public function uno($id) {
         try {
             // Crear una nueva conexión
             $con = new ClaseConectar();
             $con = $con->ProcedimientoConectar();
-
             // Preparar la consulta SQL
-            $cadena = "SELECT id, firstname, lastname, email, role, created, updated, status FROM users WHERE id='$id'";
+            $cadena = "SELECT id, firstname, lastname, email, role, identification, sex, address, birthday, phone, codeEmployee, created, updated, status 
+            FROM users 
+            WHERE id = '$id'";
+ 
             $datos = mysqli_query($con, $cadena);
 
             // Verificar si la consulta devolvió resultados
             if (mysqli_num_rows($datos) > 0) {
                 // Obtener el resultado como un array asociativo
-                $usuario = mysqli_fetch_assoc($datos);
+                $empleado = mysqli_fetch_assoc($datos);
 
                 // Convertir el campo 'status' a booleano
-                $usuario['status'] = (bool)$usuario['status'];
+                $empleado['status'] = (bool)$empleado['status'];
+                // Convertir el campo 'sex' a booleano
+                $empleado['sex'] = (bool)$empleado['sex'];
 
                 $con->close(); // Cerrar la conexión
                 return [
                     "status" => "200", // 200 OK
-                    "message" => 'Usuario encontrado.',
-                    "data" => $usuario,
+                    "message" => 'Empleado encontrado.',
+                    "data" => $empleado,
                 ];
             } else {
                 $con->close(); // Cerrar la conexión
                 return [
                     "status" => "404", // 404 Not Found
-                    "message" => 'Usuario no encontrado.',
+                    "message" => 'Empleado no encontrado.',
                     "data" => null,
                 ];
             }
@@ -132,7 +136,6 @@ class Employee
         }
     }
 
-
     public function todos()
     {
         try {
@@ -141,30 +144,32 @@ class Employee
             $con = $con->ProcedimientoConectar();
 
             // Preparar y ejecutar la consulta SQL
-            $cadena = "SELECT id, firstname, lastname, email, role, created, updated, status FROM users";
+            $cadena = "SELECT id, firstname, lastname, email, identification, sex, address, birthday, phone, codeEmployee, created, updated, status FROM users WHERE role = 'EMPLEADO'";
             $resultado = mysqli_query($con, $cadena);
 
             // Verificar si la consulta devolvió resultados
             if ($resultado && mysqli_num_rows($resultado) > 0) {
-                // Obtener todos los usuarios como un array
-                $usuarios = [];
+                // Obtener todos los empleados como un array
+                $empleados = [];
                 while ($row = mysqli_fetch_assoc($resultado)) {
                     // Convertir el campo 'status' a booleano
                     $row['status'] = (bool)$row['status'];
-                    $usuarios[] = $row;
+                    // Convertir el campo 'sex' a booleano
+                    $row['sex'] = (bool)$row['sex'];
+                    $empleados[] = $row;
                 }
 
                 $con->close(); // Cerrar la conexión
                 return [
                     "status" => "200", // 200 OK
-                    "message" => 'Usuarios encontrados.',
-                    "data" => $usuarios,
+                    "message" => 'empleados encontrados.',
+                    "data" => $empleados,
                 ];
             } else {
                 $con->close(); // Cerrar la conexión
                 return [
                     "status" => "404", // 404 Not Found
-                    "message" => 'No se encontraron usuarios.',
+                    "message" => 'No se encontraron empleados.',
                     "data" => [],
                 ];
             }

@@ -53,14 +53,21 @@ switch ($_GET["op"]) {
         $lastname = $_POST["lastname"];
         $email = $_POST["email"];
         $role = $_POST["role"];
-
+        $password = $_POST["password"];
+        $identification = $_POST["identification"];
+        $sex = $_POST["sex"];
+        $address = $_POST["address"];
+        $birthday = $_POST["birthday"];
+        $phone = $_POST["phone"];
+        $codeEmployee = $_POST["codeEmployee"];
+    
         if ($id) {
             $datos = array();
-            $datos = $Usuarios->actualizar($id, $firstname, $lastname, $email, $role);
+            $datos = $Usuarios->actualizar($id, $firstname, $lastname, $email, $role, $password, $identification, $sex, $address, $birthday, $phone, $codeEmployee);
             echo json_encode($datos);
         } else {
             echo json_encode([
-                "status" => "404", // 404 Bad request
+                "status" => "404", // 404 Bad Request
                 "message" => "El id es requerido.",
                 "data" => null    
             ]);

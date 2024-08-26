@@ -68,81 +68,119 @@ class User {
     }
 
 
-    /*TODO: Procedimiento para actualizar un usuario*/
+ /*TODO: Procedimiento para actualizar un usuario*/
+public function actualizar($id, $firstname, $lastname, $email, $role, $password, $identification, $sex, $address, $birthday, $phone, $codeEmployee)
+{
+    $con = new ClaseConectar();
+    $con = $con->ProcedimientoConectar();
 
-    // TODO: Agregar todos los atributos para actualizar
-    public function actualizar($id, $firstname, $lastname, $email, $role)
-    {
-        $con = new ClaseConectar();
-        $con = $con->ProcedimientoConectar();
+    // Arreglo para almacenar las partes de la consulta
+    $fields = [];
 
-        // Arreglo para almacenar las partes de la consulta
-        $fields = [];
+    // Añadir campos solo si no son nulos o vacíos
+    if (!empty($firstname)) {
+        $fields[] = "firstname = '$firstname'";
+    }
+    if (!empty($lastname)) {
+        $fields[] = "lastname = '$lastname'";
+    }
+    if (!empty($email)) {
+        $fields[] = "email = '$email'";
+    }
+    if (!empty($role)) {
+        $fields[] = "role = '$role'";
+    }
+    if (!empty($password)) {
+        $fields[] = "password = '$password'";
+    }
+    if (!empty($identification)) {
+        $fields[] = "identification = '$identification'";
+    }
+    if (!is_null($sex)) { // `sex` es un booleano, por lo que puede ser false
+        $fields[] = "sex = '$sex'";
+    }
+    if (!empty($address)) {
+        $fields[] = "address = '$address'";
+    }
+    if (!empty($birthday)) {
+        $fields[] = "birthday = '$birthday'";
+    }
+    if (!empty($phone)) {
+        $fields[] = "phone = '$phone'";
+    }
+    if (!empty($codeEmployee)) {
+        $fields[] = "codeEmployee = '$codeEmployee'";
+    }
 
-        // Añadir campos solo si no son nulos o vacíos
+    // Si no hay campos para actualizar, retornar un error
+    if (empty($fields)) {
+        return [
+            "status" => "400", // 400 Bad Request
+            "message" => "No se proporcionaron campos para actualizar.",
+            "data" => null,
+        ];
+    }
+
+    // Construir la consulta SQL
+    $cadena = "UPDATE users SET " . implode(', ', $fields) . " WHERE id = '$id'";
+
+    // Ejecuta la consulta
+    if (mysqli_query($con, $cadena)) {
+        $con->close(); // Cierra la conexión antes de retornar
+        // Crear arreglo data dinámicamente
+        $responseArray = ["id" => $id]; // Siempre incluir el ID
+
         if (!empty($firstname)) {
-            $fields[] = "firstname = '$firstname'";
+            $responseArray["firstname"] = $firstname;
         }
         if (!empty($lastname)) {
-            $fields[] = "lastname = '$lastname'";
+            $responseArray["lastname"] = $lastname;
         }
         if (!empty($email)) {
-            $fields[] = "email = '$email'";
+            $responseArray["email"] = $email;
         }
         if (!empty($role)) {
-            $fields[] = "role = '$role'";
+            $responseArray["role"] = $role;
+        }
+        if (!empty($password)) {
+            $responseArray["password"] = $password;
+        }
+        if (!empty($identification)) {
+            $responseArray["identification"] = $identification;
+        }
+        if (!is_null($sex)) {
+            $responseArray["sex"] = $sex;
+        }
+        if (!empty($address)) {
+            $responseArray["address"] = $address;
+        }
+        if (!empty($birthday)) {
+            $responseArray["birthday"] = $birthday;
+        }
+        if (!empty($phone)) {
+            $responseArray["phone"] = $phone;
+        }
+        if (!empty($codeEmployee)) {
+            $responseArray["codeEmployee"] = $codeEmployee;
         }
 
-        // Si no hay campos para actualizar, retornar un error
-        if (empty($fields)) {
-            return
-                $response = [
-                    "status" => "400", // 400 Bad Request
-                    "message" => "No se proporcionaron campos para actualizar.",
-                    "data" => null,
-                ];
-        }
-
-        // Construir la consulta SQL
-        $cadena = "UPDATE users SET " . implode(', ', $fields) . " WHERE id = '$id'";
-
-        // Ejecuta la consulta
-        if (mysqli_query($con, $cadena)) {
-            $con->close(); // Cierra la conexión antes de retornar
-            // Crear arreglo data dinámicamente
-            $responseArray = ["id" => $id]; // Siempre incluir el ID
-
-            if (!empty($firstname)) {
-                $responseArray["firstname"] = $firstname;
-            }
-            if (!empty($lastname)) {
-                $responseArray["lastname"] = $lastname;
-            }
-            if (!empty($email)) {
-                $responseArray["email"] = $email;
-            }
-            if (!empty($role)) {
-                $responseArray["role"] = $role;
-            }
-
-            // Respuesta
-            return 
-            $response = [
-                "status" => "200", // 200 OK
-                "message" => "Usuario actualizado.",
-                "data" => $responseArray,
-            ];
-        } else {
-            $error = mysqli_error($con); // Obtén el mensaje de error
-            $con->close(); // Cierra la conexión
-            return
-                $response = [
-                    "status" => "500", // 500 Internal Server Error
-                    "message" => 'Error al actualizar el registro: ' . $error,
-                    "data" => null,
-                ];
-        }
+        // Respuesta
+        return [
+            "status" => "200", // 200 OK
+            "message" => "Usuario actualizado.",
+            "data" => $responseArray,
+        ];
+    } else {
+        $error = mysqli_error($con); // Obtén el mensaje de error
+        $con->close(); // Cierra la conexión
+        return [
+            "status" => "500", // 500 Internal Server Error
+            "message" => 'Error al actualizar el registro: ' . $error,
+            "data" => null,
+        ];
     }
+}
+
 
 
     /*TODO: Procedimiento para eliminar un usuario*/
@@ -228,7 +266,7 @@ class User {
             $con = $con->ProcedimientoConectar();
     
             // Preparar y ejecutar la consulta SQL
-            $cadena = "SELECT id, firstname, lastname, email, role, created, updated, status FROM users";
+            $cadena = "SELECT id, firstname, lastname, email, role, created, updated, status FROM users WHERE role <> 'EMPLEADO'";
             $resultado = mysqli_query($con, $cadena);
     
             // Verificar si la consulta devolvió resultados
