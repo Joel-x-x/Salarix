@@ -54,6 +54,14 @@ CREATE TABLE railway.salary_plans (
     description TEXT,
     checkin DATETIME NOT NULL,
     checkout DATETIME,
+    esc DOUBLE, -- Egresos: Extensión de salud por Cónyuge (Valor mensual determinado por la ley o póliza)
+    esc_included BOOLEAN NOT NULL DEFAULT FALSE, -- Indica si el plan incluye extensión de salud por cónyuge
+    cp_included BOOLEAN NOT NULL DEFAULT FALSE, -- Indica si el plan incluye Comisión %
+    app_included BOOLEAN NOT NULL DEFAULT FALSE, -- Indica si el plan incluye Aporte Patronal %
+    dts_included BOOLEAN NOT NULL DEFAULT FALSE, -- Indica si el plan incluye Décimo tercer sueldo
+    dcs_included BOOLEAN NOT NULL DEFAULT FALSE, -- Indica si el plan incluye Décimo cuarto sueldo
+    frp_included BOOLEAN NOT NULL DEFAULT FALSE, -- Indica si el plan incluye Fondo de reserva %
+    apep_included BOOLEAN NOT NULL DEFAULT FALSE, -- Indica si el plan incluye Aporte personal %
     user_id CHAR(36),
     FOREIGN KEY (position_id) REFERENCES positions(id) ON DELETE SET NULL,
     FOREIGN KEY (user_id) REFERENCES users(id) ON DELETE SET NULL
@@ -71,6 +79,7 @@ CREATE TABLE railway.registers (
     FOREIGN KEY (user_id) REFERENCES users(id) ON DELETE SET NULL
 ); 
 
+-- Table dependents
 CREATE TABLE `railway`.`dependents` (
   `id` CHAR(36) NOT NULL DEFAULT (UUID()), 
   `name` VARCHAR(50) NOT NULL,
@@ -87,6 +96,63 @@ CREATE TABLE `railway`.`dependents` (
     ON DELETE CASCADE 
     ON UPDATE CASCADE  
 );
+
+-- Table nomina
+CREATE TABLE railway.nomina (
+    id CHAR(36) PRIMARY KEY DEFAULT (UUID()),
+    periodName VARCHAR(100) NOT NULL,
+    start DATE NOT NULL,
+    finish DATE NOT NULL,
+    detail TEXT,
+    totalProvision DOUBLE,
+    totalIncome DOUBLE,
+    totalEgress DOUBLE,
+    totalLiquid DOUBLE,
+    created DATETIME DEFAULT CURRENT_TIMESTAMP,
+    user_id CHAR(36),
+    FOREIGN KEY (user_id) REFERENCES users(id) ON DELETE SET NULL
+);
+
+-- Table detail nomina
+CREATE TABLE railway.detail_nomina (
+    id CHAR(36) PRIMARY KEY DEFAULT (UUID()),
+    name VARCHAR(255) NOT NULL,
+    detail TEXT,
+    type BOOLEAN NOT NULL COMMENT '0 = Egreso, 1 = Ingreso',
+    monto DOUBLE NOT NULL,
+    created DATETIME DEFAULT CURRENT_TIMESTAMP,
+    nomina_id CHAR(36),
+    FOREIGN KEY (nomina_id) REFERENCES nomina(id) ON DELETE CASCADE
+);
+
+-- Table formula
+CREATE TABLE railway.formula (
+    id CHAR(36) PRIMARY KEY DEFAULT (UUID()), -- Identificador único para cada registro
+    cp DOUBLE, -- Ingresos: Comisión %
+    app DOUBLE, -- Ingresos: Aporte Patronal %
+    dts DOUBLE, -- Ingresos: Décimo tercer sueldo (meses para los que se divide)
+    frp DOUBLE, -- Ingresos: Fondo de reserva %
+    apep DOUBLE, -- Egresos: Aporte personal %
+    date DATETIME DEFAULT CURRENT_TIMESTAMP -- Fecha y hora del registro
+);
+
+-- Table vacations
+CREATE TABLE railway.vacations (
+    id CHAR(36) PRIMARY KEY DEFAULT (UUID()),
+    totalDays INT NOT NULL,
+    periodo VARCHAR(255) NOT NULL,
+    daysTaken INT NOT NULL,
+    start DATE NOT NULL,
+    finish DATE NOT NULL,
+    detail TEXT,
+    user_id CHAR(36),
+    FOREIGN KEY (user_id) REFERENCES users(id)
+);
+
+
+
+
+
 
 
 
