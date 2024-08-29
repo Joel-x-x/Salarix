@@ -43,6 +43,7 @@ CREATE TABLE railway.user_departments (
 CREATE TABLE railway.positions (
     id CHAR(36) PRIMARY KEY DEFAULT (UUID()),
     name VARCHAR(255) NOT NULL UNIQUE,
+    created DATETIME DEFAULT CURRENT_TIMESTAMP,
     description TEXT
 );
 
@@ -52,9 +53,10 @@ CREATE TABLE railway.salary_plans (
     position_id CHAR(36),
     baseSalary DOUBLE NOT NULL,
     description TEXT,
-    checkin DATETIME NOT NULL,
-    checkout DATETIME,
+    checkin TIME,
+    checkout TIME,
     esc DOUBLE, -- Egresos: Extensión de salud por Cónyuge (Valor mensual determinado por la ley o póliza)
+    cp DOUBLE, -- Ingresos: Comisión %
     esc_included BOOLEAN NOT NULL DEFAULT FALSE, -- Indica si el plan incluye extensión de salud por cónyuge
     cp_included BOOLEAN NOT NULL DEFAULT FALSE, -- Indica si el plan incluye Comisión %
     app_included BOOLEAN NOT NULL DEFAULT FALSE, -- Indica si el plan incluye Aporte Patronal %
@@ -104,7 +106,7 @@ CREATE TABLE railway.nomina (
     start DATE NOT NULL,
     finish DATE NOT NULL,
     detail TEXT,
-    totalProvision DOUBLE,
+    totalGross DOUBLE,
     totalIncome DOUBLE,
     totalEgress DOUBLE,
     totalLiquid DOUBLE,
@@ -120,6 +122,7 @@ CREATE TABLE railway.detail_nomina (
     detail TEXT,
     type BOOLEAN NOT NULL COMMENT '0 = Egreso, 1 = Ingreso',
     monto DOUBLE NOT NULL,
+    isBonus BOOLEAN DEFAULT FALSE,
     created DATETIME DEFAULT CURRENT_TIMESTAMP,
     nomina_id CHAR(36),
     FOREIGN KEY (nomina_id) REFERENCES nomina(id) ON DELETE CASCADE
@@ -128,7 +131,6 @@ CREATE TABLE railway.detail_nomina (
 -- Table formula
 CREATE TABLE railway.formula (
     id CHAR(36) PRIMARY KEY DEFAULT (UUID()), -- Identificador único para cada registro
-    cp DOUBLE, -- Ingresos: Comisión %
     app DOUBLE, -- Ingresos: Aporte Patronal %
     dts DOUBLE, -- Ingresos: Décimo tercer sueldo (meses para los que se divide)
     frp DOUBLE, -- Ingresos: Fondo de reserva %

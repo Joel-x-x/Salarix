@@ -8,20 +8,20 @@ $Registros = new Register;
 
 switch($_GET["op"]) {
   /* TODO: Procedimiento para registrar a un usuario */
-  case 'primer-registro':
+  case 'registro-entrada':
 
-    $userId = $_POST["userId"];
+    $codeEmployee = $_POST["codeEmployee"];
 
     // Validar que no este vacio
-    if(empty($userId)) {
+    if(empty($codeEmployee)) {
         echo json_encode([
           "status" => "404", // 404 Bad request
-          "message" => "El userId es requerido.",
+          "message" => "El codeEmployee es requerido.",
       ]);
 
       return;
     }
-    $datos = $Registros->primerRegistro($userId);
+    $datos = $Registros->primerRegistro($codeEmployee);
 
     echo json_encode($datos);
   break;
@@ -44,9 +44,9 @@ switch($_GET["op"]) {
     echo json_encode($datos);
   break;
 
-  case 'insertarRegistroSalida':
+  case 'registro-salida':
 
-    $codigoEmpleado = $_POST["codigoEmpleado"];
+    $codigoEmpleado = $_POST["codeEmployee"];
 
     // Validar que no este vacio
     if(empty($codigoEmpleado)) {
@@ -64,7 +64,7 @@ switch($_GET["op"]) {
     
   break;
 
-  case 'actualizarRegistro':
+  case 'actualizar':
 
     $id = $_POST["id"];
     $start = $_POST["start"];

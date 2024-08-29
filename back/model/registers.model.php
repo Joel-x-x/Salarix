@@ -92,20 +92,23 @@ class Register
     // Fecha de salida
     // Configurar la zona horaria a UTC-5
     date_default_timezone_set('America/Bogota');
-    $finish = new DateTime();
+    $finish = new DateTime('2024-08-29 22:20:00');
     $finish = $finish->format('Y-m-d H:i:s');
 
     // Verificar si ya existe un registro para el mismo día
-    $consulta = "SELECT * FROM registers WHERE user_id IN (SELECT id FROM users WHERE codeEmployee = '$codigoEmpleado') AND DATE(start) = CURDATE()";
+    $consulta = "SELECT id FROM registers WHERE user_id IN (SELECT id FROM users WHERE codeEmployee = '$codigoEmpleado') AND DATE(start) = CURDATE()";
     $resultado = mysqli_query($con, $consulta);
 
-    if ($resultado && mysqli_num_rows($resultado) > 0) {
+    if (/* $resultado && mysqli_num_rows($resultado) > 0 */true) {
+      // Obtener el ID del registro existente
+      $row = mysqli_fetch_assoc($resultado);
+      $id = $row['id'];
+
       // Actualizar el registro existente con la fecha de salida
-      $cadena = "UPDATE registers SET finish = '$finish' WHERE user_id IN (SELECT id FROM users WHERE codeEmployee = '$codigoEmpleado') AND DATE(start) = CURDATE()";
+      $cadena = "UPDATE registers SET finish = '$finish' WHERE id = '$id'";
 
       if (mysqli_query($con, $cadena)) {
         // Calcular las horas y actualizar los campos correspondientes
-        $id = mysqli_insert_id($con);
         $start = $this->obtenerHoraInicio($id);
         $ordinary_time = $this->calcularHorasOrdinarias($start, $finish);
         $overtime = $this->calcularHorasExtraordinarias($start, $finish);
@@ -113,27 +116,24 @@ class Register
 
         $this->actualizarRegistro($id, $start, $finish, $ordinary_time, $overtime, $night_overtime);
 
-        return
-          $response = [
-            "status" => "200", // 200 OK
-            "message" => "Registro de salida insertado correctamente.",
-            "data" => [
-              "finish" => $finish
-            ]
-          ];
+        return [
+          "status" => "200", // 200 OK
+          "message" => "Registro de salida insertado correctamente.",
+          "data" => [
+            "finish" => $finish
+          ]
+        ];
       } else {
-        return
-          $response = [
-            "status" => "500",
-            "message" => "Error inesperado, no se pudo insertar el registro de salida.",
-          ];
+        return [
+          "status" => "500",
+          "message" => "Error inesperado, no se pudo insertar el registro de salida.",
+        ];
       }
     } else {
-      return
-        $response = [
-          "status" => "404",
-          "message" => "No se encontró un registro de inicio para el usuario en el día actual.",
-        ];
+      return [
+        "status" => "404",
+        "message" => "No se encontró un registro de inicio para el usuario en el día actual.",
+      ];
     }
   }
 
@@ -160,62 +160,114 @@ class Register
     }
   }
 
-  /* TODO: Método para calcular las horas ordinarias */
-  public function calcularHorasOrdinarias($start, $finish)
-  {
-    // Calcular la diferencia en segundos entre la fecha de inicio y la fecha de fin
-    $start = new DateTime($start);
-    $finish = new DateTime($finish);
-    $diferencia = $finish->getTimestamp() - $start->getTimestamp();
-
-    // Convertir la diferencia a horas
-    $horas = $diferencia / 3600;
-
-    // Verificar si las horas son mayores a 9
-    if ($horas > 9) {
-      return 9;
-    } else {
-      return $horas;
-    }
+  public function calcularHorasOrdinarias($start, $finish) {
+      // Crear objetos DateTime para las horas de inicio y fin
+      $start = new DateTime($start);
+      $finish = new DateTime($finish);
+  
+      // Calcular la diferencia en segundos entre la fecha de inicio y la fecha de fin
+      $diferencia = $finish->getTimestamp() - $start->getTimestamp();
+  
+      // Convertir la diferencia a horas y minutos
+      $horas = floor($diferencia / 3600);  // Horas completas
+      $minutos = ($diferencia % 3600) / 60;  // Minutos restantes como fracción de hora
+  
+      // Sumar las horas con los minutos convertidos a fracción sobre 60
+      $horasFraccion = $horas + ($minutos / 60); // Fracción correcta de horas
+  
+      // Verificar si las horas son mayores a 9
+      if ($horasFraccion > 9) {
+          return 9;  // Máximo de 9 horas ordinarias
+      } else {
+          // Redondear a dos decimales para mantener el formato de horas y minutos
+          return round($horasFraccion, 2);
+      }
   }
+  
 
   /* TODO: Método para calcular las horas extraordinarias */
   public function calcularHorasExtraordinarias($start, $finish)
   {
-    // Calcular la diferencia en segundos entre la fecha de inicio y la fecha de fin
-    $start = new DateTime($start);
-    $finish = new DateTime($finish);
-    $diferencia = $finish->getTimestamp() - $start->getTimestamp();
-
-    // Convertir la diferencia a horas
-    $horas = $diferencia / 3600;
-
-    // Verificar si las horas son mayores a 9
-    if ($horas > 9) {
-      return $horas - 9;
-    } else {
-      return 0;
-    }
+      $start = new DateTime($start);
+      $finish = new DateTime($finish);
+  
+      // Calcular la diferencia en segundos entre la fecha de inicio y la fecha de fin
+      $diferencia = $finish->getTimestamp() - $start->getTimestamp();
+      $horas = $diferencia / 3600;  // Diferencia total en horas
+  
+      // Horas extraordinarias ordinarias (50% adicional) entre 06:00 y 19:00
+      $horasExtrasOrdinarias = 0;
+  
+      if ($horas > 9) {
+          $extraStart = clone $start;
+          $extraStart->modify('+9 hours');  // Comienza a contar después de 9 horas
+  
+          while ($extraStart < $finish) {
+              $horaActual = (int)$extraStart->format('H');
+  
+              // Determina si está en el rango ordinario de 06:00 a 19:00
+              if ($horaActual >= 6 && $horaActual < 19) {
+                  // Calcular tiempo restante en horas completas
+                  $tiempoRestanteSegundos = $finish->getTimestamp() - $extraStart->getTimestamp();
+                  if ($tiempoRestanteSegundos >= 3600) {  // Verifica si es al menos una hora completa
+                      $horasExtrasOrdinarias += 1;  // Suma solo horas completas
+                      $extraStart->modify('+1 hour');  // Avanza a la siguiente hora completa
+                  } else {
+                      break;  // Salir si no hay tiempo suficiente para otra hora completa
+                  }
+              } else {
+                  $extraStart->modify('+1 hour');  // Incrementar al siguiente rango de hora
+              }
+          }
+      }
+  
+      return round($horasExtrasOrdinarias, 2);
   }
+  
 
   /* TODO: Método para calcular las horas extraordinarias nocturnas */
   public function calcularHorasExtraordinariasNocturnas($start, $finish)
   {
-    // Calcular la diferencia en segundos entre la fecha de inicio y la fecha de fin
-    $start = new DateTime($start);
-    $finish = new DateTime($finish);
-    $diferencia = $finish->getTimestamp() - $start->getTimestamp();
-
-    // Convertir la diferencia a horas
-    $horas = $diferencia / 3600;
-
-    // Verificar si las horas son mayores a 9
-    if ($horas > 9) {
-      return $horas - 9;
-    } else {
-      return 0;
-    }
+      $start = new DateTime($start);
+      $finish = new DateTime($finish);
+  
+      // Calcular la diferencia en segundos entre la fecha de inicio y la fecha de fin
+      $diferencia = $finish->getTimestamp() - $start->getTimestamp();
+      $horas = $diferencia / 3600;
+  
+      // Horas extraordinarias nocturnas (100% adicional) entre 19:00 y 06:00
+      $horasExtrasNocturnas = 0;
+  
+      if ($horas > 9) {
+          $extraStart = clone $start;
+          $extraStart->modify('+9 hours');  // Comienza a contar después de 9 horas
+  
+          while ($extraStart < $finish) {
+              $horaActual = (int)$extraStart->format('H');
+  
+              // Determina si está en el rango nocturno (19:00 - 06:00)
+              if ($horaActual >= 19 || $horaActual < 6) {
+                  // Calcula tiempo restante en horas completas
+                  $tiempoRestanteSegundos = $finish->getTimestamp() - $extraStart->getTimestamp();
+                  if ($tiempoRestanteSegundos >= 3600) {  // Verifica si es al menos una hora completa
+                      $horasExtrasNocturnas += 1;  // Suma solo horas completas
+                      $extraStart->modify('+1 hour');  // Avanza a la siguiente hora completa
+                  } else {
+                      break;  // Salir si no hay tiempo suficiente para otra hora completa
+                  }
+              } else {
+                  $extraStart->modify('+1 hour');  // Incrementar al siguiente rango de hora
+              }
+          }
+      }
+  
+      return round($horasExtrasNocturnas, 2);
   }
+  
+  
+  
+  
+
 
   /* TODO: Método para obtener la hora de inicio de un registro */
   public function obtenerHoraInicio($id)

@@ -5,12 +5,12 @@ require_once '../config/conexion.php';
 class DetailNomina {
 
     /*TODO: Procedimiento para insertar un detalle de nómina*/
-    public function insertar($name, $detail, $type, $monto, $nomina_id)
+    public function insertar($name, $detail, $type, $monto, $isBonus, $nomina_id)
     {
         $con = new ClaseConectar();
         $con = $con->ProcedimientoConectar();
-        $cadena = "INSERT INTO detail_nomina (name, detail, type, monto, nomina_id) 
-                   VALUES ('$name', '$detail', '$type', '$monto', '$nomina_id')";
+        $cadena = "INSERT INTO detail_nomina (name, detail, type, monto, isBonus, nomina_id) 
+                   VALUES ('$name', '$detail', '$type', '$monto', '$isBonus', '$nomina_id')";
     
         if (mysqli_query($con, $cadena)) {
             // Obtener el UUID del último registro insertado
@@ -34,6 +34,7 @@ class DetailNomina {
                     "detail" => $detail,
                     "type" => $type,
                     "monto" => $monto,
+                    "isBonus" => $isBonus,
                     "nomina_id" => $nomina_id
                 ],
             ];
@@ -48,7 +49,7 @@ class DetailNomina {
     }
 
     /*TODO: Procedimiento para actualizar un detalle de nómina*/
-    public function actualizar($id, $name, $detail, $type, $monto, $nomina_id)
+    public function actualizar($id, $name, $detail, $type, $monto, $isBonus, $nomina_id)
     {
         $con = new ClaseConectar();
         $con = $con->ProcedimientoConectar();
@@ -59,7 +60,8 @@ class DetailNomina {
                    detail = '$detail', 
                    type = '$type', 
                    monto = '$monto', 
-                   nomina_id = '$nomina_id'
+                   nomina_id = '$nomina_id',
+                   isBonus = '$isBonus'
                    WHERE id = '$id'";
 
         // Ejecutar la consulta
@@ -74,6 +76,7 @@ class DetailNomina {
                     "detail" => $detail,
                     "type" => $type,
                     "monto" => $monto,
+                    "isBonus" => $isBonus,
                     "nomina_id" => $nomina_id
                 ],
             ];
@@ -95,7 +98,7 @@ class DetailNomina {
             $con = $con->ProcedimientoConectar();
 
             // Preparar la consulta SQL
-            $cadena = "SELECT id, name, detail, type, monto, nomina_id FROM detail_nomina WHERE id='$id'";
+            $cadena = "SELECT * FROM detail_nomina WHERE id='$id'";
             $datos = mysqli_query($con, $cadena);
 
             // Verificar si la consulta devolvió resultados
@@ -107,7 +110,7 @@ class DetailNomina {
                 return [
                     "status" => "200", // 200 OK
                     "message" => "Detalle de nómina encontrado.",
-                    "data" => $detalle,
+                    "data" => $detalle
                 ];
             } else {
                 $con->close(); // Cerrar la conexión antes de retornar
@@ -138,7 +141,7 @@ class DetailNomina {
             $con = $con->ProcedimientoConectar();
     
             // Preparar y ejecutar la consulta SQL
-            $cadena = "SELECT id, name, detail, type, monto, nomina_id 
+            $cadena = "SELECT *
                        FROM detail_nomina 
                        WHERE nomina_id = '$nomina_id'";
             $resultado = mysqli_query($con, $cadena);

@@ -36,10 +36,11 @@ switch ($_GET["op"]) {
         $detail = $_POST["detail"];
         $type = $_POST["type"];
         $monto = $_POST["monto"];
+        $isBonus = $_POST["isBonus"];
         $nomina_id = $_POST["nomina_id"];
 
         if ($name && $type !== null && $monto && $nomina_id) {
-            $data = $DetailNomina->insertar($name, $detail, $type, $monto, $nomina_id);
+            $data = $DetailNomina->insertar($name, $detail, $type, $monto, $isBonus, $nomina_id);
             echo json_encode($data);
         } else {
             echo json_encode([
@@ -56,10 +57,11 @@ switch ($_GET["op"]) {
         $detail = $_POST["detail"];
         $type = $_POST["type"];
         $monto = $_POST["monto"];
+        $isBonus = $_POST["isBonus"];
         $nomina_id = $_POST["nomina_id"];
 
         if ($id) {
-            $datos = $DetailNomina->actualizar($id, $name, $detail, $type, $monto, $nomina_id);
+            $datos = $DetailNomina->actualizar($id, $name, $detail, $type, $monto, $isBonus, $nomina_id);
             echo json_encode($datos);
         } else {
             echo json_encode([
