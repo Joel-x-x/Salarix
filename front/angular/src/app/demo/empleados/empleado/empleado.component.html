@@ -1,0 +1,122 @@
+<!-- Botón para abrir el modal -->
+<button class="btn btn-primary" (click)="openModal()">Nuevo empleado</button>
+
+<!-- Modal HTML -->
+<div class="modal modal-lg fade" id="formModal" tabindex="-1" role="dialog" aria-labelledby="formModalLabel"
+  aria-hidden="true" [ngClass]="{'show': modalVisible}" [ngStyle]="{'display': modalVisible ? 'block' : 'none'}">
+  <div class="modal-dialog" role="document">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h5 class="modal-title" id="formModalLabel">Empleado</h5>
+      </div>
+      <div class="modal-body">
+        <div class="row">
+          <div class="col-sm-12">
+            <div class="row">
+              <div class="col-md-6">
+                <form action="javascript:">
+                  <div class="form-group">
+                    <label for="exampleInputEmail1">Email address</label>
+                    <input type="email" class="form-control" id="exampleInputEmail1" aria-describedby="emailHelp"
+                      placeholder="Enter email" />
+                    <small id="emailHelp" class="form-text text-muted">We'll never share your email with anyone
+                      else.</small>
+                  </div>
+                  <div class="form-group">
+                    <label for="exampleInputPassword1">Password</label>
+                    <input type="password" class="form-control" id="exampleInputPassword1" placeholder="Password" />
+                  </div>
+                  <div class="form-group form-check">
+                    <input type="checkbox" class="form-check-input" id="exampleCheck1" />
+                    <label class="form-check-label" for="exampleCheck1">Check me out</label>
+                  </div>
+                  <button type="submit" class="btn btn-primary">Submit</button>
+                </form>
+              </div>
+              <div class="col-md-6">
+                <form action="javascript:">
+                  <div class="form-group">
+                    <label>Text</label>
+                    <input type="text" class="form-control" placeholder="Text" />
+                  </div>
+                  <div class="form-group">
+                    <label for="exampleFormControlSelect1">Example select</label>
+                    <select class="form-control" id="exampleFormControlSelect1">
+                      <option>1</option>
+                      <option>2</option>
+                      <option>3</option>
+                      <option>4</option>
+                      <option>5</option>
+                    </select>
+                  </div>
+                  <div class="form-group">
+                    <label for="exampleFormControlTextarea1">Example textarea</label>
+                    <textarea class="form-control" id="exampleFormControlTextarea1" rows="3"></textarea>
+                  </div>
+                </form>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+      <div class="modal-footer">
+        <button type="button" class="btn btn-secondary" (click)="closeModal()">Close</button>
+        <button type="button" class="btn btn-primary">Save changes</button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- Table Empleados -->
+<div class="col-xl-12 mt-3">
+  <app-card cardTitle="Lista de empleados" [options]="false" blockClass="table-border-style">
+    <div class="table-responsive">
+      <table class="table table-striped">
+        <thead>
+          <tr>
+            <th>#</th>
+            <th>Acciones</th>
+            <th>Nombre</th>
+            <th>Apellido</th>
+            <th>Correo Electrónico</th>
+            <th>Identificación</th>
+            <th>Sexo</th>
+            <th>Dirección</th>
+            <th>Fecha de Nacimiento</th>
+            <th>Teléfono</th>
+            <th>Cod. Empleado</th>
+            <th>Creado</th>
+            <th>Actualizado</th>
+            <th>Estatus</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr>
+            <th scope="row">1</th>
+            <td class="text-center">
+              <button class="btn btn-link" aria-label="Editar">
+                <i class="fas fa-edit"></i>
+              </button>
+              <button class="btn btn-link" aria-label="Eliminar">
+                <i class="fas fa-trash"></i>
+              </button>
+            </td>
+            <td>Juan</td>
+            <td>Pérez</td>
+            <td>{{"juan.perez@gmail.com"}}</td>
+            <td>1234567890</td>
+            <td>Masculino</td> <!-- Assumed 'true' for Male -->
+            <td>123 Calle Principal, Ciudad, País</td>
+            <td>1990-01-01</td>
+            <td>097483728374</td>
+            <td>001</td>
+            <td>2024-08-23 23:35:14</td>
+            <td>2024-08-25 19:13:41</td>
+            <td>Activo</td> <!-- 'true' for active status -->
+          </tr>
+          <!-- Add more rows as needed -->
+        </tbody>
+      </table>
+    </div>
+  </app-card>
+</div>

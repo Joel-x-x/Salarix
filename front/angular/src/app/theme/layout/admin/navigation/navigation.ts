@@ -87,6 +87,68 @@ export const NavigationItems: NavigationItem[] = [
     ]
   },
   {
+    id: 'Empleados',
+    title: 'Empleados',
+    type: 'group',
+    icon: 'icon-group',
+    children: [
+      {
+        id: 'registros',
+        title: 'Registros',
+        type: 'item',
+        url: '/registros',
+        icon: 'feather icon-clock',
+        target: false,
+        breadcrumbs: true
+      },
+      {
+        id: 'empleado',
+        title: 'Empleado',
+        type: 'item',
+        url: '/empleado',
+        icon: 'feather icon-users',
+        target: false,
+        breadcrumbs: true
+      },
+      {
+        id: 'plan-salarial',
+        title: 'Plan salarial',
+        type: 'item',
+        url: '/plan-salarial',
+        icon: 'feather icon-book',
+        target: false,
+        breadcrumbs: true
+      },
+      {
+        id: 'departamentos',
+        title: 'Departamentos',
+        type: 'item',
+        url: '/departamentos',
+        icon: 'feather icon-grid',
+        target: false,
+        breadcrumbs: true
+      },
+      {
+        id: 'dependientes',
+        title: 'Dependientes',
+        type: 'item',
+        url: '/dependientes',
+        icon: 'feather icon-user-plus',
+        target: false,
+        breadcrumbs: true
+      },
+      {
+        id: 'vacaciones',
+        title: 'Vacaciones',
+        type: 'item',
+        url: '/vacaciones',
+        icon: 'feather icon-link-2',
+        target: false,
+        breadcrumbs: true
+      }
+    ]
+  },
+  {
     id: 'Authentication',
     title: 'Authentication',
     type: 'group',

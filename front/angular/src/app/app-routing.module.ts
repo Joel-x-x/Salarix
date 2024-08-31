@@ -39,6 +39,30 @@ const routes: Routes = [
       {
         path: 'sample-page',
         loadComponent: () => import('./demo/sample-page/sample-page.component')
+      },
+      {
+        path: 'registros',
+        loadComponent: () => import('./demo/empleados/registros/registros.component'),
+      },
+      {
+        path: 'empleado',
+        loadComponent: () => import('./demo/empleados/empleado/empleado.component')
+      },
+      {
+        path: 'plan-salarial',
+        loadComponent: () => import('./demo/empleados/plan-salarial/plan-salarial.component')
+      },
+      {
+        path: 'departamentos',
+        loadComponent: () => import('./demo/empleados/departamentos/departamentos.component')
+      },
+      {
+        path: 'dependientes',
+        loadComponent: () => import('./demo/empleados/dependientes/dependientes.component')
+      },
+      {
+        path: 'vacaciones',
+        loadComponent: () => import('./demo/empleados/vacaciones/vacaciones.component')
       }
     ]
   },
