@@ -3,6 +3,7 @@ error_reporting(0);
 
 /*TODO: Requerimientos */
 require_once("../model/detail_nomina.model.php");
+require_once("../config/cors.php");
 
 $DetailNomina = new DetailNomina();
 

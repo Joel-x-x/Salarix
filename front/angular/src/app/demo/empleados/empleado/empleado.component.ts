@@ -1,10 +1,17 @@
 import { Component, OnInit } from '@angular/core';
 import { EmpleadoService } from '../../services/empleado.service'; // Ajusta la ruta si es necesario
 import { Empleado } from '../../interfaces/IEmpleado';
+import { AbstractControl, FormControl, FormGroup, ReactiveFormsModule, ValidationErrors, Validators } from '@angular/forms';
+import { CommonModule } from '@angular/common';
+import { RouterLink } from '@angular/router';
+import { SharedModule } from 'src/app/theme/shared/shared.module';
+import { UsuarioService } from '../../services/usuario.service';
 import Swal from 'sweetalert2';
 
 @Component({
   selector: 'app-empleado',
+  standalone: true,
+  imports: [RouterLink, SharedModule, CommonModule, ReactiveFormsModule],
   templateUrl: './empleado.component.html',
   styleUrls: ['./empleado.component.scss']
 })
@@ -14,54 +21,68 @@ export class EmpleadoComponent implements OnInit {
   modalVisible: boolean = false;
   esNuevoEmpleado: boolean = true;
 
-  constructor(private empleadoService: EmpleadoService) {}
+  // Form
+  formEmpleado = new FormGroup({
+    firstname: new FormControl('', Validators.required),
+    lastname: new FormControl('', Validators.required),
+    email: new FormControl('', [Validators.required, Validators.email]),
+    password: new FormControl('', Validators.required),
+    identification: new FormControl('', Validators.required),
+    sex: new FormControl('', Validators.required),
+    address: new FormControl('', Validators.required),
+    birthday: new FormControl('', Validators.required),
+    phone: new FormControl('', Validators.required),
+  });
+
+  constructor(private empleadoService: EmpleadoService, private usuarioService: UsuarioService) {}
 
   ngOnInit(): void {
     this.listarEmpleados();
   }
 
   // Listar todos los empleados
-  listarEmpleados(): void {
-    this.empleadoService.todos().subscribe(
-      (data) => this.empleados = data,
-      (error) => console.error('Error al obtener los empleados', error)
-    );
+  listarEmpleados() {
+    this.empleadoService.todos().subscribe({
+      next: (data) => this.empleados = data,
+      error: (error) => console.error('Error al obtener los empleados', error)
+    });
   }
 
   // Obtener un empleado por ID
   obtenerEmpleado(id: number): void {
-    this.empleadoService.uno(id).subscribe(
-      (data) => this.empleadoSeleccionado = data,
-      (error) => console.error('Error al obtener el empleado', error)
-    );
+    this.empleadoService.uno(id).subscribe({
+      next: (data) => this.empleadoSeleccionado = data,
+      error: (error) => console.error('Error al obtener el empleado', error)
+    });
   }
 
   // Crear o actualizar un empleado
-  guardarEmpleado(empleado: Empleado): void {
-    if (this.esNuevoEmpleado) {
-      this.empleadoService.insertar(empleado).subscribe(
-        (response) => {
-          Swal.fire('Empleado', 'Empleado creado con éxito.', 'success');
-          this.listarEmpleados();
-          this.closeModal();
-        },
-        (error) => console.error('Error al insertar el empleado', error)
-      );
-    } else {
-      this.empleadoService.actualizar(empleado).subscribe(
-        (response) => {
-          Swal.fire('Empleado', 'Empleado actualizado con éxito.', 'success');
-          this.listarEmpleados();
-          this.closeModal();
-        },
-        (error) => console.error('Error al actualizar el empleado', error)
-      );
-    }
-  }
+  // grabar(): void {
+  //   if (this.esNuevoEmpleado) {
+  //     this.empleadoService.insertar(empleado).subscribe({
+  //       next: (response) => {
+  //         Swal.fire('Empleado', 'Empleado creado con éxito.', 'success');
+  //         this.listarEmpleados();
+  //         this.closeModal();
+  //       },
+  //       error: (error) => console.error('Error al insertar el empleado', error)
+  //     });
+  //   } else {
+  //     this.empleadoService.actualizar(empleado).subscribe({
+  //       next: (response) => {
+  //         Swal.fire('Empleado', 'Empleado actualizado con éxito.', 'success');
+  //         this.listarEmpleados();
+  //         this.closeModal();
+  //       },
+  //       error: (error) => console.error('Error al actualizar el empleado', error)
+  //     });
+  //   }
+  // }
 
-  // Abrir el modal para nuevo empleado
+  // // Abrir el modal para nuevo empleado
   openModal(): void {
     this.empleadoSeleccionado = {
+      id: '',
       firstname: '',
       lastname: '',
       password: '',
@@ -90,7 +111,7 @@ export class EmpleadoComponent implements OnInit {
   }
 
   // Eliminar empleado
-  eliminarEmpleado(id: number): void {
+  eliminarEmpleado(id: string): void {
     Swal.fire({
       title: 'Confirmación',
       text: '¿Está seguro de que desea eliminar este empleado?',
@@ -102,13 +123,13 @@ export class EmpleadoComponent implements OnInit {
       cancelButtonText: 'Cancelar'
     }).then((result) => {
       if (result.isConfirmed) {
-        this.empleadoService.eliminar(id).subscribe(
-          () => {
+        this.usuarioService.cambiarEstadoUsuario(id).subscribe({
+          next: () => {
             Swal.fire('Empleado', 'Empleado eliminado con éxito.', 'success');
             this.listarEmpleados();
           },
-          (error) => console.error('Error al eliminar el empleado', error)
-        );
+          error: (error) => console.error('Error al eliminar el empleado', error)
+        });
       }
     });
   }

@@ -1,5 +1,5 @@
 export interface IPosicion {
-  id?: number;
+  id: string;
   name: string;
   description: string;
 }

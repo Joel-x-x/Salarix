@@ -74,6 +74,9 @@ dependencies:
   rxjs:
     specifier: ~7.8.1
     version: 7.8.1
+  sweetalert2:
+    specifier: ^11.12.4
+    version: 11.12.4
   tslib:
     specifier: ^2.6.3
     version: 2.6.3
@@ -8505,6 +8508,10 @@ packages:
     engines: {node: '>= 0.8.0'}
     dependencies:
       svg.js: 2.7.1
+    dev: false
+
+  /sweetalert2@11.12.4:
+    resolution: {integrity: sha512-ZSpyaLbAmn4b7xjnV9x9BFD1UOrCAhIzm1D8dZ443kGxtVKqbTIA5SgXs4xeEtmFfEXUyC3RBgpSlu1AXmCiHA==}
     dev: false
 
   /symbol-observable@4.0.0:

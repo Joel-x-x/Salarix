@@ -1,7 +1,8 @@
 import { HttpClient } from '@angular/common/http';
 import { Injectable } from '@angular/core';
-import { Observable } from 'rxjs';
+import { Observable, throwError } from 'rxjs';
 import { Empleado } from '../interfaces/IEmpleado';
+import { catchError, map } from 'rxjs/operators';
 
 @Injectable({
   providedIn: 'root'
@@ -13,14 +14,38 @@ export class EmpleadoService {
 
   // Obtener todos los empleados
   todos(): Observable<Empleado[]> {
-    return this.http.get<Empleado[]>(`${this.apiUrl}todos`);
+    return this.http.get<any>(this.apiUrl + 'todos').pipe(
+      map(response => {
+        if (response.status === '200') {
+          return response.data;
+        } else {
+          return throwError(() => new Error(response.message));
+        }
+      }),
+      catchError(error => {
+        console.error('Error al obtener los empleados:', error.message);
+        return throwError(() => new Error('Error al obtener los empleados.'));
+      })
+    );
   }
 
   // Obtener un empleado por ID
   uno(id: number): Observable<Empleado> {
     const formData = new FormData();
     formData.append('id', id.toString());
-    return this.http.post<Empleado>(`${this.apiUrl}uno`, formData);
+    return this.http.post<any>(`${this.apiUrl}uno`, formData).pipe(
+      map(response => {
+        if (response.status === '200') {
+          return response.data;
+        } else {
+          return throwError(() => new Error(response.message));
+        }
+      }),
+      catchError(error => {
+        console.error('Error al obtener el empleado:', error.message);
+        return throwError(() => new Error('Error al obtener el empleado.'));
+      })
+    );
   }
 
   // Crear un nuevo empleado
@@ -36,10 +61,22 @@ export class EmpleadoService {
     formData.append('birthday', empleado.birthday);
     formData.append('phone', empleado.phone);
     formData.append('status', empleado.status.toString());
-    return this.http.post<string>(`${this.apiUrl}insertar`, formData);
+    return this.http.post<any>(`${this.apiUrl}insertar`, formData).pipe(
+      map(response => {
+        if (response.status === '201') {
+          return response.message; // Suponemos que el mensaje contiene algún dato relevante
+        } else {
+          return throwError(() => new Error(response.message));
+        }
+      }),
+      catchError(error => {
+        console.error('Error al crear el empleado:', error.message);
+        return throwError(() => new Error('Error al crear el empleado.'));
+      })
+    );
   }
 
-  // Actualizar un empleado (si es necesario)
+  // Actualizar un empleado
   actualizar(empleado: Empleado): Observable<string> {
     const formData = new FormData();
     formData.append('id', empleado.id?.toString() || '');
@@ -53,6 +90,18 @@ export class EmpleadoService {
     formData.append('birthday', empleado.birthday);
     formData.append('phone', empleado.phone);
     formData.append('status', empleado.status.toString());
-    return this.http.post<string>(`${this.apiUrl}actualizar`, formData);
+    return this.http.post<any>(`${this.apiUrl}actualizar`, formData).pipe(
+      map(response => {
+        if (response.status === '200') {
+          return response.message; // Suponemos que el mensaje contiene algún dato relevante
+        } else {
+          return throwError(() => new Error(response.message));
+        }
+      }),
+      catchError(error => {
+        console.error('Error al actualizar el empleado:', error.message);
+        return throwError(() => new Error('Error al actualizar el empleado.'));
+      })
+    );
   }
 }

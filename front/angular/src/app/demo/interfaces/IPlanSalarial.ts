@@ -1,5 +1,5 @@
 export interface IPlanSalarial {
-  id?: number;
+  id: string;
   position_id: number;
   baseSalary: number;
   description: string;

@@ -1,78 +1,118 @@
 import { HttpClient, HttpHeaders } from '@angular/common/http';
 import { Injectable } from '@angular/core';
 import { Observable, throwError } from 'rxjs';
-import { catchError } from 'rxjs/operators';
+import { catchError, map } from 'rxjs/operators';
 import { IUsuario } from '../interfaces/IUsuario';
 
 @Injectable({
   providedIn: 'root'
 })
-export class UserService {
+export class UsuarioService {
   private apiUrl = 'http://localhost/Salarix/back/controller/users.controller.php?op='; // Ajusta esta URL
 
   constructor(private http: HttpClient) { }
 
   // Obtener todos los usuarios
-  getAllUsers(): Observable<IUsuario[]> {
-    return this.http.get<IUsuario[]>(`${this.apiUrl}todos`)
+  obtenerTodosUsuarios(): Observable<IUsuario[]> {
+    return this.http.get<any>(`${this.apiUrl}todos`)
       .pipe(
-        catchError(this.handleError)
+        map(response => {
+          if (response.status === '200') {
+            return response.data;
+          } else {
+            console.error(response.message);
+            return [];
+          }
+        }),
+        catchError(this.manejarError)
       );
   }
 
   // Obtener un usuario por ID
-  getUserById(id: number): Observable<IUsuario> {
+  obtenerUsuarioPorId(id: number): Observable<IUsuario> {
     const formData = new FormData();
     formData.append('id', id.toString());
-    return this.http.post<IUsuario>(`${this.apiUrl}uno`, formData)
+    return this.http.post<any>(`${this.apiUrl}uno`, formData)
       .pipe(
-        catchError(this.handleError)
+        map(response => {
+          if (response.status === '200') {
+            return response.data;
+          } else {
+            console.error(response.message);
+            return null;
+          }
+        }),
+        catchError(this.manejarError)
       );
   }
 
   // Crear un nuevo usuario
-  createUser(user: IUsuario): Observable<IUsuario> {
+  crearUsuario(usuario: IUsuario): Observable<IUsuario> {
     const formData = new FormData();
-    formData.append('firstname', user.firstname);
-    formData.append('lastname', user.lastname);
-    formData.append('email', user.email);
-    formData.append('password', user.password || '');
-    formData.append('role', user.role);
-    formData.append('status', user.status.toString());
-    return this.http.post<IUsuario>(`${this.apiUrl}insertar`, formData)
+    formData.append('firstname', usuario.firstname);
+    formData.append('lastname', usuario.lastname);
+    formData.append('email', usuario.email);
+    formData.append('password', usuario.password || '');
+    formData.append('role', usuario.role);
+    formData.append('status', usuario.status.toString());
+    return this.http.post<any>(`${this.apiUrl}insertar`, formData)
       .pipe(
-        catchError(this.handleError)
+        map(response => {
+          if (response.status === '200') {
+            return response.data;
+          } else {
+            console.error(response.message);
+            return null;
+          }
+        }),
+        catchError(this.manejarError)
       );
   }
 
   // Actualizar un usuario
-  updateUser(user: IUsuario): Observable<IUsuario> {
+  actualizarUsuario(usuario: IUsuario): Observable<IUsuario> {
     const formData = new FormData();
-    formData.append('id', user.id?.toString() || '');
-    formData.append('firstname', user.firstname);
-    formData.append('lastname', user.lastname);
-    formData.append('email', user.email);
-    formData.append('role', user.role);
-    formData.append('password', user.password || '');
-    formData.append('identification', user.identification || '');
-    formData.append('sex', user.sex?.toString() || '');
-    formData.append('address', user.address || '');
-    formData.append('birthday', user.birthday || '');
-    formData.append('phone', user.phone || '');
-    formData.append('codeEmployee', user.codeEmployee || '');
-    return this.http.post<IUsuario>(`${this.apiUrl}actualizar`, formData)
+    formData.append('id', usuario.id?.toString() || '');
+    formData.append('firstname', usuario.firstname);
+    formData.append('lastname', usuario.lastname);
+    formData.append('email', usuario.email);
+    formData.append('role', usuario.role);
+    formData.append('password', usuario.password || '');
+    formData.append('identification', usuario.identification || '');
+    formData.append('sex', usuario.sex?.toString() || '');
+    formData.append('address', usuario.address || '');
+    formData.append('birthday', usuario.birthday || '');
+    formData.append('phone', usuario.phone || '');
+    formData.append('codeEmployee', usuario.codeEmployee || '');
+    return this.http.post<any>(`${this.apiUrl}actualizar`, formData)
       .pipe(
-        catchError(this.handleError)
+        map(response => {
+          if (response.status === '200') {
+            return response.data;
+          } else {
+            console.error(response.message);
+            return null;
+          }
+        }),
+        catchError(this.manejarError)
       );
   }
 
   // Cambiar el estado de un usuario
-  changeUserStatus(id: number): Observable<any> {
+  cambiarEstadoUsuario(id: string): Observable<any> {
     const formData = new FormData();
-    formData.append('id', id.toString());
-    return this.http.post<any>(`${this.apiUrl}cambiarEstado`, formData)
+    formData.append('id', id);
+    return this.http.post<any>(`${this.apiUrl}eliminar`, formData)
       .pipe(
-        catchError(this.handleError)
+        map(response => {
+          if (response.status === '200') {
+            return response.message;
+          } else {
+            console.error(response.message);
+            return null;
+          }
+        }),
+        catchError(this.manejarError)
       );
   }
 
@@ -82,13 +122,21 @@ export class UserService {
     formData.append('email', email);
     return this.http.post<any>(`${this.apiUrl}login`, formData)
       .pipe(
-        catchError(this.handleError)
+        map(response => {
+          if (response.status === '200') {
+            return response.data;
+          } else {
+            console.error(response.message);
+            return null;
+          }
+        }),
+        catchError(this.manejarError)
       );
   }
 
   // Manejar errores
-  private handleError(error: any): Observable<never> {
-    console.error('An error occurred:', error);
+  private manejarError(error: any): Observable<never> {
+    console.error('Ocurrió un error:', error);
     return throwError(error);
   }
 }

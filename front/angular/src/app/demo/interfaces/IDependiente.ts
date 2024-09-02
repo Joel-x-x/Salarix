@@ -1,7 +1,7 @@
 // src/app/interfaces/IDependiente.ts
 
 export interface IDependiente {
-  id?: number;
+  id: string;
   name: string;
   lastname: string;
   relation: string;

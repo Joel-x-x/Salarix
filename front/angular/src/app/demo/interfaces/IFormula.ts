@@ -1,5 +1,5 @@
 export interface IFormula {
-  id?: number;
+  id: string;
   cp: string;
   app: string;
   dts: string;

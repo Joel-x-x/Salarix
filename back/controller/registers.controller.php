@@ -3,6 +3,7 @@ error_reporting(0);
 
 /* TODO: Requrimientos */
 require_once '../model/registers.model.php';
+require_once("../config/cors.php");
 
 $Registros = new Register;
 

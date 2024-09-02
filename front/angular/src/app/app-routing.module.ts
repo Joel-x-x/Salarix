@@ -46,7 +46,7 @@ const routes: Routes = [
       },
       {
         path: 'empleado',
-        loadComponent: () => import('./demo/empleados/empleado/empleado.component')
+        loadComponent: () => import('./demo/empleados/empleado/empleado.component').then((m) => m.EmpleadoComponent)
       },
       {
         path: 'plan-salarial',

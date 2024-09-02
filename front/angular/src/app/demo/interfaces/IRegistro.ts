@@ -1,5 +1,5 @@
 export interface IRegistro {
-  id?: number;
+  id: string;
   start: string;  // Formato 'YYYY-MM-DD HH:MM:SS'
   finish?: string; // Formato 'YYYY-MM-DD HH:MM:SS'
   ordinary_time?: number;

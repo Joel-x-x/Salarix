@@ -1,7 +1,7 @@
 // src/app/interfaces/IDetalleNomina.ts
 
 export interface IDetalleNomina {
-  id?: number;
+  id: string;
   name: string;
   detail: string;
   type: string;

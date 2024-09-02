@@ -6,6 +6,7 @@ error_reporting(0);
 
 require_once('../config/sesiones.php');
 require_once("../model/dependents.model.php");
+require_once("../config/cors.php");
 
 $Dependientes = new Dependent;
 

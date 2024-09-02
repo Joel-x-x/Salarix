@@ -4,6 +4,7 @@ error_reporting(0);
 
 require_once('../config/conexion.php');
 require_once('../model/vacations.model.php');
+require_once("../config/cors.php");
 
 $Vacations = new Vacation();
 

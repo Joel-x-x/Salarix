@@ -3,6 +3,7 @@
 error_reporting(0);
 
 require_once("../model/formula.model.php");
+require_once("../config/cors.php");
 
 $Formula = new Formula;
 

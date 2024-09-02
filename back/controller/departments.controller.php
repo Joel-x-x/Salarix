@@ -6,6 +6,7 @@ error_reporting(0);
 
 require_once('../config/conexion.php');
 require_once('../model/departments.model.php');
+require_once("../config/cors.php");
 
 $Departamentos = new Department;
 

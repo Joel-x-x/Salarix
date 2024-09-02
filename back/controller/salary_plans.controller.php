@@ -2,6 +2,7 @@
 error_reporting(0);
 
 require_once("../model/salary_plans.model.php");
+require_once("../config/cors.php");
 
 $salaryPlan = new SalaryPlan();
 

@@ -4,6 +4,7 @@
 
 require_once('../config/conexion.php');
 require_once('../model/user_departments.model.php');
+require_once("../config/cors.php");
 
 $UserDepartments = new UserDepartment;
 

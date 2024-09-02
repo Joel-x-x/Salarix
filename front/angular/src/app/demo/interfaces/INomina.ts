@@ -1,5 +1,5 @@
 export interface INomina {
-  id?: number;
+  id: string;
   periodName: string;
   start: string;
   finish: string;
