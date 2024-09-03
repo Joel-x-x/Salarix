@@ -1,13 +1,13 @@
 export interface IUsuario {
-  id: string;
+  id?: string;
   firstname: string;
   lastname: string;
   email: string;
   password?: string;
-  role: string;
-  status: boolean;
+  role?: string;
+  status?: number;
   identification?: string;
-  sex?: boolean;
+  sex?: number;
   address?: string;
   birthday?: string;
   phone?: string;

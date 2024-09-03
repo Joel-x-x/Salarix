@@ -60,7 +60,6 @@ export class EmpleadoService {
     formData.append('address', empleado.address);
     formData.append('birthday', empleado.birthday);
     formData.append('phone', empleado.phone);
-    formData.append('status', empleado.status.toString());
     return this.http.post<any>(`${this.apiUrl}insertar`, formData).pipe(
       map(response => {
         if (response.status === '201') {
@@ -89,7 +88,6 @@ export class EmpleadoService {
     formData.append('address', empleado.address);
     formData.append('birthday', empleado.birthday);
     formData.append('phone', empleado.phone);
-    formData.append('status', empleado.status.toString());
     return this.http.post<any>(`${this.apiUrl}actualizar`, formData).pipe(
       map(response => {
         if (response.status === '200') {
