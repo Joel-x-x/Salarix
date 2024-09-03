@@ -111,6 +111,15 @@ export const NavigationItems: NavigationItem[] = [
         breadcrumbs: true
       },
       {
+        id: 'posicion',
+        title: 'Posicion',
+        type: 'item',
+        url: '/posicion',
+        icon: 'feather icon-shield',
+        target: false,
+        breadcrumbs: true
+      },
+      {
         id: 'plan-salarial',
         title: 'Plan salarial',
         type: 'item',

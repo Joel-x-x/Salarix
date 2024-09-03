@@ -49,6 +49,10 @@ const routes: Routes = [
         loadComponent: () => import('./demo/empleados/empleado/empleado.component').then((m) => m.EmpleadoComponent)
       },
       {
+        path: 'posicion',
+        loadComponent: () => import('./demo/empleados/posicion/posicion.component').then((m) => m.PosicionComponent)
+      },
+      {
         path: 'plan-salarial',
         loadComponent: () => import('./demo/empleados/plan-salarial/plan-salarial.component')
       },

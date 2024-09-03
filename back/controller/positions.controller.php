@@ -1,7 +1,7 @@
 <?php
 error_reporting(0);
-require_once("../model/positions.model.php");
 require_once("../config/cors.php");
+require_once("../model/positions.model.php");
 
 $position = new Position;
 

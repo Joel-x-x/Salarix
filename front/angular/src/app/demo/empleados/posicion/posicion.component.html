@@ -1,0 +1,78 @@
+<!-- Botón para abrir el modal -->
+<button class="btn btn-primary" (click)="openModal()">Nueva Posición</button>
+
+<!-- Modal HTML -->
+<div class="modal modal-lg fade" id="formModal" tabindex="-1" role="dialog" aria-labelledby="formModalLabel"
+  aria-hidden="true" [ngClass]="{'show': modalVisible}" [ngStyle]="{'display': modalVisible ? 'block' : 'none'}">
+  <div class="modal-dialog" role="document">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h5 class="modal-title" id="formModalLabel">{{ esNuevaPosicion ? 'Nueva Posición' : 'Editar Posición' }}</h5>
+      </div>
+      <div class="modal-body">
+        <form [formGroup]="formPosicion" (ngSubmit)="grabar()">
+          <div class="row">
+            <div class="col-md-6">
+              <div class="form-group">
+                <label for="name">Nombre de la Posición</label>
+                <input formControlName="name" type="text" class="form-control" id="name" name="name" required>
+                <div *ngIf="formPosicion.get('name')?.invalid && formPosicion.get('name')?.touched">
+                  <small *ngIf="formPosicion.get('name')?.hasError('required')" style="color: red">El nombre es
+                    requerido</small>
+                </div>
+              </div>
+              <div class="form-group">
+                <label for="description">Descripción</label>
+                <input formControlName="description" type="text" class="form-control" id="description" name="description"
+                  required>
+                <div *ngIf="formPosicion.get('description')?.invalid && formPosicion.get('description')?.touched">
+                  <small *ngIf="formPosicion.get('description')?.hasError('required')" style="color: red">La descripción es
+                    requerida</small>
+                </div>
+              </div>
+            </div>
+          </div>
+          <div class="modal-footer">
+            <button type="button" class="btn btn-secondary" (click)="closeModal()">Cerrar</button>
+            <button type="submit" class="btn btn-primary" [disabled]="formPosicion.invalid">{{ esNuevaPosicion ?
+              'Guardar' : 'Actualizar' }}</button>
+          </div>
+        </form>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- Tabla de Posiciones -->
+<div class="col-xl-12 mt-3">
+  <app-card cardTitle="Lista de posiciones" [options]="false" blockClass="table-border-style">
+    <div class="table-responsive">
+      <table class="table table-striped">
+        <thead>
+          <tr>
+            <th>#</th>
+            <th>Acciones</th>
+            <th>Nombre</th>
+            <th>Descripción</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr *ngFor="let posicion of posiciones; let i = index">
+            <th scope="row">{{ i + 1 }}</th>
+            <td class="text-center">
+              <button class="btn btn-link" aria-label="Editar" (click)="openModalEditar(posicion)">
+                <i class="fas fa-edit"></i>
+              </button>
+              <button title="Eliminar posición" class="btn btn-link" aria-label="Eliminar"
+                (click)="eliminarPosicion(posicion.id || '')">
+                <i class="fas fa-trash"></i>
+              </button>
+            </td>
+            <td>{{ posicion.name }}</td>
+            <td>{{ posicion.description }}</td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+  </app-card>
+</div>
