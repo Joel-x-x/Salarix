@@ -1,12 +1,210 @@
-<div class="row">
-  <div class="col-sm-12">
-    <app-card cardTitle="Hello Card" [options]="false">
-      <p>
-        "Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim
-        ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat. Duis aute irure dolor in
-        reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur. Excepteur sint occaecat cupidatat non proident, sunt
-        in culpa qui officia deserunt mollit anim id est laborum."
-      </p>
-    </app-card>
+<!-- Botón para abrir el modal -->
+<button class="btn btn-primary" (click)="openModal()">Nuevo Plan Salarial</button>
+
+<!-- Modal HTML -->
+<div class="modal modal-lg fade" id="formModal" tabindex="-1" role="dialog" aria-labelledby="formModalLabel"
+  aria-hidden="true" [ngClass]="{'show': modalVisible}" [ngStyle]="{'display': modalVisible ? 'block' : 'none'}">
+  <div class="modal-dialog" role="document">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h5 class="modal-title" id="formModalLabel">{{ esNuevoPlan ? 'Nuevo Plan Salarial' : 'Editar Plan Salarial' }}
+        </h5>
+      </div>
+      <div class="modal-body">
+        <form [formGroup]="formPlanSalarial" (ngSubmit)="grabar()">
+          <div class="row">
+            <div class="col-md-6">
+              <!-- Campos de texto -->
+              <div class="form-group">
+                <label for="baseSalary">Salario Base</label>
+                <input formControlName="baseSalary" type="number" class="form-control" id="baseSalary" name="baseSalary"
+                  required>
+                <div *ngIf="formPlanSalarial.get('baseSalary')?.invalid && formPlanSalarial.get('baseSalary')?.touched">
+                  <small *ngIf="formPlanSalarial.get('baseSalary')?.hasError('required')" style="color: red">El salario
+                    base es requerido</small>
+                </div>
+              </div>
+              <div class="form-group">
+                <label for="description">Descripción</label>
+                <input formControlName="description" type="text" class="form-control" id="description"
+                  name="description" required>
+                <div
+                  *ngIf="formPlanSalarial.get('description')?.invalid && formPlanSalarial.get('description')?.touched">
+                  <small *ngIf="formPlanSalarial.get('description')?.hasError('required')" style="color: red">La
+                    descripción es requerida</small>
+                </div>
+              </div>
+              <div class="form-group">
+                <label for="checkin">Checkin</label>
+                <input formControlName="checkin" type="time" class="form-control" id="checkin" name="checkin" required>
+                <div *ngIf="formPlanSalarial.get('checkin')?.invalid && formPlanSalarial.get('checkin')?.touched">
+                  <small *ngIf="formPlanSalarial.get('checkin')?.hasError('required')" style="color: red">El checkin es
+                    requerido</small>
+                </div>
+              </div>
+              <div class="form-group">
+                <label for="checkout">Checkout</label>
+                <input formControlName="checkout" type="time" class="form-control" id="checkout" name="checkout"
+                  required>
+                <div *ngIf="formPlanSalarial.get('checkout')?.invalid && formPlanSalarial.get('checkout')?.touched">
+                  <small *ngIf="formPlanSalarial.get('checkout')?.hasError('required')" style="color: red">El checkout
+                    es requerido</small>
+                </div>
+              </div>
+              <div class="form-group">
+                <label for="employee">Empleado</label>
+                <div class="input-group mb-3">
+                  <input type="text" class="form-control"
+                    [value]="(empleadoSeleccionado?.firstname || '') + ' ' + (empleadoSeleccionado?.lastname || '')"
+                    readonly>
+                  <div class="input-group-append">
+                    <button class="btn btn-outline-secondary" type="button" (click)="toggleEmpleadoTable()">Listar
+                      Empleados</button>
+                  </div>
+                </div>
+
+                <div *ngIf="mostrarTablaEmpleados" class="table-responsive">
+                  <input type="text" class="form-control mb-2" placeholder="Buscar empleado..."
+                    [(ngModel)]="busquedaEmpleado" (input)="filtrarEmpleados()">
+                  <table class="table table-bordered">
+                    <thead>
+                      <tr>
+                        <th>#</th>
+                        <th>Nombre</th>
+                        <th>Apellido</th>
+                      </tr>
+                    </thead>
+                    <tbody>
+                      <tr *ngFor="let empleado of empleadosFiltrados">
+                        <!-- <td>{{ empleado.id }}</td> -->
+                        <td>{{ empleado.firstname}}</td>
+                        <td>{{ empleado.lastname}}</td>
+                        <td><button class="btn btn-sm btn-primary"
+                            (click)="seleccionarEmpleado(empleado)">Seleccionar</button></td>
+                      </tr>
+                    </tbody>
+                  </table>
+                </div>
+              </div>
+
+              <div class="form-group">
+                <label for="position_id">Posición</label>
+                <select formControlName="position_id" class="form-control" required>
+                  <option *ngFor="let posicion of posiciones" [value]="posicion.id">{{ posicion.name }}</option>
+                </select>
+                <div
+                  *ngIf="formPlanSalarial.get('position_id')?.invalid && formPlanSalarial.get('position_id')?.touched">
+                  <small *ngIf="formPlanSalarial.get('position_id')?.hasError('required')" style="color: red">El ID de
+                    posición es requerido</small>
+                </div>
+              </div>
+            </div>
+            <div class="col-md-6">
+              <!-- Checkboxes -->
+              <div class="form-group">
+                <label for="esc">Extensión de salud por conyugue</label>
+                <input formControlName="esc" type="number" class="form-control" id="esc" name="esc">
+              </div>
+              <div class="form-group">
+                <label>Incluido:</label>
+                <div class="form-check">
+                  <input type="checkbox" formControlName="esc_included" class="form-check-input" id="esc_included" />
+                  <label class="form-check-label" for="esc_included">Extensión de salud por conguye</label>
+                </div>
+                <div class="form-check">
+                  <input type="checkbox" formControlName="cp_included" class="form-check-input" id="cp_included" />
+                  <label class="form-check-label" for="cp_included">Comisión</label>
+                </div>
+                <div class="form-check">
+                  <input type="checkbox" formControlName="app_included" class="form-check-input" id="app_included" />
+                  <label class="form-check-label" for="app_included">Aporte patronal</label>
+                </div>
+                <div class="form-check">
+                  <input type="checkbox" formControlName="dts_included" class="form-check-input" id="dts_included" />
+                  <label class="form-check-label" for="dts_included">Décimo tercer sueldo</label>
+                </div>
+                <div class="form-check">
+                  <input type="checkbox" formControlName="dcs_included" class="form-check-input" id="dcs_included" />
+                  <label class="form-check-label" for="dcs_included">Décimo cuarto sueldo</label>
+                </div>
+                <div class="form-check">
+                  <input type="checkbox" formControlName="frp_included" class="form-check-input" id="frp_included" />
+                  <label class="form-check-label" for="frp_included">Fondo de reserva</label>
+                </div>
+                <div class="form-check">
+                  <input type="checkbox" formControlName="apep_included" class="form-check-input" id="apep_included" />
+                  <label class="form-check-label" for="apep_included">Aporte personal</label>
+                </div>
+              </div>
+            </div>
+          </div>
+          <div class="modal-footer">
+            <button type="button" class="btn btn-secondary" (click)="closeModal()">Cerrar</button>
+            <button type="submit" class="btn btn-primary" [disabled]="formPlanSalarial.invalid">{{ esNuevoPlan ?
+              'Guardar' : 'Actualizar' }}</button>
+          </div>
+        </form>
+      </div>
+    </div>
   </div>
+</div>
+
+
+<!-- Tabla de Planes Salariales -->
+<div class="col-xl-12 mt-3">
+  <app-card cardTitle="Lista de Planes Salariales" [options]="false" blockClass="table-border-style">
+    <div class="table-responsive">
+      <table class="table table-striped">
+        <thead>
+          <tr>
+            <th>#</th>
+            <th>Acciones</th>
+            <th>Empleado</th>
+            <th>Posición</th>
+            <th>Salario Base</th>
+            <th>Descripción</th>
+            <th>Checkin</th>
+            <th>Checkout</th>
+            <th>Esc</th>
+            <th>Esc Incluido</th>
+            <th>CP Incluido</th>
+            <th>App Incluido</th>
+            <th>DTS Incluido</th>
+            <th>DCS Incluido</th>
+            <th>FRP Incluido</th>
+            <th>Apep Incluido</th>
+          </tr>
+        </thead>
+        <tbody>
+          @for(plan of planesSalariales; track $index) {
+          <tr>
+            <th scope="row">{{ $index + 1 }}</th>
+            <td class="text-center">
+              <button class="btn btn-warning btn-sm" (click)="openModal(plan)">
+                <i class="fa fa-pencil-alt"></i> Editar
+              </button>
+              <!-- <button class="btn btn-danger btn-sm" (click)="eliminarPlan(plan.id)">
+                <i class="fa fa-trash"></i> Eliminar
+              </button> -->
+            </td>
+            <td>{{ getEmpleadoNombre(plan.user_id) }}</td>
+            <td>{{ getPosicionNombre(plan.position_id) }}</td>
+            <td>{{ plan.baseSalary }}</td>
+            <td>{{ plan.description }}</td>
+            <td>{{ plan.checkin }}</td>
+            <td>{{ plan.checkout }}</td>
+            <td>{{ plan.esc }}</td>
+            <td>{{ plan.esc_included }}</td>
+            <td>{{ plan.cp_included }}</td>
+            <td>{{ plan.app_included }}</td>
+            <td>{{ plan.dts_included }}</td>
+            <td>{{ plan.dcs_included }}</td>
+            <td>{{ plan.frp_included }}</td>
+            <td>{{ plan.apep_included }}</td>
+          </tr>
+          }
+        </tbody>
+      </table>
+    </div>
+  </app-card>
 </div>

@@ -1,11 +1,11 @@
 export interface IPlanSalarial {
-  id: string;
+  id?: string;
   position_id: string;
-  baseSalary: number;
+  baseSalary?: string;
   description: string;
   checkin: string;
   checkout: string;
-  esc: number;
+  esc?: string;
   esc_included: number;
   cp_included: number;
   app_included: number;

@@ -48,7 +48,7 @@ class UserDepartment
         $stmt->close();
         $con->close();
 
-        return json_encode($response);
+        return $response;
     }
 
     public function eliminarRelacion($user_id, $department_id)
@@ -57,7 +57,7 @@ class UserDepartment
         $con = new ClaseConectar();
         $con = $con->ProcedimientoConectar();
 
-        $cadena = "DELETE FROM user_departments WHERE user_id = $user_id AND department_id = $department_id";
+        $cadena = "DELETE FROM user_departments WHERE user_id = '$user_id' AND department_id = '$department_id'";
         if (mysqli_query($con, $cadena)) {
             $response = [
                 "status" => "200",
@@ -77,7 +77,7 @@ class UserDepartment
 
         $con->close();
 
-        return json_encode($response);
+        return $response;
     }
 
     public function listarUsuariosPorDepartamento($department_id)
@@ -86,31 +86,34 @@ class UserDepartment
         $con = new ClaseConectar();
         $con = $con->ProcedimientoConectar();
 
-        $query = "SELECT * FROM user_departments WHERE department_id = $department_id";
+        $query = "SELECT ud.department_id, ud.user_id, u.firstname, u.lastname, u.codeEmployee FROM user_departments ud
+        JOIN users u ON u.id = ud.user_id
+        WHERE ud.department_id = '$department_id'";
         $result = mysqli_query($con, $query);
 
         if (mysqli_num_rows($result) > 0) {
             $response = [
                 "status" => "200",
                 "message" => "Usuarios encontrados.",
-                "data" => [],
             ];
             while ($row = mysqli_fetch_assoc($result)) {
                 $response["data"][] = [
                     "user_id" => $row["user_id"],
                     "department_id" => $row["department_id"],
+                    "firstname" => $row["firstname"],
+                    "lastname" => $row["lastname"],
+                    "codeEmployee" => $row["codeEmployee"],
                 ];
             }
         } else {
             $response = [
                 "status" => "404",
                 "message" => "No se encontraron usuarios en este departamento.",
-                "data" => null,
             ];
         }
 
         $con->close();
 
-        return json_encode($response);
+        return $response;
     }
 }

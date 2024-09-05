@@ -4,94 +4,102 @@ require_once('../config/conexion.php');
 
 class Department {
 
-    /* TODO: Procedimiento para insertar un departamento */
-
-    public function insertar ($name, $description){
-
+    // Método para insertar un nuevo departamento
+    public function insertar($name, $description) {
         $con = new ClaseConectar();
         $con = $con->ProcedimientoConectar();
 
-        // Verificar si el departamento ya existe con name
+        // Verificar si el departamento ya existe
         $query = "SELECT * FROM departments WHERE name = '$name'";
         $result = mysqli_query($con, $query);
 
         if (mysqli_num_rows($result) > 0) {
-            $response = [
+            $con->close();
+            return [
                 "status" => "409",
                 "message" => "El departamento ya existe.",
-                "data" => null,
             ];
         } else {
-            // El departamento no existe, proceder con la inserción
+            // Insertar el nuevo departamento
             $cadena = "INSERT INTO departments (name, description) VALUES ('$name', '$description')";
             if (mysqli_query($con, $cadena)) {
-                $response = [
-                    "status" => "201",
-                    "message" => "Departamento creado.",
-                    "data" => [
-                        "name" => $name,
-                        "description" => $description,
-                    ],
-                ];
+                // Obtener el último ID insertado
+                $idQuery = "SELECT id FROM departments ORDER BY created DESC LIMIT 1";
+                $result = mysqli_query($con, $idQuery);
+
+                if ($result && mysqli_num_rows($result) > 0) {
+                    $row = mysqli_fetch_assoc($result);
+                    $id = $row['id'];
+
+                    $con->close();
+                    return [
+                        "status" => "201",
+                        "message" => "Departamento creado correctamente.",
+                        "data" => [
+                            "id" => $id,
+                            "name" => $name,
+                            "description" => $description,
+                        ],
+                    ];
+                } else {
+                    $con->close();
+                    return [
+                        "status" => "500",
+                        "message" => "No se pudo recuperar el ID del nuevo registro.",
+                    ];
+                }
             } else {
-                $response = [
+                $error = mysqli_error($con);
+                $con->close();
+                return [
                     "status" => "500",
-                    "message" => "Error inesperado, no se pudo crear el departamento.",
+                    "message" => "Error al crear el departamento: " . $error,
                     "data" => null,
                 ];
             }
         }
-        // Cerrar la conexión
-        $con->close();
-        // Retornar la respuesta como JSON
-        return json_encode($response);
-
     }
 
-    /*TODO: Procedimiento para actualizar un departamento*/
-
-    public function actualizar ($id, $name, $description){
-
+    // Método para actualizar un departamento
+    public function actualizar($id, $name, $description) {
         $con = new ClaseConectar();
         $con = $con->ProcedimientoConectar();
 
-        $cadena = "UPDATE departments SET name = '$name', description = '$description' WHERE id = $id";
+        $cadena = "UPDATE departments SET name = '$name', description = '$description' WHERE id = '$id'";
         if (mysqli_query($con, $cadena)) {
-            $response = [
+            $con->close();
+            return [
                 "status" => "200",
-                "message" => "Departamento actualizado.",
+                "message" => "Departamento actualizado correctamente.",
                 "data" => [
+                    "id" => $id,
                     "name" => $name,
                     "description" => $description,
                 ],
             ];
         } else {
-            $response = [
+            $error = mysqli_error($con);
+            $con->close();
+            return [
                 "status" => "500",
-                "message" => "Error inesperado, no se pudo actualizar el departamento.",
+                "message" => "Error al actualizar el departamento: " . $error,
                 "data" => null,
             ];
         }
-        // Cerrar la conexión
-        $con->close();
-        // Retornar la respuesta como JSON
-        return json_encode($response);
-
     }
 
-    /*TODO: Procedimiento para obtener un departamento con ID*/
-
-    public function uno ($id){
-
+    // Método para obtener un departamento por su ID
+    public function uno($id) {
         $con = new ClaseConectar();
         $con = $con->ProcedimientoConectar();
 
-        $query = "SELECT * FROM departments WHERE id = $id";
+        $query = "SELECT * FROM departments WHERE id = '$id'";
         $result = mysqli_query($con, $query);
 
-        if (mysqli_num_rows($result) > 0) {
+        if ($result && mysqli_num_rows($result) > 0) {
             $row = mysqli_fetch_assoc($result);
-            $response = [
+            $con->close();
+            return [
                 "status" => "200",
                 "message" => "Departamento encontrado.",
                 "data" => [
@@ -101,30 +109,24 @@ class Department {
                 ],
             ];
         } else {
-            $response = [
+            $con->close();
+            return [
                 "status" => "404",
                 "message" => "Departamento no encontrado.",
                 "data" => null,
             ];
         }
-        // Cerrar la conexión
-        $con->close();
-        // Retornar la respuesta como JSON
-        return json_encode($response);
-
     }
 
-    /*TODO: Procedimiento para obtener todos los departamentos*/
-
-    public function todos(){
-
+    // Método para obtener todos los departamentos
+    public function todos() {
         $con = new ClaseConectar();
         $con = $con->ProcedimientoConectar();
 
         $query = "SELECT * FROM departments";
         $result = mysqli_query($con, $query);
 
-        if (mysqli_num_rows($result) > 0) {
+        if ($result && mysqli_num_rows($result) > 0) {
             $data = [];
             while ($row = mysqli_fetch_assoc($result)) {
                 $data[] = [
@@ -133,23 +135,45 @@ class Department {
                     "description" => $row['description'],
                 ];
             }
-            $response = [
+            $con->close();
+            return [
                 "status" => "200",
                 "message" => "Departamentos encontrados.",
                 "data" => $data,
             ];
         } else {
-            $response = [
+            $con->close();
+            return [
                 "status" => "404",
                 "message" => "No se encontraron departamentos.",
+                "data" => [],
+            ];
+        }
+    }
+
+    // Método para eliminar un departamento
+    public function eliminar($id) {
+        $con = new ClaseConectar();
+        $con = $con->ProcedimientoConectar();
+
+        $cadena = "DELETE FROM departments WHERE id = '$id'";
+
+        if (mysqli_query($con, $cadena)) {
+            $con->close();
+            return [
+                "status" => "200",
+                "message" => "Departamento eliminado correctamente.",
+                "data" => null,
+            ];
+        } else {
+            $error = mysqli_error($con);
+            $con->close();
+            return [
+                "status" => "500",
+                "message" => "Error al eliminar el departamento: " . $error,
                 "data" => null,
             ];
         }
-        // Cerrar la conexión
-        $con->close();
-        // Retornar la respuesta como JSON
-        return json_encode($response);
-
     }
-
 }
+?>

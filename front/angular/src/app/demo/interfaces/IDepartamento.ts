@@ -1,5 +1,5 @@
 export interface IDepartamento {
-  id: string;
+  id?: string;
   name: string;
   description: string;
 }

@@ -54,11 +54,11 @@ const routes: Routes = [
       },
       {
         path: 'plan-salarial',
-        loadComponent: () => import('./demo/empleados/plan-salarial/plan-salarial.component')
+        loadComponent: () => import('./demo/empleados/plan-salarial/plan-salarial.component').then((m) => m.PlanSalarialComponent)
       },
       {
         path: 'departamentos',
-        loadComponent: () => import('./demo/empleados/departamentos/departamentos.component')
+        loadComponent: () => import('./demo/empleados/departamentos/departamentos.component').then(m => m.DepartamentoComponent)
       },
       {
         path: 'dependientes',

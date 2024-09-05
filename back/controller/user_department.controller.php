@@ -13,7 +13,7 @@ switch ($_GET["op"]) {
     case 'insertar':
         $user_id = isset($_POST["user_id"]) ? $_POST["user_id"] : null;
         $department_id = isset($_POST["department_id"]) ? $_POST["department_id"] : null;
-
+        
         // Verificar que todos los campos están presentes
         if ($user_id !== null && $department_id !== null) {
             $data = $UserDepartments->insertar($user_id, $department_id);
@@ -26,7 +26,6 @@ switch ($_GET["op"]) {
             echo json_encode([
                 "status" => "400",
                 "message" => "Faltan campos obligatorios.",
-                "missing_fields" => $missing_fields
             ]);
         }
         break;
@@ -47,7 +46,6 @@ switch ($_GET["op"]) {
             echo json_encode([
                 "status" => "400",
                 "message" => "Faltan campos obligatorios.",
-                "missing_fields" => $missing_fields
             ]);
         }
         break;
@@ -61,7 +59,6 @@ switch ($_GET["op"]) {
 
     case 'listarUsuariosPorDepartamento':
         $department_id = isset($_POST["department_id"]) ? $_POST["department_id"] : null;
-
         // Verificar que todos los campos están presentes
         if ($department_id !== null) {
             $data = $UserDepartments->listarUsuariosPorDepartamento($department_id);
@@ -73,7 +70,6 @@ switch ($_GET["op"]) {
             echo json_encode([
                 "status" => "400",
                 "message" => "Faltan campos obligatorios.",
-                "missing_fields" => $missing_fields
             ]);
         }
         break;

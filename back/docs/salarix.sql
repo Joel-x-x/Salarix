@@ -27,6 +27,7 @@ CREATE TABLE railway.users (
 CREATE TABLE railway.departments (
     id CHAR(36) PRIMARY KEY DEFAULT (UUID()),
     name VARCHAR(255) NOT NULL,
+    created DATETIME DEFAULT CURRENT_TIMESTAMP,
     description TEXT
 );
 

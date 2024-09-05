@@ -8,7 +8,7 @@ import { IPlanSalarial } from '../interfaces/IPlanSalarial';
   providedIn: 'root'
 })
 export class SalaryPlanService {
-  private apiUrl = 'http://localhost/Salarix/back/controller/salaryplan.controller.php?op='; // Asegúrate de que esta URL sea correcta.
+  private apiUrl = 'http://localhost/Salarix/back/controller/salary_plans.controller.php?op='; // Asegúrate de que esta URL sea correcta.
 
   constructor(private http: HttpClient) { }
 
@@ -30,7 +30,7 @@ export class SalaryPlanService {
   // Obtener un plan de salario por ID de usuario
   uno(user_id: string): Observable<IPlanSalarial> {
     const formData = new FormData();
-    formData.append('user_id', user_id.toString());
+    formData.append('user_id', user_id);
     return this.http.post<any>(`${this.apiUrl}uno`, formData)
       .pipe(
         map(response => {
@@ -61,31 +61,34 @@ export class SalaryPlanService {
   }
 
   // Actualizar un plan de salario existente
-  actualizar(plan: IPlanSalarial): Observable<string> {
-    const formData = this.mapPlanToFormData(plan);
-    return this.http.post<any>(`${this.apiUrl}actualizar`, formData)
-      .pipe(
-        map(response => {
-          if (response.status === '200') {
-            return response.message; // Suponemos que el mensaje contiene algún dato relevante
-          } else {
-            return throwError(() => new Error(response.message));
-          }
-        }),
-        catchError(this.handleError('Error al actualizar el plan de salario'))
-      );
-  }
+actualizar(plan: IPlanSalarial): Observable<string> {
+  const formData = this.mapPlanToFormData(plan);
+  return this.http.post<any>(`${this.apiUrl}actualizar`, formData)
+    .pipe(
+      map(response => {
+        console.log('Respuesta del servidor:', response); // Agrega esto para depuración
+        if (response.status === '200') {
+          return response.message; // Suponemos que el mensaje contiene algún dato relevante
+        } else {
+          return throwError(() => new Error(response.message));
+        }
+      }),
+      catchError(this.handleError('Error al actualizar el plan de salario'))
+    );
+}
+
 
   // Mapear el plan a FormData para enviar en peticiones POST
   private mapPlanToFormData(plan: IPlanSalarial): FormData {
     const formData = new FormData();
+    formData.append('id', plan.id ?? '');
     formData.append('user_id', plan.user_id.toString());
     formData.append('position_id', plan.position_id.toString());
-    formData.append('baseSalary', plan.baseSalary.toString());
-    formData.append('description', plan.description);
-    formData.append('checkin', plan.checkin);
-    formData.append('checkout', plan.checkout);
-    formData.append('esc', plan.esc.toString());
+    formData.append('baseSalary', plan.baseSalary?.toString() ?? '');
+    formData.append('description', plan.description ?? '');
+    formData.append('checkin', plan.checkin ?? '');
+    formData.append('checkout', plan.checkout ?? '');
+    formData.append('esc', plan.esc ?? '');
     formData.append('esc_included', plan.esc_included.toString());
     formData.append('cp_included', plan.cp_included.toString());
     formData.append('app_included', plan.app_included.toString());

@@ -1,12 +1,155 @@
-<div class="row">
-  <div class="col-sm-12">
-    <app-card cardTitle="Hello Card" [options]="false">
-      <p>
-        "Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim
-        ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat. Duis aute irure dolor in
-        reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur. Excepteur sint occaecat cupidatat non proident, sunt
-        in culpa qui officia deserunt mollit anim id est laborum."
-      </p>
-    </app-card>
+<!-- Botón para abrir el modal de nuevo departamento -->
+<button class="btn btn-primary" (click)="openModal()">Nuevo Departamento</button>
+
+<!-- Modal HTML para Crear/Editar Departamento -->
+<div class="modal modal-lg fade" id="formModal" tabindex="-1" role="dialog" aria-labelledby="formModalLabel"
+  aria-hidden="true" [ngClass]="{'show': modalVisible}" [ngStyle]="{'display': modalVisible ? 'block' : 'none'}">
+  <div class="modal-dialog" role="document">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h5 class="modal-title" id="formModalLabel">{{ esNuevoDepartamento ? 'Nuevo Departamento' : 'Editar Departamento' }}</h5>
+      </div>
+      <div class="modal-body">
+        <form [formGroup]="formDepartamento" (ngSubmit)="grabar()">
+          <div class="row">
+            <div class="col-md-12">
+              <div class="form-group">
+                <label for="name">Nombre del Departamento</label>
+                <input formControlName="name" type="text" class="form-control" id="name" name="name" required>
+                <div *ngIf="formDepartamento.get('name')?.invalid && formDepartamento.get('name')?.touched">
+                  <small *ngIf="formDepartamento.get('name')?.hasError('required')" style="color: red">El nombre es requerido</small>
+                </div>
+              </div>
+              <div class="form-group">
+                <label for="description">Descripción</label>
+                <input formControlName="description" type="text" class="form-control" id="description" name="description" required>
+                <div *ngIf="formDepartamento.get('description')?.invalid && formDepartamento.get('description')?.touched">
+                  <small *ngIf="formDepartamento.get('description')?.hasError('required')" style="color: red">La descripción es requerida</small>
+                </div>
+              </div>
+            </div>
+          </div>
+          <div class="modal-footer">
+            <button type="button" class="btn btn-secondary" (click)="closeModal()">Cerrar</button>
+            <button type="submit" class="btn btn-primary" [disabled]="formDepartamento.invalid">{{ esNuevoDepartamento ? 'Guardar' : 'Actualizar' }}</button>
+          </div>
+        </form>
+      </div>
+    </div>
   </div>
 </div>
+
+<!-- Tabla de Departamentos -->
+<div class="col-xl-12 mt-3">
+  <app-card cardTitle="Lista de departamentos" [options]="false" blockClass="table-border-style">
+    <div class="table-responsive">
+      <table class="table table-striped">
+        <thead>
+          <tr>
+            <th>#</th>
+            <th>Acciones</th>
+            <th>Nombre</th>
+            <th>Descripción</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr *ngFor="let departamento of departamentos; let i = index">
+            <th scope="row">{{ i + 1 }}</th>
+            <td class="text-center">
+              <button class="btn btn-link" aria-label="Editar" (click)="openModalEditar(departamento)">
+                <i class="fas fa-edit"></i>
+              </button>
+              <button title="Eliminar departamento" class="btn btn-link" aria-label="Eliminar" (click)="eliminarDepartamento(departamento.id || '')">
+                <i class="fas fa-trash"></i>
+              </button>
+              <button title="Agregar empleado" class="btn btn-link" aria-label="Agregar Empleado" (click)="openAgregarEmpleadoModal(departamento.id || '')">
+                <i class="fas fa-user-plus"></i>
+              </button>
+              <button title="Listar empleados" class="btn btn-link" aria-label="Listar Empleados" (click)="listarEmpleados(departamento.id || '')">
+                <i class="fas fa-users"></i>
+              </button>
+            </td>
+            <td>{{ departamento.name }}</td>
+            <td>{{ departamento.description }}</td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+  </app-card>
+</div>
+
+<!-- Modal para agregar empleado -->
+<div class="modal fade" id="agregarEmpleadoModal" tabindex="-1" role="dialog" aria-labelledby="agregarEmpleadoLabel" aria-hidden="true" [ngClass]="{'show': agregarEmpleadoModalVisible}" 
+[ngStyle]="{'display': agregarEmpleadoModalVisible ? 'block' : 'none', 'opacity': agregarEmpleadoModalVisible ? '1' : '0'}">
+  <div class="modal-dialog" role="document">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h5 class="modal-title" id="agregarEmpleadoLabel">Agregar Empleado</h5>
+      </div>
+      <div class="modal-body">
+        <input type="text" class="form-control mb-3" [(ngModel)]="filtroEmpleado" placeholder="Buscar empleado..." />
+        <table class="table">
+          <thead>
+            <tr>
+              <th>Nombre</th>
+              <th>Código</th>
+              <th>Acción</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr *ngFor="let empleado of empleadosFiltrados">
+              <td>{{ empleado.firstname + ' ' + empleado.lastname }}</td>
+              <td>{{ empleado.codeEmployee }}</td>
+              <td>
+                <button class="btn btn-success btn-sm" (click)="agregarEmpleado(empleado.id ?? '')">Agregar</button>
+              </td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+      <div class="modal-footer d-flex j-content-end">
+        <button class="btn btn-secondary" (click)="closeAgregarEmpleadoModal()">Cerrar</button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- Modal para listar empleados del departamento -->
+<div class="modal fade" id="listarEmpleadosModal" tabindex="-1" role="dialog" aria-labelledby="listarEmpleadosLabel"
+  aria-hidden="true" [ngClass]="{'show': listarEmpleadosModalVisible}" 
+  [ngStyle]="{'display': listarEmpleadosModalVisible ? 'block' : 'none', 'opacity': listarEmpleadosModalVisible ? '1' : '0'}">
+  <div class="modal-dialog modal-lg" role="document">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h5 class="modal-title" id="listarEmpleadosLabel">Empleados del Departamento</h5>
+      </div>
+      <div class="modal-body">
+        <table class="table table-striped">
+          <thead>
+            <tr>
+              <th>#</th>
+              <th>Nombre</th>
+              <th>Código empleado</th>
+              <th>Acciones</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr *ngFor="let empleado of empleadosDepartamento; let i = index">
+              <th scope="row">{{ i + 1 }}</th>
+              <td>{{ empleado.firstname + ' ' + empleado.lastname }}</td>
+              <td>{{ empleado.codeEmployee }}</td>
+              <td>
+                <button class="btn btn-danger btn-sm" (click)="eliminarEmpleado(empleado.user_id)">Eliminar</button>
+              </td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+      <div class="modal-footer d-flex justify-content-end">
+        <button type="button" class="btn btn-secondary" (click)="closeListarEmpleadosModal()">Cerrar</button>
+      </div>
+    </div>
+  </div>
+</div>
+
+
