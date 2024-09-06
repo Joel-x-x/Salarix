@@ -3,10 +3,15 @@ class ClaseConectar
 {
     public $conexion;
     protected $db;
-    private $host = "junction.proxy.rlwy.net";
-    private $port = "12773";
+    // private $host = "junction.proxy.rlwy.net";
+    // private $port = "12773";
+    // private $usu = "root";
+    // private $clave = "rDYSWZIFEnyiHQUqagsVFkzbkJZUuouB";
+    // private $base = "railway";
+    private $host = "localhost";
+    private $port = "3306";
     private $usu = "root";
-    private $clave = "rDYSWZIFEnyiHQUqagsVFkzbkJZUuouB";
+    private $clave = "";
     private $base = "railway";
 
     public function ProcedimientoConectar()

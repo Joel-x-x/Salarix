@@ -33,7 +33,7 @@ switch ($_GET["op"]) {
       $email = $_POST["email"];
       $password = $_POST["password"];
       $role = $_POST["role"];
-      $status = true; // default to active
+      $status = 1; // default to active
   
       
       if ($firstname && $lastname && $email && $password && $role) {

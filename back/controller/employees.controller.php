@@ -1,5 +1,5 @@
 <?php
-error_reporting(0);
+// error_reporting(0);
 
 /*TODO: Requerimientos */
 require_once("../model/employees.model.php");
@@ -37,7 +37,7 @@ switch ($_GET["op"]) {
         $address = $_POST["address"];
         $birthday = $_POST["birthday"];
         $phone = $_POST["phone"];
-        $status = isset($_POST["status"]) ? (bool)$_POST["status"] : true; 
+        $status = isset($_POST["status"]) ? (bool)$_POST["status"] : 1; 
   
       
       if ($firstname && $lastname && $email && $password) {

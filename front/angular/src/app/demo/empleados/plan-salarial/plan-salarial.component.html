@@ -75,13 +75,13 @@
                       </tr>
                     </thead>
                     <tbody>
-                      <tr *ngFor="let empleado of empleadosFiltrados">
-                        <!-- <td>{{ empleado.id }}</td> -->
-                        <td>{{ empleado.firstname}}</td>
-                        <td>{{ empleado.lastname}}</td>
-                        <td><button class="btn btn-sm btn-primary"
-                            (click)="seleccionarEmpleado(empleado)">Seleccionar</button></td>
-                      </tr>
+                        <tr *ngFor="let empleado of empleadosFiltrados; index as i">
+                          <td>{{ i + 1 }}</td>
+                          <td>{{ empleado.firstname }}</td>
+                          <td>{{ empleado.lastname }}</td>
+                          <td><button class="btn btn-sm btn-primary"
+                              (click)="seleccionarEmpleado(empleado)">Seleccionar</button></td>
+                        </tr>
                     </tbody>
                   </table>
                 </div>

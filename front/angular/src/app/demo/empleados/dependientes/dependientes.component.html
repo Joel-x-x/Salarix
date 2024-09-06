@@ -1,12 +1,157 @@
-<div class="row">
-  <div class="col-sm-12">
-    <app-card cardTitle="Hello Card" [options]="false">
-      <p>
-        "Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim
-        ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat. Duis aute irure dolor in
-        reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur. Excepteur sint occaecat cupidatat non proident, sunt
-        in culpa qui officia deserunt mollit anim id est laborum."
-      </p>
-    </app-card>
+<!-- Botón para abrir el modal de nuevo dependiente -->
+<button class="btn btn-primary" (click)="openModal()">Nuevo Dependiente</button>
+
+<!-- Modal HTML para Crear/Editar Dependiente -->
+<div class="modal modal-lg fade" id="formModal" tabindex="-1" role="dialog" aria-labelledby="formModalLabel"
+  aria-hidden="true" [ngClass]="{'show': modalVisible}" [ngStyle]="{'display': modalVisible ? 'block' : 'none'}">
+  <div class="modal-dialog" role="document">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h5 class="modal-title" id="formModalLabel">{{ esNuevoDependiente ? 'Nuevo Dependiente' : 'Editar Dependiente'
+          }}</h5>
+      </div>
+      <div class="modal-body">
+        <form [formGroup]="formDependiente" (ngSubmit)="grabar()">
+          <div class="row">
+            <div class="col-md-6">
+              <div class="form-group">
+                <label for="name">Nombre</label>
+                <input formControlName="name" type="text" class="form-control" id="name" name="name" required>
+                <div *ngIf="formDependiente.get('name')?.invalid && formDependiente.get('name')?.touched">
+                  <small *ngIf="formDependiente.get('name')?.hasError('required')" style="color: red">El nombre es
+                    requerido</small>
+                </div>
+              </div>
+            </div>
+            <div class="col-md-6">
+              <div class="form-group">
+                <label for="lastname">Apellido</label>
+                <input formControlName="lastname" type="text" class="form-control" id="lastname" name="lastname"
+                  required>
+                <div *ngIf="formDependiente.get('lastname')?.invalid && formDependiente.get('lastname')?.touched">
+                  <small *ngIf="formDependiente.get('lastname')?.hasError('required')" style="color: red">El apellido es
+                    requerido</small>
+                </div>
+              </div>
+            </div>
+            <div class="col-md-6">
+              <div class="form-group">
+                <label for="relation">Relación</label>
+                <input formControlName="relation" type="text" class="form-control" id="relation" name="relation"
+                  required>
+                <div *ngIf="formDependiente.get('relation')?.invalid && formDependiente.get('relation')?.touched">
+                  <small *ngIf="formDependiente.get('relation')?.hasError('required')" style="color: red">La relación es
+                    requerida</small>
+                </div>
+              </div>
+            </div>
+            <div class="col-md-6">
+              <div class="form-group">
+                <label for="disability">Discapacidad</label>
+                <select formControlName="disability" class="form-control" id="disability">
+                  <option [value]="0">No</option>
+                  <option [value]="1">Sí</option>
+                </select>
+              </div>
+            </div>
+            <div class="col-md-6">
+              <div class="form-group">
+                <label for="birthday">Fecha de Nacimiento</label>
+                <input formControlName="birthday" type="date" class="form-control" id="birthday" name="birthday"
+                  required>
+                <div *ngIf="formDependiente.get('birthday')?.invalid && formDependiente.get('birthday')?.touched">
+                  <small *ngIf="formDependiente.get('birthday')?.hasError('required')" style="color: red">La fecha de
+                    nacimiento es requerida</small>
+                </div>
+              </div>
+            </div>
+            <div class="col-md-6">
+              <div class="form-group">
+                <label for="employee">Empleado</label>
+                <div class="input-group mb-3">
+                  <input type="text" class="form-control"
+                    [value]="(empleadoSeleccionado?.firstname || '') + ' ' + (empleadoSeleccionado?.lastname || '')"
+                    readonly>
+                  <div class="input-group-append">
+                    <button class="btn btn-outline-secondary" type="button" (click)="toggleEmpleadoTable()">Listar
+                      Empleados</button>
+                  </div>
+                </div>
+
+                <div *ngIf="mostrarTablaEmpleados" class="table-responsive">
+                  <input type="text" class="form-control mb-2" placeholder="Buscar empleado..."
+                    [(ngModel)]="busquedaEmpleado" (input)="filtrarEmpleados()">
+                  <table class="table table-bordered">
+                    <thead>
+                      <tr>
+                        <th>#</th>
+                        <th>Nombre</th>
+                        <th>Apellido</th>
+                      </tr>
+                    </thead>
+                    <tbody>
+                      <tr *ngFor="let empleado of empleadosFiltrados; index as i">
+                        <td>{{ i + 1 }}</td>
+                        <td>{{ empleado.firstname }}</td>
+                        <td>{{ empleado.lastname }}</td>
+                        <td><button class="btn btn-sm btn-primary"
+                            (click)="seleccionarEmpleado(empleado)">Seleccionar</button></td>
+                      </tr>
+                    </tbody>
+                  </table>
+                </div>
+              </div>
+            </div>
+          </div>
+          <div class="modal-footer">
+            <button type="button" class="btn btn-secondary" (click)="closeModal()">Cerrar</button>
+            <button type="submit" class="btn btn-primary" [disabled]="formDependiente.invalid">{{ esNuevoDependiente ?
+              'Guardar' : 'Actualizar' }}</button>
+          </div>
+        </form>
+      </div>
+    </div>
   </div>
+</div>
+
+<!-- Tabla de Dependientes -->
+<div class="col-xl-12 mt-3">
+  <app-card cardTitle="Lista de dependientes" [options]="false" blockClass="table-border-style">
+    <div class="table-responsive">
+      <table class="table table-striped">
+        <thead>
+          <tr>
+            <th>#</th>
+            <th>Acciones</th>
+            <th>Nombre</th>
+            <th>Apellido</th>
+            <th>Relación</th>
+            <th>Discapacidad</th>
+            <th>Fecha de Nacimiento</th>
+            <th>Estado</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr *ngFor="let dependiente of dependientes; let i = index">
+            <th scope="row">{{ i + 1 }}</th>
+            <td class="text-center">
+              <button class="btn btn-link" aria-label="Editar" (click)="openModalEditar(dependiente)">
+                <i class="fas fa-edit"></i>
+              </button>
+              <button title="Eliminar dependiente" class="btn btn-link" aria-label="Eliminar"
+                (click)="eliminarDependiente(dependiente.id || '')">
+                <i class="fas fa-trash"></i>
+              </button>
+            </td>
+            <td>{{ dependiente.name }}</td>
+            <td>{{ dependiente.lastname }}</td>
+            <td>{{ dependiente.relation }}</td>
+            <td>{{ dependiente.disability ? 'Sí' : 'No' }}</td>
+            <td>{{ dependiente.birthday }}</td>
+            <td>{{ dependiente.status ? 'Activo' : 'Inactivo' }}</td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+  </app-card>
 </div>

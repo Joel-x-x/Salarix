@@ -10,6 +10,7 @@ import { EmpleadoService } from '../../services/empleado.service'; // Ajusta la 
 import { PositionService } from '../../services/posicion.service'; // Ajusta la ruta si es necesario
 import { Empleado } from '../../interfaces/IEmpleado';
 import { IPosicion } from '../../interfaces/IPosicion';
+import { forEach } from 'lodash';
 
 @Component({
   selector: 'app-plan-salarial',

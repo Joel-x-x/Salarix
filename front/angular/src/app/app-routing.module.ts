@@ -62,7 +62,7 @@ const routes: Routes = [
       },
       {
         path: 'dependientes',
-        loadComponent: () => import('./demo/empleados/dependientes/dependientes.component')
+        loadComponent: () => import('./demo/empleados/dependientes/dependientes.component').then(m => m.DependienteComponent)
       },
       {
         path: 'vacaciones',
