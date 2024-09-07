@@ -29,18 +29,18 @@ switch($_GET["op"]) {
 
   case 'listar-registros':
 
-    $userId = $_POST["user_id"];
+    $codeEmployee = $_POST["codeEmployee"];
 
     // Validar que no este vacio
-    if(empty($userId)) {
+    if(empty($codeEmployee)) {
         echo json_encode([
           "status" => "404", // 404 Bad request
-          "message" => "El userId es requerido.",
+          "message" => "El codeEmployee es requerido.",
       ]);
 
       return;
     }
-    $datos = $Registros->listarRegistrosPorUsuario($userId);
+    $datos = $Registros->listarRegistrosPorUsuario($codeEmployee);
 
     echo json_encode($datos);
   break;

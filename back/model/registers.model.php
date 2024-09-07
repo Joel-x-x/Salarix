@@ -54,12 +54,12 @@ class Register
   }
 
   /* TODO: Endpoint para listar registros por usuario */
-  public function listarRegistrosPorUsuario($user_id)
+  public function listarRegistrosPorUsuario($codeEmployee)
   {
     $con = new ClaseConectar();
     $con = $con->ProcedimientoConectar();
 
-    $consulta = "SELECT * FROM registers WHERE user_id = '$user_id'";
+    $consulta = "SELECT r.*, u.firstname, u.lastname, u.codeEmployee FROM registers r JOIN users u ON u.id = r.user_id WHERE u.codeEmployee = '$codeEmployee'";
     $resultado = mysqli_query($con, $consulta);
 
     if ($resultado && mysqli_num_rows($resultado) > 0) {

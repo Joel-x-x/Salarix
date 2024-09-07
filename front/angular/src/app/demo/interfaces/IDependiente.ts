@@ -5,7 +5,9 @@ export interface IDependiente {
   relation: string; 
   disability: number; 
   birthday: string; 
-  status?: number; 
+  status?: number;
+  firstname?: string;
+  codeEmployee?: string 
   id_user: string; 
 }
 

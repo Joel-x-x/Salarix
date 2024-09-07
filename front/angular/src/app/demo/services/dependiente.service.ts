@@ -48,7 +48,7 @@ export class DependentService {
   eliminar(id: string): Observable<string> {
     const formData = new FormData();
     formData.append('id', id.toString());
-    return this.http.post<any>(`${this.apiUrl}cambiarEstado`, formData).pipe(
+    return this.http.post<any>(`${this.apiUrl}eliminar`, formData).pipe(
       map(response => {
         if (response.status === '200') {
           return response.message;

@@ -2,46 +2,40 @@
 <button class="btn btn-primary" (click)="openModal()">Nuevo Dependiente</button>
 
 <!-- Modal HTML para Crear/Editar Dependiente -->
-<div class="modal modal-lg fade" id="formModal" tabindex="-1" role="dialog" aria-labelledby="formModalLabel"
-  aria-hidden="true" [ngClass]="{'show': modalVisible}" [ngStyle]="{'display': modalVisible ? 'block' : 'none'}">
-  <div class="modal-dialog" role="document">
+<div class="modal fade" id="formModal" tabindex="-1" aria-labelledby="formModalLabel" [ngClass]="{'show': isModalVisible}" [ngStyle]="{'display': isModalVisible ? 'block' : 'none', 'opacity': isModalVisible ? '1' : '0'}" role="dialog">
+  <div class="modal-dialog modal-lg" role="document">
     <div class="modal-content">
       <div class="modal-header">
-        <h5 class="modal-title" id="formModalLabel">{{ esNuevoDependiente ? 'Nuevo Dependiente' : 'Editar Dependiente'
-          }}</h5>
+        <h5 class="modal-title" id="formModalLabel">{{ esNuevoDependiente ? 'Nuevo Dependiente' : 'Editar Dependiente' }}</h5>
       </div>
       <div class="modal-body">
         <form [formGroup]="formDependiente" (ngSubmit)="grabar()">
           <div class="row">
+            <!-- Campos del formulario -->
             <div class="col-md-6">
               <div class="form-group">
                 <label for="name">Nombre</label>
-                <input formControlName="name" type="text" class="form-control" id="name" name="name" required>
+                <input formControlName="name" type="text" class="form-control" id="name" required>
                 <div *ngIf="formDependiente.get('name')?.invalid && formDependiente.get('name')?.touched">
-                  <small *ngIf="formDependiente.get('name')?.hasError('required')" style="color: red">El nombre es
-                    requerido</small>
+                  <small class="text-danger">El nombre es requerido</small>
                 </div>
               </div>
             </div>
             <div class="col-md-6">
               <div class="form-group">
                 <label for="lastname">Apellido</label>
-                <input formControlName="lastname" type="text" class="form-control" id="lastname" name="lastname"
-                  required>
+                <input formControlName="lastname" type="text" class="form-control" id="lastname" required>
                 <div *ngIf="formDependiente.get('lastname')?.invalid && formDependiente.get('lastname')?.touched">
-                  <small *ngIf="formDependiente.get('lastname')?.hasError('required')" style="color: red">El apellido es
-                    requerido</small>
+                  <small class="text-danger">El apellido es requerido</small>
                 </div>
               </div>
             </div>
             <div class="col-md-6">
               <div class="form-group">
                 <label for="relation">Relación</label>
-                <input formControlName="relation" type="text" class="form-control" id="relation" name="relation"
-                  required>
+                <input formControlName="relation" type="text" class="form-control" id="relation" required>
                 <div *ngIf="formDependiente.get('relation')?.invalid && formDependiente.get('relation')?.touched">
-                  <small *ngIf="formDependiente.get('relation')?.hasError('required')" style="color: red">La relación es
-                    requerida</small>
+                  <small class="text-danger">La relación es requerida</small>
                 </div>
               </div>
             </div>
@@ -57,14 +51,13 @@
             <div class="col-md-6">
               <div class="form-group">
                 <label for="birthday">Fecha de Nacimiento</label>
-                <input formControlName="birthday" type="date" class="form-control" id="birthday" name="birthday"
-                  required>
+                <input formControlName="birthday" type="date" class="form-control" id="birthday" required>
                 <div *ngIf="formDependiente.get('birthday')?.invalid && formDependiente.get('birthday')?.touched">
-                  <small *ngIf="formDependiente.get('birthday')?.hasError('required')" style="color: red">La fecha de
-                    nacimiento es requerida</small>
+                  <small class="text-danger">La fecha de nacimiento es requerida</small>
                 </div>
               </div>
             </div>
+            <!-- Lista empleadas -->
             <div class="col-md-6">
               <div class="form-group">
                 <label for="employee">Empleado</label>
@@ -73,30 +66,29 @@
                     [value]="(empleadoSeleccionado?.firstname || '') + ' ' + (empleadoSeleccionado?.lastname || '')"
                     readonly>
                   <div class="input-group-append">
-                    <button class="btn btn-outline-secondary" type="button" (click)="toggleEmpleadoTable()">Listar
-                      Empleados</button>
+                    <button class="btn btn-outline-secondary" type="button" (click)="toggleEmpleadoTable()">Listar Empleados</button>
                   </div>
                 </div>
 
                 <div *ngIf="mostrarTablaEmpleados" class="table-responsive">
                   <input type="text" class="form-control mb-2" placeholder="Buscar empleado..."
-                    [(ngModel)]="busquedaEmpleado" (input)="filtrarEmpleados()">
-                  <table class="table table-bordered">
+                    [ngModel]="busquedaEmpleado" (ngModelChange)="filtrarEmpleados()" >
+                  <table class="table table-bordered" >
                     <thead>
                       <tr>
                         <th>#</th>
                         <th>Nombre</th>
-                        <th>Apellido</th>
+                        <th>Código empleado</th>
                       </tr>
                     </thead>
                     <tbody>
-                      <tr *ngFor="let empleado of empleadosFiltrados; index as i">
-                        <td>{{ i + 1 }}</td>
-                        <td>{{ empleado.firstname }}</td>
-                        <td>{{ empleado.lastname }}</td>
-                        <td><button class="btn btn-sm btn-primary"
-                            (click)="seleccionarEmpleado(empleado)">Seleccionar</button></td>
-                      </tr>
+                        <tr *ngFor="let empleado of empleadosFiltrados; index as i">
+                          <td>{{ i + 1 }}</td>
+                          <td>{{ empleado.firstname + ' ' + empleado.lastname }}</td>
+                          <td>{{ empleado.codeEmployee }}</td>
+                          <td><button class="btn btn-sm btn-primary"
+                              (click)="seleccionarEmpleado(empleado)">Seleccionar</button></td>
+                        </tr>
                     </tbody>
                   </table>
                 </div>
@@ -105,8 +97,7 @@
           </div>
           <div class="modal-footer">
             <button type="button" class="btn btn-secondary" (click)="closeModal()">Cerrar</button>
-            <button type="submit" class="btn btn-primary" [disabled]="formDependiente.invalid">{{ esNuevoDependiente ?
-              'Guardar' : 'Actualizar' }}</button>
+            <button type="submit" class="btn btn-primary" [disabled]="formDependiente.invalid">{{ esNuevoDependiente ? 'Guardar' : 'Actualizar' }}</button>
           </div>
         </form>
       </div>
@@ -116,7 +107,7 @@
 
 <!-- Tabla de Dependientes -->
 <div class="col-xl-12 mt-3">
-  <app-card cardTitle="Lista de dependientes" [options]="false" blockClass="table-border-style">
+  <app-card cardTitle="Lista de Dependientes" [options]="false" blockClass="table-border-style">
     <div class="table-responsive">
       <table class="table table-striped">
         <thead>
@@ -125,6 +116,8 @@
             <th>Acciones</th>
             <th>Nombre</th>
             <th>Apellido</th>
+            <th>Empleado</th>
+            <th>Código empleado</th>
             <th>Relación</th>
             <th>Discapacidad</th>
             <th>Fecha de Nacimiento</th>
@@ -135,20 +128,21 @@
           <tr *ngFor="let dependiente of dependientes; let i = index">
             <th scope="row">{{ i + 1 }}</th>
             <td class="text-center">
-              <button class="btn btn-link" aria-label="Editar" (click)="openModalEditar(dependiente)">
+              <button class="btn btn-link" aria-label="Editar" (click)="openModal(dependiente)">
                 <i class="fas fa-edit"></i>
               </button>
-              <button title="Eliminar dependiente" class="btn btn-link" aria-label="Eliminar"
-                (click)="eliminarDependiente(dependiente.id || '')">
+              <button title="Eliminar dependiente" class="btn btn-link" aria-label="Eliminar" (click)="eliminarDependiente(dependiente.id || '')">
                 <i class="fas fa-trash"></i>
               </button>
             </td>
             <td>{{ dependiente.name }}</td>
             <td>{{ dependiente.lastname }}</td>
+            <td>{{ dependiente.firstname }}</td>
+            <td>{{ dependiente.codeEmployee }}</td>
             <td>{{ dependiente.relation }}</td>
             <td>{{ dependiente.disability ? 'Sí' : 'No' }}</td>
             <td>{{ dependiente.birthday }}</td>
-            <td>{{ dependiente.status ? 'Activo' : 'Inactivo' }}</td>
+            <td>{{ dependiente.status == 1 ? 'Activo' : 'Inactivo' }}</td>
           </tr>
         </tbody>
       </table>

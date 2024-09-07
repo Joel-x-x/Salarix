@@ -2,11 +2,12 @@
 
 require_once('../config/conexion.php');
 
-class Dependent{
+class Dependent
+{
 
     /*TODO: Procedimiento para insertar un dependiente*/
 
-    public function insertar($name, $lastname, $relation, $disability, $birthday, $status, $id_user){
+    public function insertar($name, $lastname, $relation, $disability, $birthday, $status, $id_user) {
         $con = new ClaseConectar();
         $con = $con->ProcedimientoConectar();
 
@@ -54,11 +55,12 @@ class Dependent{
         $con->close();
 
         // Retornar la respuesta como JSON
-        return json_encode($response);
+        return $response;
     }
 
     /*TODO: Procedimiento para actualizar un dependiente*/
-    public function actualizar($id, $name, $lastname, $relation, $disability, $birthday, $id_user){
+    public function actualizar($id, $name, $lastname, $relation, $disability, $birthday, $id_user)
+    {
         $con = new ClaseConectar();
         $con = $con->ProcedimientoConectar();
 
@@ -88,12 +90,13 @@ class Dependent{
         $con->close();
 
         // Retornar la respuesta como JSON
-        return json_encode($response);
+        return $response;
     }
 
     /*TODO: Procedimiento para eliminar un dependiente*/
 
-    public function cambiarEstado($id){
+    public function cambiarEstado($id)
+    {
 
         $con = new ClaseConectar();
         $con = $con->ProcedimientoConectar();
@@ -117,13 +120,13 @@ class Dependent{
         $con->close();
 
         // Retornar la respuesta como JSON
-        return json_encode($response);
-
+        return $response;
     }
 
     /* TODO: Procedimiento para obtener dependiente por ID */
 
-    public function uno($id){
+    public function uno($id)
+    {
 
         $con = new ClaseConectar();
         $con = $con->ProcedimientoConectar();
@@ -150,17 +153,17 @@ class Dependent{
         $con->close();
 
         // Retornar la respuesta como JSON
-        return json_encode($response);
+        return $response;
     }
 
-    /* TODO: Procedimiento para obtener todos los dependientes */ 
+    /* TODO: Procedimiento para obtener todos los dependientes */
 
-    public function todos(){
+    public function todos() {
 
         $con = new ClaseConectar();
         $con = $con->ProcedimientoConectar();
 
-        $query = "SELECT * FROM dependents";
+        $query = "select * from dependents d join users u on u.id = d.id_user";
         $result = mysqli_query($con, $query);
 
         if (mysqli_num_rows($result) > 0) {
@@ -185,8 +188,6 @@ class Dependent{
         $con->close();
 
         // Retornar la respuesta como JSON
-        return json_encode($response);
+        return $response;
     }
-
 }
-
