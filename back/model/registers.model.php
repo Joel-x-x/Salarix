@@ -54,8 +54,7 @@ class Register
   }
 
   /* TODO: Endpoint para listar registros por usuario */
-  public function listarRegistrosPorUsuario($codeEmployee)
-  {
+  public function listarRegistrosPorEmpleado($codeEmployee) {
     $con = new ClaseConectar();
     $con = $con->ProcedimientoConectar();
 
@@ -83,6 +82,89 @@ class Register
     }
   }
 
+  /* TODO: Endpoint para listar registros por usuario con filtro de rango de fechas */
+public function listarRegistrosPorEmpleadoFechas($codeEmployee, $startDate, $finishDate) {
+  $con = new ClaseConectar();
+  $con = $con->ProcedimientoConectar();
+
+  // Escapar variables para prevenir inyección SQL
+  $codeEmployee = mysqli_real_escape_string($con, $codeEmployee);
+  $startDate = mysqli_real_escape_string($con, $startDate);
+  $finishDate = mysqli_real_escape_string($con, $finishDate);
+
+  // Consulta modificada para incluir el rango de fechas
+  $consulta = "
+      SELECT r.*, u.firstname, u.lastname, u.codeEmployee 
+      FROM registers r 
+      JOIN users u ON u.id = r.user_id 
+      WHERE u.codeEmployee = '$codeEmployee' 
+      AND r.start BETWEEN '$startDate' AND '$finishDate'
+  ";
+
+  $resultado = mysqli_query($con, $consulta);
+
+  if ($resultado && mysqli_num_rows($resultado) > 0) {
+      $registros = [];
+      while ($row = mysqli_fetch_assoc($resultado)) {
+          $registros[] = $row;
+      }
+
+      return [
+          "status" => "200", // 200 OK
+          "message" => "Registros encontrados.",
+          "data" => $registros
+      ];
+  } else {
+      return [
+          "status" => "404",
+          "message" => "No se encontraron registros para el usuario.",
+      ];
+  }
+}
+
+
+/* TODO: Endpoint para listar registros por usuario con filtro de rango de fechas */
+public function listarRegistrosPorFechas($startDate, $finishDate) {
+  $con = new ClaseConectar();
+  $con = $con->ProcedimientoConectar();
+
+  // Escapar variables para prevenir inyección SQL
+  $startDate = mysqli_real_escape_string($con, $startDate);
+  $finishDate = mysqli_real_escape_string($con, $finishDate);
+
+  if($startDate == $finishDate) {
+    $finishDate = $finishDate + " 23:59:59";
+  }
+
+  // Consulta modificada para incluir el rango de fechas
+  $consulta = "
+      SELECT r.*, u.firstname, u.lastname, u.codeEmployee 
+      FROM registers r 
+      JOIN users u ON u.id = r.user_id 
+      WHERE r.start BETWEEN '$startDate' AND '$finishDate'";
+
+  $resultado = mysqli_query($con, $consulta);
+
+  if ($resultado && mysqli_num_rows($resultado) > 0) {
+      $registros = [];
+      while ($row = mysqli_fetch_assoc($resultado)) {
+          $registros[] = $row;
+      }
+
+      return [
+          "status" => "200", // 200 OK
+          "message" => "Registros encontrados.",
+          "data" => $registros
+      ];
+  } else {
+      return [
+          "status" => "404",
+          "message" => "No se encontraron registros para el usuario.",
+      ];
+  }
+}
+
+
   /* TODO: Endpoint para insertar registro de salida */
   public function insertarRegistroSalida($codigoEmpleado)
   {
@@ -92,7 +174,7 @@ class Register
     // Fecha de salida
     // Configurar la zona horaria a UTC-5
     date_default_timezone_set('America/Bogota');
-    $finish = new DateTime('2024-08-29 22:20:00');
+    $finish = new DateTime();
     $finish = $finish->format('Y-m-d H:i:s');
 
     // Verificar si ya existe un registro para el mismo día

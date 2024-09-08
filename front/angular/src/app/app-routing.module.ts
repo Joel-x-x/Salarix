@@ -42,7 +42,7 @@ const routes: Routes = [
       },
       {
         path: 'registros',
-        loadComponent: () => import('./demo/empleados/registros/registros.component'),
+        loadComponent: () => import('./demo/empleados/registros/registros.component').then(m => m.RegistroComponent),
       },
       {
         path: 'empleado',

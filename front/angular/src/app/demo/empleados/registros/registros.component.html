@@ -1,12 +1,84 @@
-<div class="row">
-  <div class="col-sm-12">
-    <app-card cardTitle="Hello Card" [options]="false">
-      <p>
-        "Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim
-        ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat. Duis aute irure dolor in
-        reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur. Excepteur sint occaecat cupidatat non proident, sunt
-        in culpa qui officia deserunt mollit anim id est laborum."
-      </p>
-    </app-card>
+<!-- Botón para abrir el modal -->
+<button class="btn btn-primary" (click)="openModal()">Registrar Nuevo</button>
+
+<!-- Modal HTML -->
+<div class="modal fade" id="formModal" tabindex="-1" aria-labelledby="formModalLabel" aria-hidden="true"
+     [ngClass]="{'show': modalVisible}" [ngStyle]="{'display': modalVisible ? 'block' : 'none'}">
+  <div class="modal-dialog modal-lg">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h5 class="modal-title" id="formModalLabel">Registrar Asistencia</h5>
+        <button type="button" class="btn-close" (click)="closeModal()" aria-label="Close"></button>
+      </div>
+      <div class="modal-body">
+        <form [formGroup]="formRegistro">
+          <div class="mb-3">
+            <label for="codeEmployee" class="form-label">Código del Empleado</label>
+            <input type="text" formControlName="codeEmployee" class="form-control" id="codeEmployee" placeholder="Ingrese el código del empleado" required>
+            <div *ngIf="formRegistro.get('codeEmployee')?.invalid && formRegistro.get('codeEmployee')?.touched">
+              <small class="text-danger">El código del empleado es requerido.</small>
+            </div>
+          </div>
+        </form>
+      </div>
+      <div class="modal-footer">
+        <button class="btn btn-secondary" (click)="closeModal()">Cerrar</button>
+        <button class="btn btn-success" (click)="registrarEntrada()" [disabled]="formRegistro.invalid">Registrar Entrada</button>
+        <button class="btn btn-danger" (click)="registrarSalida()" [disabled]="formRegistro.invalid">Registrar Salida</button>
+      </div>
+    </div>
   </div>
+</div>
+
+<!-- Controles para listar registros -->
+<form [formGroup]="formRegistro" (ngSubmit)="listarRegistros()">
+  <div class="container mt-4">
+    <div class="row">
+      <div class="col-md-4">
+        <input type="date" formControlName="startDate" class="form-control" placeholder="Fecha de inicio">
+      </div>
+      <div class="col-md-4">
+        <input type="date" formControlName="endDate" class="form-control" placeholder="Fecha de fin">
+      </div>
+      <div class="col-md-4 d-flex align-items-center">
+        <button type="button" class="btn btn-outline-primary me-2" (click)="setFechas(true)">Hoy</button>
+        <button type="button" class="btn btn-outline-primary me-2" (click)="setFechas(false, true)">Última Semana</button>
+        <button type="button" class="btn btn-outline-primary" (click)="setFechas(false, false, true)">Último Mes</button>
+      </div>
+    </div>
+    <div class="row mt-3">
+      <div class="col-12">
+        <button type="submit" class="btn btn-primary w-100">Listar Registros</button>
+      </div>
+    </div>
+  </div>
+</form>
+
+
+<!-- Tabla de Registros -->
+<div class="mt-4">
+  <app-card cardTitle="Lista de Registros" [options]="false" blockClass="table-border-style">
+    <div class="table-responsive">
+      <table class="table table-striped">
+        <thead>
+          <tr>
+            <th>#</th>
+            <th>Código Empleado</th>
+            <th>Nombre</th>
+            <th>Entrada</th>
+            <th>Salida</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr *ngFor="let registro of registros; let i = index">
+            <th scope="row">{{ i + 1 }}</th>
+            <td>{{ registro.codeEmployee }}</td>
+            <td>{{ registro.firstname + ' ' + registro.lastname }}</td>
+            <td>{{ registro.start }}</td>
+            <td>{{ registro.finish }}</td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+  </app-card>
 </div>

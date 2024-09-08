@@ -5,4 +5,7 @@ export interface IRegistro {
   ordinary_time?: number;
   overtime?: number;
   night_overtime?: number;
+  codeEmployee?: string;
+  firstname?: string;
+  lastname?: string;
 }

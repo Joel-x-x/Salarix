@@ -1,55 +1,153 @@
-import { HttpClient, HttpParams } from '@angular/common/http';
 import { Injectable } from '@angular/core';
+import { HttpClient } from '@angular/common/http';
 import { Observable, throwError } from 'rxjs';
-import { catchError } from 'rxjs/operators';
+import { catchError, map } from 'rxjs/operators';
 import { IRegistro } from '../interfaces/IRegistro';
+import Swal from 'sweetalert2';
 
 @Injectable({
   providedIn: 'root'
 })
 export class RegisterService {
-  private apiUrl = 'http://localhost/Salarix/back/controller/register.controller.php?op='; // Ajusta esta URL
+  private apiUrl = 'http://localhost/Salarix/back/controller/registers.controller.php?op='; // Asegúrate de que esta URL sea correcta.
 
-  constructor(private http: HttpClient) { }
+  constructor(private http: HttpClient) {}
 
-  // Registrar al usuario
-  primerRegistro(codigoEmpleado: string): Observable<IRegistro> {
-    const params = new HttpParams().set('codigoEmpleado', codigoEmpleado);
-    return this.http.get<IRegistro>(`${this.apiUrl}primerRegistro`, { params })
-      .pipe(
-        catchError(this.handleError)
-      );
+  // Registrar entrada
+  registrarEntrada(codeEmployee: string): Observable<any> {
+    if (!codeEmployee) {
+      Swal.fire('Error', 'El codeEmployee es requerido.', 'error');
+      return throwError(() => new Error('El codeEmployee es requerido.'));
+    }
+
+    const formData = new FormData();
+    formData.append('codeEmployee', codeEmployee);
+
+    return this.http.post<any>(`${this.apiUrl}registro-entrada`, formData).pipe(
+      map(response => {
+        if (response.status === '200') {
+          return response.message;
+        } else {
+          return throwError(() => new Error(response.message));
+        }
+      }),
+      catchError(this.handleError('Error al registrar la entrada'))
+    );
   }
 
   // Listar registros por usuario
-  listarRegistrosPorUsuario(userId: number): Observable<IRegistro[]> {
-    const params = new HttpParams().set('user_id', userId.toString());
-    return this.http.get<IRegistro[]>(`${this.apiUrl}listarRegistrosPorUsuario`, { params })
-      .pipe(
-        catchError(this.handleError)
-      );
+  listarRegistrosEmpleado(codeEmployee: string, startDate: string, finishDate: string): Observable<IRegistro[]> {
+    if (!codeEmployee || !startDate || !finishDate) {
+      Swal.fire('Error', 'todos los campos son requeridos.', 'error');
+      return throwError(() => new Error('Los campos no pueden ir vacios.'));
+    }
+
+    const formData = new FormData();
+    formData.append('codeEmployee', codeEmployee);
+    formData.append('finishDate', finishDate);
+    formData.append('startDate', startDate);
+
+    return this.http.post<any>(`${this.apiUrl}listar-registros-fechas-empleado`, formData).pipe(
+      map(response => {
+        if (response.status === '200') {
+          return response.data;
+        } else {
+          return throwError(() => new Error(response.message));
+        }
+      }),
+      catchError(this.handleError('Error al listar los registros'))
+    );
   }
 
-  // Insertar registro de salida
-  insertarRegistroSalida(codigoEmpleado: string): Observable<IRegistro> {
-    const params = new HttpParams().set('codigoEmpleado', codigoEmpleado);
-    return this.http.get<IRegistro>(`${this.apiUrl}insertarRegistroSalida`, { params })
-      .pipe(
-        catchError(this.handleError)
+    // Listar registros por usuario
+    listarRegistros(startDate: string, finishDate: string): Observable<IRegistro[]> {
+      if (!startDate || !finishDate) {
+        Swal.fire('Error', 'todos los campos son requeridos.', 'error');
+        return throwError(() => new Error('Los campos no pueden ir vacios.'));
+      }
+      const formData = new FormData();
+      formData.append('startDate', startDate);
+      formData.append('finishDate', finishDate);
+
+      return this.http.post<any>(`${this.apiUrl}listar-registros-fechas`, formData).pipe(
+        map(response => {
+          if (response.status === '200') {
+            return response.data;
+          } else {
+            return throwError(() => new Error(response.message));
+          }
+        }),
+        catchError(this.handleError('Error al listar los registros'))
       );
+    }
+
+  // Registrar salida
+  registrarSalida(codeEmployee: string): Observable<any> {
+    if (!codeEmployee) {
+      Swal.fire('Error', 'El código de empleado es requerido.', 'error');
+      return throwError(() => new Error('El código de empleado es requerido.'));
+    }
+
+    const formData = new FormData();
+    formData.append('codeEmployee', codeEmployee);
+
+    return this.http.post<any>(`${this.apiUrl}registro-salida`, formData).pipe(
+      map(response => {
+        if (response.status === '200') {
+          return response.message;
+        } else {
+          return throwError(() => new Error(response.message));
+        }
+      }),
+      catchError(this.handleError('Error al registrar la salida'))
+    );
   }
 
-  // Actualizar un registro
+  // Actualizar registro
   actualizarRegistro(registro: IRegistro): Observable<any> {
-    return this.http.post<any>(`${this.apiUrl}actualizarRegistro`, registro)
-      .pipe(
-        catchError(this.handleError)
-      );
+    if (!registro.id) {
+      Swal.fire('Error', 'El id es requerido.', 'error');
+      return throwError(() => new Error('El id es requerido.'));
+    }
+
+    const formData = this.mapRegistroToFormData(registro);
+
+    return this.http.post<any>(`${this.apiUrl}actualizar`, formData).pipe(
+      map(response => {
+        if (response.status === '200') {
+          return response.message;
+        } else {
+          return throwError(() => new Error(response.message));
+        }
+      }),
+      catchError(this.handleError('Error al actualizar el registro'))
+    );
+  }
+
+  // Mapear registro a FormData para enviar en peticiones POST
+  private mapRegistroToFormData(registro: IRegistro): FormData {
+    const formData = new FormData();
+    formData.append('id', registro.id || '');
+    formData.append('start', registro.start || '');
+    formData.append('finish', registro.finish || '');
+    if (registro.ordinary_time !== undefined) {
+      formData.append('ordinary_time', registro.ordinary_time.toString());
+    }
+    if (registro.overtime !== undefined) {
+      formData.append('overtime', registro.overtime.toString());
+    }
+    if (registro.night_overtime !== undefined) {
+      formData.append('night_overtime', registro.night_overtime.toString());
+    }
+    return formData;
   }
 
   // Manejar errores
-  private handleError(error: any): Observable<never> {
-    console.error('An error occurred:', error);
-    return throwError(error);
+  private handleError(operation = 'operación'): (error: any) => Observable<never> {
+    return (error: any): Observable<never> => {
+      console.error(`${operation} falló:`, error);
+      Swal.fire('Error', `${operation} falló. Por favor, inténtalo de nuevo más tarde.`, 'error');
+      return throwError(() => new Error(`${operation} falló. Por favor, inténtalo de nuevo más tarde.`));
+    };
   }
 }
