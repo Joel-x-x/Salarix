@@ -118,26 +118,55 @@ class RubrosService {
       //   ];
       // }
 
+      // Obtener las formulas
       $formula = $ultimaFormula['data'];
 
-      // Validaciones según los booleanos del plan salarial
-      if ($plan['cp_included']) {
-        $cp = $formula['cp']; // Valor de Comisión %
+      // Obtener el sueldo bruto
+      $sueldoBruto = $this->calcularSueldoBruto($user_id, $nomina_id);
+      echo $sueldoBruto;
+      echo "<br>";
 
+      // Obtener la nomina
+      $nominaModel = new Nomina();
+      $nomina = $nominaModel->uno($nomina_id);
+
+      // Mostrar mensaje de error
+      if ($nomina['status'] !== '200') {
+        return $nomina;
       }
+
+      // Register model
+      $registroModel = new Register();
+      $registros = $registroModel->listarRegistrosPorEmpleadoFechas($user_id, $nomina['data']['start'], $nomina['data']['finish']);
+
+      // Mostrar mensaje de error
+      if ($registros['status'] !== '200') {
+        return $registros; // Retorna mensaje de error
+      }
+
+      // Obtener los detalles de la nómina
+      $detailNominaModel = new DetailNomina();
+      $detailNomina = $detailNominaModel->todos($nomina_id);
+
+      // Validaciones según los booleanos del plan salarial
+      // TODO: pediente por agregar sql
+      // if ($plan['cp_included']) {
+      //   $cp = $formula['cp']; // Valor de Comisión %
+
+      // }
 
       if ($plan['app_included']) {
         $app = $formula['app']; // Valor de Aporte Patronal %
-
+        $valorApp = $sueldoBruto * ($app / 100);
       }
 
       if ($plan['dts_included']) {
         $dts = $formula['dts']; // Valor de Décimo tercer sueldo
-
+        $valorDts = $sueldoBruto / $dts;
       }
 
       if ($plan['dcs_included']) {
-        // Si tienes otro valor relacionado con dcs en la fórmula, puedes acceder a él aquí
+        // Décimo cuarto sueldo
 
       }
 
@@ -152,7 +181,7 @@ class RubrosService {
       }
 
       if ($plan['esc_included']) {
-        $esc = $formula['esc']; // Valor de Extensión de salud por Cónyuge
+      // Valor de Extensión de salud por Cónyuge
 
       }
 
