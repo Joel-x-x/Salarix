@@ -68,7 +68,6 @@ export class RegisterService {
       const formData = new FormData();
       formData.append('startDate', startDate);
       formData.append('finishDate', finishDate);
-
       return this.http.post<any>(`${this.apiUrl}listar-registros-fechas`, formData).pipe(
         map(response => {
           if (response.status === '200') {

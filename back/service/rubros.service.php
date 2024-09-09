@@ -4,6 +4,7 @@ require_once("../model/nominas.model.php");
 require_once("../model/detail_nomina.model.php");
 require_once("../model/salary_plans.model.php");
 require_once("../model/employees.model.php");
+require_once("../model/registers.model.php");
 
 class RubrosService {
 
@@ -43,8 +44,35 @@ class RubrosService {
       }
       // Sumar el sueldo base a los bonos
       $sueldoBruto += $planSalarial['data']['baseSalary'];
+      
+      // Calcular valor hora
+      $valorHora = $this->calcularValorHora($sueldoBruto);
 
-      echo json_encode($sueldoBruto);
+      // Register model
+      $registroModel = new Register();
+      $registros = $registroModel->listarRegistrosPorEmpleadoFechas($user_id, $nomina['data']['start'], $nomina['data']['finish']);
+
+      // Total hora extraordinarias
+      $horasExtraordinarias = 0;
+      $valorHorasExtraordinarias = 0;
+      // Total horas extraordinarias nocturnas
+      $horasExtraordinariasNocturnas = 0;
+      $valorHorasExtraordinariasNocturnas = 0;
+
+      foreach($registros['data'] as $registro) {
+        $horasExtraordinarias += $registro['overtime'];
+        $horasExtraordinariasNocturnas += $registro['night_overtime'];
+      }
+
+      // Calcular valor de horas extras
+      $valorHorasExtraordinarias = ($valorHora * 1.5) * $horasExtraordinarias;
+      $valorHorasExtraordinariasNocturnas = ($valorHora * 2) * $horasExtraordinariasNocturnas;
+      
+      // Sumar valor de horas extras al sueldo bruto
+      $sueldoBruto = $sueldoBruto + $valorHorasExtraordinarias + $valorHorasExtraordinariasNocturnas;
+
+      // retornar sueldo bruto
+      return (double)number_format($sueldoBruto, 2);
 
     } else {
       // Caso de error
@@ -53,8 +81,12 @@ class RubrosService {
 
   }
 
-  public function validarPlanSalarial($user_id, $nomina_id)
-  {
+  // Calcular valor por hora en base al sueldo bruto
+  public function calcularValorHora($sueldoBruto) {
+    return $sueldoBruto / 160; // 40h por semana x 4 semanas 160 horas totales al mes
+  }
+
+  public function validarPlanSalarial($user_id, $nomina_id) {
     $con = new ClaseConectar();
     $con = $con->ProcedimientoConectar();
 
@@ -138,4 +170,5 @@ class RubrosService {
       ];
     }
   }
+
 }

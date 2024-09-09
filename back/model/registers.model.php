@@ -83,21 +83,21 @@ class Register
   }
 
   /* TODO: Endpoint para listar registros por usuario con filtro de rango de fechas */
-public function listarRegistrosPorEmpleadoFechas($codeEmployee, $startDate, $finishDate) {
+public function listarRegistrosPorEmpleadoFechas($user_id, $startDate, $finishDate) {
   $con = new ClaseConectar();
   $con = $con->ProcedimientoConectar();
 
   // Escapar variables para prevenir inyección SQL
-  $codeEmployee = mysqli_real_escape_string($con, $codeEmployee);
+  $user_id = mysqli_real_escape_string($con, $user_id);
   $startDate = mysqli_real_escape_string($con, $startDate);
   $finishDate = mysqli_real_escape_string($con, $finishDate);
 
   // Consulta modificada para incluir el rango de fechas
   $consulta = "
-      SELECT r.*, u.firstname, u.lastname, u.codeEmployee 
+      SELECT r.*, u.firstname, u.lastname, u.id 
       FROM registers r 
       JOIN users u ON u.id = r.user_id 
-      WHERE u.codeEmployee = '$codeEmployee' 
+      WHERE u.id = '$user_id' 
       AND r.start BETWEEN '$startDate' AND '$finishDate'
   ";
 
@@ -132,16 +132,18 @@ public function listarRegistrosPorFechas($startDate, $finishDate) {
   $startDate = mysqli_real_escape_string($con, $startDate);
   $finishDate = mysqli_real_escape_string($con, $finishDate);
 
-  if($startDate == $finishDate) {
-    $finishDate = $finishDate + " 23:59:59";
-  }
+  $startDateTime = new DateTime($startDate);
+  $finishDateTime = new DateTime($finishDate);
+  
+  // Si las fechas son iguales, agregar " 23:59:59" a $finishDate
+  $finishDate = $finishDateTime->format('Y-m-d') . " 23:59:59";
 
   // Consulta modificada para incluir el rango de fechas
   $consulta = "
       SELECT r.*, u.firstname, u.lastname, u.codeEmployee 
       FROM registers r 
       JOIN users u ON u.id = r.user_id 
-      WHERE r.start BETWEEN '$startDate' AND '$finishDate'";
+      WHERE r.start BETWEEN '$startDate' AND '$finishDate' ";
 
   $resultado = mysqli_query($con, $consulta);
 

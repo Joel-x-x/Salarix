@@ -73,7 +73,6 @@ export class RegistroComponent implements OnInit {
 
     this.registerService.listarRegistros(startDate, endDate).subscribe({
       next: (data) => {
-        console.log(data);
         this.registros = data
       },
       error: (error) => console.error('Error al listar registros', error)
