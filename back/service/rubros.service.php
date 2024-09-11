@@ -196,19 +196,22 @@ class RubrosService
         $frp = $formula['frp']; // Valor de Fondo de reserva % despues de un año trabajando.
         $valorFrp = $sueldoBruto * ($frp / 100);
 
-        $detailNominaModel->insertar('Fondo de reserva', 'Beneficio de los empleados afiliados al IESS, que cumplen con un año de trabajo consecutivo, el cual corresponde a un aporte por parte del patrono.', 0, $valorFrp, 0, $nomina_id);
+        $detailNominaModel->insertar('Fondo de reserva', 'Beneficio de los empleados afiliados al IESS, que cumplen con un año de trabajo consecutivo, el cual corresponde a un aporte por parte del patrono.', 1, $valorFrp, 0, $nomina_id);
       }
 
       if ($plan['apep_included']) {
         $apep = $formula['apep']; // Valor de Aporte personal %
         $valorApep = $sueldoBruto * ($apep / 100);
-        // TODO: seguir haciendo los detail_nomina
+        
+        $detailNominaModel->insertar('Aporte personal', 'Aporte del empleado que destina a financiar los beneficios de la seguridad social, como atención médica, pensiones, seguro de invalidez, entre otros.', 0, $valorApep, 0, $nomina_id);
       }
 
       if ($plan['esc_included']) {
         // Valor de Extensión de salud por Cónyuge
-        $esc = $planSalarial['data']['esc'];
-        echo $esc;
+        $escp = $formula['escp'];
+        $valorEscp = $sueldoBruto * ($escp / 100);
+
+        $detailNominaModel->insertar('Extensión de salud por Cónyugue', 'Prestación ofrecida por la empresa, permitiendo que el conyúgue de un empleado también acceda a servicios de atención médica a través del sistema de salud del empleado.', 0, $valorEscp, 0, $nomina_id);
       }
 
       return [

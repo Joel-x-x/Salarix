@@ -93,65 +93,90 @@ export const NavigationItems: NavigationItem[] = [
     icon: 'icon-group',
     children: [
       {
-        id: 'registros',
-        title: 'Registros',
-        type: 'item',
-        url: '/registros',
-        icon: 'feather icon-clock',
-        target: false,
-        breadcrumbs: true
+      id: 'Empleados',
+      title: 'Empleados',
+      type: 'collapse',
+      icon: 'icon-group',
+      children: [
+        {
+          id: 'registros',
+          title: 'Registros',
+          type: 'item',
+          url: '/registros',
+          icon: 'feather icon-clock',
+          target: false,
+          breadcrumbs: true
+        },
+        {
+          id: 'empleado',
+          title: 'Empleado',
+          type: 'item',
+          url: '/empleado',
+          icon: 'feather icon-users',
+          target: false,
+          breadcrumbs: true
+        },
+        {
+          id: 'posicion',
+          title: 'Posicion',
+          type: 'item',
+          url: '/posicion',
+          icon: 'feather icon-shield',
+          target: false,
+          breadcrumbs: true
+        },
+        {
+          id: 'plan-salarial',
+          title: 'Plan salarial',
+          type: 'item',
+          url: '/plan-salarial',
+          icon: 'feather icon-book',
+          target: false,
+          breadcrumbs: true
+        },
+        {
+          id: 'departamentos',
+          title: 'Departamentos',
+          type: 'item',
+          url: '/departamentos',
+          icon: 'feather icon-grid',
+          target: false,
+          breadcrumbs: true
+        },
+        {
+          id: 'dependientes',
+          title: 'Dependientes',
+          type: 'item',
+          url: '/dependientes',
+          icon: 'feather icon-user-plus',
+          target: false,
+          breadcrumbs: true
+        },
+        {
+          id: 'vacaciones',
+          title: 'Vacaciones',
+          type: 'item',
+          url: '/vacaciones',
+          icon: 'feather icon-link-2',
+          target: false,
+          breadcrumbs: true
+        }
+      ]
       },
+    ]
+  },
+  {
+    id: 'Nomina',
+    title: 'Nomina',
+    type: 'group',
+    icon: 'icon-group',
+    children: [
       {
-        id: 'empleado',
-        title: 'Empleado',
+        id: 'nomina',
+        title: 'Nomina',
         type: 'item',
-        url: '/empleado',
-        icon: 'feather icon-users',
-        target: false,
-        breadcrumbs: true
-      },
-      {
-        id: 'posicion',
-        title: 'Posicion',
-        type: 'item',
-        url: '/posicion',
-        icon: 'feather icon-shield',
-        target: false,
-        breadcrumbs: true
-      },
-      {
-        id: 'plan-salarial',
-        title: 'Plan salarial',
-        type: 'item',
-        url: '/plan-salarial',
-        icon: 'feather icon-book',
-        target: false,
-        breadcrumbs: true
-      },
-      {
-        id: 'departamentos',
-        title: 'Departamentos',
-        type: 'item',
-        url: '/departamentos',
-        icon: 'feather icon-grid',
-        target: false,
-        breadcrumbs: true
-      },
-      {
-        id: 'dependientes',
-        title: 'Dependientes',
-        type: 'item',
-        url: '/dependientes',
-        icon: 'feather icon-user-plus',
-        target: false,
-        breadcrumbs: true
-      },
-      {
-        id: 'vacaciones',
-        title: 'Vacaciones',
-        type: 'item',
-        url: '/vacaciones',
-        icon: 'feather icon-link-2',
+        url: '/nomina',
+        icon: 'feather icon-link',
         target: false,
         breadcrumbs: true
       }

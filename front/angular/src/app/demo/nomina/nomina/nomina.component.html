@@ -1,0 +1,170 @@
+<!-- Botón para abrir el modal -->
+<button class="btn btn-primary" (click)="openModal()">Nueva Nómina</button>
+
+<!-- Modal HTML -->
+<div class="modal modal-lg fade" id="formModal" tabindex="-1" role="dialog" aria-labelledby="formModalLabel"
+     aria-hidden="true" [ngClass]="{'show': modalVisible}" [ngStyle]="{'display': modalVisible ? 'block' : 'none'}">
+  <div class="modal-dialog" role="document">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h5 class="modal-title" id="formModalLabel">{{ esNuevaNomina ? 'Nueva Nómina' : 'Editar Nómina' }}</h5>
+      </div>
+      <div class="modal-body">
+        <form [formGroup]="formNomina" (ngSubmit)="grabar()">
+          <div class="row">
+            <div class="col-md-6">
+              <div class="form-group">
+                <label for="periodName">Nombre del Periodo</label>
+                <input formControlName="periodName" type="text" class="form-control" id="periodName" required>
+                <div *ngIf="formNomina.get('periodName')?.invalid && formNomina.get('periodName')?.touched">
+                  <small *ngIf="formNomina.get('periodName')?.hasError('required')" style="color: red">
+                    El nombre del periodo es requerido
+                  </small>
+                </div>
+              </div>
+              <div class="form-group">
+                <label for="start">Fecha de Inicio</label>
+                <input formControlName="start" type="date" class="form-control" id="start" required>
+                <div *ngIf="formNomina.get('start')?.invalid && formNomina.get('start')?.touched">
+                  <small *ngIf="formNomina.get('start')?.hasError('required')" style="color: red">
+                    La fecha de inicio es requerida
+                  </small>
+                </div>
+              </div>
+              <div class="form-group">
+                <label for="finish">Fecha de Fin</label>
+                <input formControlName="finish" type="date" class="form-control" id="finish" required>
+                <div *ngIf="formNomina.get('finish')?.invalid && formNomina.get('finish')?.touched">
+                  <small *ngIf="formNomina.get('finish')?.hasError('required')" style="color: red">
+                    La fecha de fin es requerida
+                  </small>
+                </div>
+              </div>
+              <div class="form-group">
+                <label for="totalGross">Total Bruto</label>
+                <input formControlName="totalGross" type="number" class="form-control" id="totalGross">
+                <div *ngIf="formNomina.get('totalGross')?.invalid && formNomina.get('totalGross')?.touched">
+                  <small *ngIf="formNomina.get('totalGross')?.hasError('required')" style="color: red">
+                    El total bruto es requerido
+                  </small>
+                </div>
+              </div>
+              <div class="form-group">
+                <label for="totalIncome">Total Ingresos</label>
+                <input formControlName="totalIncome" type="number" class="form-control" id="totalIncome">
+                <div *ngIf="formNomina.get('totalIncome')?.invalid && formNomina.get('totalIncome')?.touched">
+                  <small *ngIf="formNomina.get('totalIncome')?.hasError('required')" style="color: red">
+                    El total de ingresos es requerido
+                  </small>
+                </div>
+              </div>
+              <div class="form-group">
+                <label for="totalEgress">Total Egresos</label>
+                <input formControlName="totalEgress" type="number" class="form-control" id="totalEgress">
+                <div *ngIf="formNomina.get('totalEgress')?.invalid && formNomina.get('totalEgress')?.touched">
+                  <small *ngIf="formNomina.get('totalEgress')?.hasError('required')" style="color: red">
+                    El total de egresos es requerido
+                  </small>
+                </div>
+              </div>
+            </div>
+            <div class="col-md-6">
+              <div class="form-group">
+                <label for="totalLiquid">Total Líquido</label>
+                <input formControlName="totalLiquid" type="number" class="form-control" id="totalLiquid">
+                <div *ngIf="formNomina.get('totalLiquid')?.invalid && formNomina.get('totalLiquid')?.touched">
+                  <small *ngIf="formNomina.get('totalLiquid')?.hasError('required')" style="color: red">
+                    El total líquido es requerido
+                  </small>
+                </div>
+              </div>
+              <!-- Tabla listar empleados -->
+              <div class="form-group">
+                <label for="employee">Empleado</label>
+                <div class="input-group mb-3">
+                  <input type="text" class="form-control"
+                    [value]="(empleadoSeleccionado?.firstname || '') + ' ' + (empleadoSeleccionado?.lastname || '')"
+                    readonly>
+                  <div class="input-group-append">
+                    <button class="btn btn-outline-secondary" type="button" (click)="toggleEmpleadoTable()">Listar Empleados</button>
+                  </div>
+                </div>
+
+                <div *ngIf="mostrarTablaEmpleados" class="table-responsive">
+                  <input type="text" class="form-control mb-2" placeholder="Buscar empleado..."
+                    [(ngModel)]="busquedaEmpleado" (input)="filtrarEmpleados()">
+                  <table class="table table-bordered">
+                    <thead>
+                      <tr>
+                        <th>#</th>
+                        <th>Nombre</th>
+                        <th>Código empleado</th>
+                      </tr>
+                    </thead>
+                    <tbody>
+                        <tr *ngFor="let empleado of empleadosFiltrados; index as i">
+                          <td>{{ i + 1 }}</td>
+                          <td>{{ empleado.firstname + ' ' + empleado.lastname}}</td>
+                          <td>{{ empleado.codeEmployee }}</td>
+                          <td><button class="btn btn-sm btn-primary"
+                              (click)="seleccionarEmpleado(empleado)">Seleccionar</button></td>
+                        </tr>
+                    </tbody>
+                  </table>
+                </div>
+              </div>
+            </div>
+          </div>
+          <div class="modal-footer">
+            <button type="button" class="btn btn-secondary" (click)="closeModal()">Cerrar</button>
+            <button type="submit" class="btn btn-primary" [disabled]="formNomina.invalid">
+              {{ esNuevaNomina ? 'Guardar' : 'Actualizar' }}
+            </button>
+          </div>
+        </form>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- Tabla de Nóminas -->
+<div class="col-xl-12 mt-3">
+  <app-card cardTitle="Lista de Nóminas" [options]="false" blockClass="table-border-style">
+    <div class="table-responsive">
+      <table class="table table-striped">
+        <thead>
+          <tr>
+            <th>#</th>
+            <th>Acciones</th>
+            <th>Nombre del Periodo</th>
+            <th>Empleado</th>
+            <th>Fecha de Inicio</th>
+            <th>Fecha de Fin</th>
+            <th>Total Bruto</th>
+            <th>Total Ingresos</th>
+            <th>Total Egresos</th>
+            <th>Total Líquido</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr *ngFor="let nomina of nominas; let i = index">
+            <th scope="row">{{ i + 1 }}</th>
+            <td class="text-center">
+              <button class="btn btn-warning btn-sm" (click)="openModal(nomina)">
+                <i class="fa fa-pencil-alt"></i> Editar
+              </button>
+            </td>
+            <td>{{ nomina.periodName }}</td>
+            <td>{{ getEmpleadoNombre(nomina.user_id ?? '') }}</td>
+            <td>{{ nomina.start}}</td>
+            <td>{{ nomina.finish}}</td>
+            <td>{{ nomina.totalGross }}</td>
+            <td>{{ nomina.totalIncome }}</td>
+            <td>{{ nomina.totalEgress }}</td>
+            <td>{{ nomina.totalLiquid }}</td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+  </app-card>
+</div>

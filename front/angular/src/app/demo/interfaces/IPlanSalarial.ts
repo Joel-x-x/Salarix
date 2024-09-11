@@ -5,7 +5,6 @@ export interface IPlanSalarial {
   description: string;
   checkin: string;
   checkout: string;
-  esc?: string;
   esc_included: number;
   cp_included: number;
   app_included: number;

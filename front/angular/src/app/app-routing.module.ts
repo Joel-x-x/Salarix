@@ -67,6 +67,10 @@ const routes: Routes = [
       {
         path: 'vacaciones',
         loadComponent: () => import('./demo/empleados/vacaciones/vacaciones.component')
+      },
+      {
+        path: 'nomina',
+        loadComponent: () => import('./demo/nomina/nomina/nomina.component').then(m => m.NominaComponent)
       }
     ]
   },

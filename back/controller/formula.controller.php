@@ -22,12 +22,13 @@ switch ($_GET["op"]) {
         $cp = $_POST["cp"];
         $app = $_POST["app"];
         $dts = $_POST["dts"];
+        $dtc = $_POST["dtc"];
         $frp = $_POST["frp"];
         $apep = $_POST["apep"];
-        $esc = $_POST["esc"];
+        $escp = $_POST["escp"];
 
-        if ($cp && $app && $dts && $frp && $apep && $esc) {
-            $data = $Formula->insertar($cp, $app, $dts, $frp, $apep, $esc);
+        if ($cp && $app && $dts && $dcs && $frp && $apep && $escp) {
+            $data = $Formula->insertar($cp, $app, $dts, $dcs, $frp, $apep, $escp);
             echo json_encode($data);
         } else {
             echo json_encode([

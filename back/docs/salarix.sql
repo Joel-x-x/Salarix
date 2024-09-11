@@ -121,6 +121,7 @@ CREATE TABLE `formula` (
   `dcs` double DEFAULT NULL,
   `frp` double DEFAULT NULL,
   `apep` double DEFAULT NULL,
+  `escp` double DEFAULT NULL,
   `date` datetime DEFAULT NULL,
   PRIMARY KEY (`id`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
@@ -132,7 +133,7 @@ CREATE TABLE `formula` (
 
 LOCK TABLES `formula` WRITE;
 /*!40000 ALTER TABLE `formula` DISABLE KEYS */;
-INSERT INTO `formula` VALUES ('11310007-649c-11ef-84b2-a2aa5538db1f',12.5,12,460,8.33,9.45,'2024-08-27 12:44:53'),('2ea7fdd0-649c-11ef-84b2-a2aa5538db1f',12.5,12,460,8.33,9.45,'2024-08-27 12:45:43');
+INSERT INTO `formula` VALUES ('11310007-649c-11ef-84b2-a2aa5538db1f',12.5,12,460,8.33,9.45,3.41,'2024-08-27 12:44:53'),('2ea7fdd0-649c-11ef-84b2-a2aa5538db1f',12.5,12,460,8.33,9.45,3.41'2024-08-27 12:45:43');
 /*!40000 ALTER TABLE `formula` ENABLE KEYS */;
 UNLOCK TABLES;
 

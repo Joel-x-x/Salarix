@@ -1,54 +1,100 @@
-// src/app/services/detail-nomina.service.ts
-
-import { HttpClient } from '@angular/common/http';
+import { HttpClient, HttpHeaders } from '@angular/common/http';
 import { Injectable } from '@angular/core';
 import { Observable, throwError } from 'rxjs';
-import { catchError } from 'rxjs/operators';
-import { IDetalleNomina } from '../interfaces/IDetalleNomina';
+import { catchError, map } from 'rxjs/operators';
+import { IDetalleNomina } from '../interfaces/IDetalleNomina'; // Asegúrate de tener esta interfaz definida
 
 @Injectable({
   providedIn: 'root'
 })
-export class DetailNominaService {
-  private apiUrl = 'http://localhost/Salarix/back/controller/detailNomina.controller.php?op='; // Ajusta esta URL
+export class DetalleNominaService {
+  private apiUrl = 'http://localhost/Salarix/back/controller/detalle_nomina.controller.php?op='; // Asegúrate de que esta URL sea correcta.
 
   constructor(private http: HttpClient) { }
 
-  // Crear un nuevo detalle de nómina
-  createDetailNomina(detail: IDetalleNomina): Observable<IDetalleNomina> {
-    return this.http.post<IDetalleNomina>(`${this.apiUrl}insertar`, detail)
+  // Obtener todos los detalles de nómina
+  todos(): Observable<IDetalleNomina[]> {
+    return this.http.get<any>(`${this.apiUrl}todos`)
       .pipe(
-        catchError(this.handleError)
-      );
-  }
-
-  // Actualizar un detalle de nómina existente
-  updateDetailNomina(id: number, detail: IDetalleNomina): Observable<IDetalleNomina> {
-    return this.http.put<IDetalleNomina>(`${this.apiUrl}actualizar&id=${id}`, detail)
-      .pipe(
-        catchError(this.handleError)
+        map(response => {
+          if (response.status === '200') {
+            return response.data;
+          } else {
+            return throwError(() => new Error(response.message));
+          }
+        }),
+        catchError(this.handleError('Error al obtener los detalles de nómina'))
       );
   }
 
   // Obtener un detalle de nómina por ID
-  getDetailNominaById(id: number): Observable<IDetalleNomina> {
-    return this.http.get<IDetalleNomina>(`${this.apiUrl}uno&id=${id}`)
+  uno(id: string): Observable<IDetalleNomina> {
+    const formData = new FormData();
+    formData.append('id', id);
+    return this.http.post<any>(`${this.apiUrl}uno`, formData)
       .pipe(
-        catchError(this.handleError)
+        map(response => {
+          if (response.status === '200') {
+            return response.data;
+          } else {
+            return throwError(() => new Error(response.message));
+          }
+        }),
+        catchError(this.handleError('Error al obtener el detalle de nómina'))
       );
   }
 
-  // Obtener todos los detalles de nómina para una nómina específica
-  getAllDetailNomina(nominaId: number): Observable<IDetalleNomina[]> {
-    return this.http.get<IDetalleNomina[]>(`${this.apiUrl}todos&nomina_id=${nominaId}`)
+  // Crear un nuevo detalle de nómina
+  insertar(detalleNomina: IDetalleNomina): Observable<string> {
+    const formData = this.mapDetalleNominaToFormData(detalleNomina);
+    return this.http.post<any>(`${this.apiUrl}insertar`, formData)
       .pipe(
-        catchError(this.handleError)
+        map(response => {
+          if (response.status === '201') {
+            return response.message; // Suponemos que el mensaje contiene algún dato relevante
+          } else {
+            return throwError(() => new Error(response.message));
+          }
+        }),
+        catchError(this.handleError('Error al crear el detalle de nómina'))
       );
   }
+
+  // Actualizar un detalle de nómina existente
+  actualizar(detalleNomina: IDetalleNomina): Observable<string> {
+    const formData = this.mapDetalleNominaToFormData(detalleNomina);
+    return this.http.post<any>(`${this.apiUrl}actualizar`, formData)
+      .pipe(
+        map(response => {
+          if (response.status === '200') {
+            return response.message; // Suponemos que el mensaje contiene algún dato relevante
+          } else {
+            return throwError(() => new Error(response.message));
+          }
+        }),
+        catchError(this.handleError('Error al actualizar el detalle de nómina'))
+      );
+  }
+
+// Mapear el detalle de la nómina a FormData para enviar en peticiones POST
+private mapDetalleNominaToFormData(detail: IDetalleNomina): FormData {
+  const formData = new FormData();
+  formData.append('id', detail.id ?? '');
+  formData.append('name', detail.name ?? '');
+  formData.append('detail', detail.detail ?? '');
+  formData.append('type', detail.type?.toString() ?? '');
+  formData.append('monto', detail.monto?.toString() ?? '');
+  formData.append('nomina_id', detail.nomina_id ?? '');
+  formData.append('created', detail.created?.toISOString() ?? ''); // Asegúrate de convertir la fecha a un formato de cadena adecuado
+  formData.append('isBonus', detail.isBonus?.toString() ?? '');
+  return formData;
+}
 
   // Manejar errores
-  private handleError(error: any): Observable<never> {
-    console.error('An error occurred:', error);
-    return throwError(error);
+  private handleError(operation = 'operación'): (error: any) => Observable<never> {
+    return (error: any): Observable<never> => {
+      console.error(`${operation} falló:`, error);
+      return throwError(() => new Error(`${operation} falló. Por favor, inténtalo de nuevo más tarde.`));
+    };
   }
 }

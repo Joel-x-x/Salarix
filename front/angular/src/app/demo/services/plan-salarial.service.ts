@@ -88,7 +88,6 @@ actualizar(plan: IPlanSalarial): Observable<string> {
     formData.append('description', plan.description ?? '');
     formData.append('checkin', plan.checkin ?? '');
     formData.append('checkout', plan.checkout ?? '');
-    formData.append('esc', plan.esc ?? '');
     formData.append('esc_included', plan.esc_included.toString());
     formData.append('cp_included', plan.cp_included.toString());
     formData.append('app_included', plan.app_included.toString());

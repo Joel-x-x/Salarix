@@ -51,6 +51,7 @@
                     es requerido</small>
                 </div>
               </div>
+              <!-- Tabla listar empleados -->
               <div class="form-group">
                 <label for="employee">Empleado</label>
                 <div class="input-group mb-3">
@@ -58,8 +59,7 @@
                     [value]="(empleadoSeleccionado?.firstname || '') + ' ' + (empleadoSeleccionado?.lastname || '')"
                     readonly>
                   <div class="input-group-append">
-                    <button class="btn btn-outline-secondary" type="button" (click)="toggleEmpleadoTable()">Listar
-                      Empleados</button>
+                    <button class="btn btn-outline-secondary" type="button" (click)="toggleEmpleadoTable()">Listar Empleados</button>
                   </div>
                 </div>
 
@@ -71,14 +71,14 @@
                       <tr>
                         <th>#</th>
                         <th>Nombre</th>
-                        <th>Apellido</th>
+                        <th>Código empleado</th>
                       </tr>
                     </thead>
                     <tbody>
                         <tr *ngFor="let empleado of empleadosFiltrados; index as i">
                           <td>{{ i + 1 }}</td>
-                          <td>{{ empleado.firstname }}</td>
-                          <td>{{ empleado.lastname }}</td>
+                          <td>{{ empleado.firstname + ' ' + empleado.lastname}}</td>
+                          <td>{{ empleado.codeEmployee }}</td>
                           <td><button class="btn btn-sm btn-primary"
                               (click)="seleccionarEmpleado(empleado)">Seleccionar</button></td>
                         </tr>
@@ -101,10 +101,10 @@
             </div>
             <div class="col-md-6">
               <!-- Checkboxes -->
-              <div class="form-group">
+              <!-- <div class="form-group">
                 <label for="esc">Extensión de salud por conyugue</label>
                 <input formControlName="esc" type="number" class="form-control" id="esc" name="esc">
-              </div>
+              </div> -->
               <div class="form-group">
                 <label>Incluido:</label>
                 <div class="form-check">
@@ -165,7 +165,6 @@
             <th>Descripción</th>
             <th>Checkin</th>
             <th>Checkout</th>
-            <th>Esc</th>
             <th>Esc Incluido</th>
             <th>CP Incluido</th>
             <th>App Incluido</th>
@@ -193,7 +192,6 @@
             <td>{{ plan.description }}</td>
             <td>{{ plan.checkin }}</td>
             <td>{{ plan.checkout }}</td>
-            <td>{{ plan.esc }}</td>
             <td>{{ plan.esc_included }}</td>
             <td>{{ plan.cp_included }}</td>
             <td>{{ plan.app_included }}</td>

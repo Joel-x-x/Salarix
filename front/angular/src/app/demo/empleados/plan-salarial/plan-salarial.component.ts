@@ -10,8 +10,6 @@ import { EmpleadoService } from '../../services/empleado.service'; // Ajusta la 
 import { PositionService } from '../../services/posicion.service'; // Ajusta la ruta si es necesario
 import { Empleado } from '../../interfaces/IEmpleado';
 import { IPosicion } from '../../interfaces/IPosicion';
-import { forEach } from 'lodash';
-
 @Component({
   selector: 'app-plan-salarial',
   standalone: true,
@@ -125,7 +123,6 @@ export class PlanSalarialComponent implements OnInit {
       description: this.formPlanSalarial.get('description')?.value ?? '',
       checkin: this.formPlanSalarial.get('checkin')?.value ?? '',
       checkout: this.formPlanSalarial.get('checkout')?.value ?? '',
-      esc: this.formPlanSalarial.get('esc')?.value ?? '',
       esc_included: this.formPlanSalarial.get('esc_included')?.value ? 1 : 0,
       cp_included: this.formPlanSalarial.get('cp_included')?.value ? 1 : 0,
       app_included: this.formPlanSalarial.get('app_included')?.value ? 1 : 0,
@@ -161,7 +158,6 @@ export class PlanSalarialComponent implements OnInit {
   openModal(planSalarial?: IPlanSalarial): void {
     this.modalVisible = true;
     this.esNuevoPlan = !planSalarial;
-
     if (planSalarial) {
       // Asignar el plan salarial seleccionado
       this.planSalarialSeleccionado = planSalarial;
@@ -181,14 +177,13 @@ export class PlanSalarialComponent implements OnInit {
         description: planSalarial.description,
         checkin: planSalarial.checkin,
         checkout: planSalarial.checkout,
-        esc: planSalarial.esc,
-        esc_included: planSalarial.esc_included ? true : false, // Manejar checkbox como booleano
-        cp_included: planSalarial.cp_included ? true : false,
-        app_included: planSalarial.app_included ? true : false,
-        dts_included: planSalarial.dts_included ? true : false,
-        dcs_included: planSalarial.dcs_included ? true : false,
-        frp_included: planSalarial.frp_included ? true : false,
-        apep_included: planSalarial.apep_included ? true : false,
+        esc_included: planSalarial.esc_included == 1 ? true : false, // Manejar checkbox como booleano
+        cp_included: planSalarial.cp_included == 1 ? true : false,
+        app_included: planSalarial.app_included == 1 ? true : false,
+        dts_included: planSalarial.dts_included == 1 ? true : false,
+        dcs_included: planSalarial.dcs_included == 1 ? true : false,
+        frp_included: planSalarial.frp_included == 1 ? true : false,
+        apep_included: planSalarial.apep_included == 1 ? true : false,
         user_id: planSalarial.user_id,
       });
     } else {
@@ -204,7 +199,7 @@ export class PlanSalarialComponent implements OnInit {
       const empleado = this.empleados.find(e => e.id === userId);
       return empleado ? `${empleado.firstname} ${empleado.lastname}` : '';
     }
-  
+
     // Obtener el nombre de la posición basado en su ID
     getPosicionNombre(positionId: string): string {
       const posicion = this.posiciones.find(p => p.id === positionId);

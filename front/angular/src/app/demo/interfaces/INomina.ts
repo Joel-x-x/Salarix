@@ -1,7 +1,11 @@
 export interface INomina {
-  id: string;
-  periodName: string;
-  start: string;
-  finish: string;
-  detail: string;
+  id?: string; // UUID
+  periodName: string; // Nombre del período
+  start: string; // Fecha de inicio
+  finish: string; // Fecha de fin
+  totalGross?: number; // Total bruto
+  totalIncome?: number; // Total ingresos
+  totalEgress?: number; // Total egresos
+  totalLiquid?: number; // Total líquido
+  user_id?: string; // ID del usuario asociado
 }

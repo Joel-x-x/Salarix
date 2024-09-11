@@ -3,13 +3,13 @@ require_once("../config/conexion.php");
 
 class Formula
 {
-  public function insertar($cp, $app, $dts, $frp, $apep, $esc)
+  public function insertar($cp, $app, $dts, $dcs, $frp, $apep, $escp)
   {
       $con = new ClaseConectar();
       $con = $con->ProcedimientoConectar();
   
-      $cadena = "INSERT INTO formula (cp, app, dts, frp, apep, esc, date) 
-                 VALUES ('$cp', '$app', '$dts', '$frp', '$apep', '$esc', NOW())";
+      $cadena = "INSERT INTO formula (cp, app, dts, dcs, frp, apep, escp, date) 
+                 VALUES ($cp, $app, $dts, $dcs, $frp, $apep, $escp, NOW())";
   
       if (mysqli_query($con, $cadena)) {
           // Obtener el UUID del registro recién insertado
@@ -27,9 +27,10 @@ class Formula
                   "cp" => $cp,
                   "app" => $app,
                   "dts" => $dts,
+                  "dcs" => $dcs,
                   "frp" => $frp,
                   "apep" => $apep,
-                  "esc" => $esc
+                  "esc" => $escp
               ],
           ];
       } else {
