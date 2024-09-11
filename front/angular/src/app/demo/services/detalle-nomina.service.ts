@@ -8,13 +8,15 @@ import { IDetalleNomina } from '../interfaces/IDetalleNomina'; // Asegúrate de 
   providedIn: 'root'
 })
 export class DetalleNominaService {
-  private apiUrl = 'http://localhost/Salarix/back/controller/detalle_nomina.controller.php?op='; // Asegúrate de que esta URL sea correcta.
+  private apiUrl = 'http://localhost/Salarix/back/controller/detail_nomina.controller.php?op='; // Asegúrate de que esta URL sea correcta.
 
   constructor(private http: HttpClient) { }
 
   // Obtener todos los detalles de nómina
-  todos(): Observable<IDetalleNomina[]> {
-    return this.http.get<any>(`${this.apiUrl}todos`)
+  todos(nomina_id: string): Observable<IDetalleNomina[]> {
+    const formData = new FormData();
+    formData.append('nomina_id', nomina_id);
+    return this.http.post<any>(`${this.apiUrl}todos`, formData)
       .pipe(
         map(response => {
           if (response.status === '200') {

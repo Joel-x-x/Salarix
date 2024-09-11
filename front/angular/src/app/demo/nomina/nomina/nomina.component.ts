@@ -1,8 +1,10 @@
+import { DetalleNominaService } from './../../services/detalle-nomina.service';
+import { NominaService } from './../../services/nomina.service';
 import { Component, OnInit } from '@angular/core';
 import { FormControl, FormGroup, ReactiveFormsModule, Validators } from '@angular/forms';
 import { INomina } from '../../interfaces/INomina';
-import { NominaService } from '../../services/nomina.service';
 import { EmpleadoService } from '../../services/empleado.service';
+import { IDetalleNomina } from '../../interfaces/IDetalleNomina';
 import { Empleado } from '../../interfaces/IEmpleado';
 import { CommonModule } from '@angular/common';
 import { RouterLink } from '@angular/router';
@@ -19,6 +21,11 @@ import Swal from 'sweetalert2';
 export class NominaComponent implements OnInit {
   nominas: INomina[] = [];
   nominaSeleccionada: INomina | null = null;
+  // Detalle nomina
+  detallesNomina: IDetalleNomina[] = [];
+  detalleNominaSeleccionado: IDetalleNomina | null = null;
+  agregarRubroModalVisible: boolean = false;
+
   modalVisible: boolean = false;
   esNuevaNomina: boolean = true;
   // Empleado
@@ -27,6 +34,8 @@ export class NominaComponent implements OnInit {
   busquedaEmpleado: string = '';
   mostrarTablaEmpleados: boolean = false;
   empleadoSeleccionado: Empleado | null = null;
+  // Modal empleados
+  listarEmpleadosModalVisible: boolean = false;
 
   // Formulario de Nómina
   formNomina = new FormGroup({
@@ -41,7 +50,18 @@ export class NominaComponent implements OnInit {
     user_id: new FormControl('', Validators.required),
   });
 
-  constructor(private nominaService: NominaService, private empleadoService: EmpleadoService) { }
+  // Formulario de detalle nómina
+  formDetalleNomina = new FormGroup({
+    id: new FormControl(''),
+    name: new FormControl('', Validators.required),
+    detail: new FormControl('', Validators.required),
+    type: new FormControl(0, Validators.required),
+    monto: new FormControl(0, Validators.required),
+    nomina_id: new FormControl('', Validators.required),
+    isBonus: new FormControl(0, Validators.required),
+  })
+
+  constructor(private nominaService: NominaService, private empleadoService: EmpleadoService, private detalleNominaService: DetalleNominaService) { }
 
   ngOnInit(): void {
     this.obtenerNominas();
@@ -51,9 +71,20 @@ export class NominaComponent implements OnInit {
   // Listar todas las nóminas
   obtenerNominas(): void {
     this.nominaService.todos().subscribe({
-      next: (data) => this.nominas = data, // Asegúrate de ajustar esto según la estructura de respuesta
+      next: (data) => this.nominas = data,
       error: (error) => console.error('Error al obtener las nóminas:', error)
     });
+  }
+
+  // Listar detalles nómina
+  listarDetallesNomina(nomina_id: string): void {
+    this.detalleNominaService.todos(nomina_id).subscribe({
+      next: data => {
+        this.detallesNomina = data;
+        console.log(data);
+      },
+      error: error => console.log('Error al obtener los detalles nómina:', error)
+    })
   }
 
   // Listar empleados
@@ -67,19 +98,53 @@ export class NominaComponent implements OnInit {
     });
   }
 
+  // Modal empleado
+  openListarEmpleadosModal(): void {
+    this.listarEmpleadosModalVisible = true;
+  }
+
+  // Modal detalles nómina
+  openAgregarRubroModal(): void {
+    this.agregarRubroModalVisible = true;
+  }
+
+  closeListarEmpleadosModal(): void {
+    this.listarEmpleadosModalVisible = false;
+    this.busquedaEmpleado = '';
+    this.filtrarEmpleados();
+  }
+
+  closeAgregarRubroModal(): void {
+    this.agregarRubroModalVisible = false;
+    // this.listarDetallesNomina();
+  }
+
+  // Eliminar detalle
+  eliminarDetalle(detalle_id: string): void {
+
+  }
+
+  // Calcular rubros
+  calcularRubros(): void {
+
+  }
+
+  // Grabra rubro
+  grabarRubro(): void {
+
+  }
+
+  seleccionarEmpleado(empleado: Empleado): void {
+    this.formNomina.patchValue({ user_id: empleado.firstname + ' ' + empleado.lastname });
+    this.closeListarEmpleadosModal();
+  }
+
   // Filtrar empleados por búsqueda
   filtrarEmpleados(): void {
     this.empleadosFiltrados = this.empleados.filter(empleado =>
       empleado.firstname.toLowerCase().includes(this.busquedaEmpleado.toLowerCase()) ||
       empleado.lastname.toLowerCase().includes(this.busquedaEmpleado.toLowerCase())
     );
-  }
-
-  // Seleccionar un empleado
-  seleccionarEmpleado(empleado: Empleado): void {
-    this.empleadoSeleccionado = empleado;
-    this.formNomina.patchValue({ user_id: empleado.id });
-    this.mostrarTablaEmpleados = false;
   }
 
   // Alternar la tabla de empleados
@@ -101,6 +166,9 @@ export class NominaComponent implements OnInit {
         start: nomina.start ?? '',
         finish: nomina.finish ?? '',
       });
+
+      // Listar detalles
+      this.listarDetallesNomina(nomina.id ?? '');
     } else {
       // Resetea el formulario para una nueva nómina
       this.formNomina.reset();
