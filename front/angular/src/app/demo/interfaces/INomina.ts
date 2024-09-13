@@ -1,6 +1,7 @@
 export interface INomina {
   id?: string; // UUID
   periodName: string; // Nombre del período
+  detail: string;
   start: string; // Fecha de inicio
   finish: string; // Fecha de fin
   totalGross?: number; // Total bruto

@@ -78,6 +78,23 @@ export class DetalleNominaService {
       );
   }
 
+  // Eliminar detalle nómina
+  eliminar(id: string): Observable<string> {
+    const formData = new FormData();
+    formData.append('id', id);
+    return this.http.post<any>(`${this.apiUrl}eliminar`, formData)
+      .pipe(
+        map(response => {
+          if(response.status === '200') {
+            return response.message;
+          } else {
+            return throwError(() => new Error(response.message));
+          }
+        }),
+        catchError(this.handleError('Error al eliminar detalle nómina'))
+      );
+  }
+
 // Mapear el detalle de la nómina a FormData para enviar en peticiones POST
 private mapDetalleNominaToFormData(detail: IDetalleNomina): FormData {
   const formData = new FormData();

@@ -37,6 +37,17 @@
                   <small *ngIf="formNomina.get('start')?.hasError('required')" style="color: red">La fecha de inicio es requerida</small>
                 </div>
               </div>
+            </div>
+            <div class="col-md-6">
+              <div class="form-group">
+                <label for="detail">Descripción</label>
+                <input formControlName="detail" type="text" class="form-control" id="detail" required />
+                <div *ngIf="formNomina.get('detail')?.invalid && formNomina.get('detail')?.touched">
+                  <small *ngIf="formNomina.get('detail')?.hasError('required')" style="color: red">
+                    El nombre del periodo es requerido
+                  </small>
+                </div>
+              </div>
               <div class="form-group">
                 <label for="finish">Fecha de Fin</label>
                 <input formControlName="finish" type="date" class="form-control" id="finish" required />
@@ -44,100 +55,104 @@
                   <small *ngIf="formNomina.get('finish')?.hasError('required')" style="color: red">La fecha de fin es requerida</small>
                 </div>
               </div>
-              <div class="form-group">
-                <label for="totalGross">Total Bruto</label>
-                <input formControlName="totalGross" type="number" class="form-control" id="totalGross" />
-                <div *ngIf="formNomina.get('totalGross')?.invalid && formNomina.get('totalGross')?.touched">
-                  <small *ngIf="formNomina.get('totalGross')?.hasError('required')" style="color: red">El total bruto es requerido</small>
-                </div>
-              </div>
-              <div class="form-group">
-                <label for="totalIncome">Total Ingresos</label>
-                <input formControlName="totalIncome" type="number" class="form-control" id="totalIncome" />
-                <div *ngIf="formNomina.get('totalIncome')?.invalid && formNomina.get('totalIncome')?.touched">
-                  <small *ngIf="formNomina.get('totalIncome')?.hasError('required')" style="color: red">
-                    El total de ingresos es requerido
-                  </small>
-                </div>
-              </div>
-              <div class="form-group">
-                <label for="totalEgress">Total Egresos</label>
-                <input formControlName="totalEgress" type="number" class="form-control" id="totalEgress" />
-                <div *ngIf="formNomina.get('totalEgress')?.invalid && formNomina.get('totalEgress')?.touched">
-                  <small *ngIf="formNomina.get('totalEgress')?.hasError('required')" style="color: red">
-                    El total de egresos es requerido
-                  </small>
+            </div>
+            <!-- Modal para listar empleados -->
+            <!-- Tabla listar empleados -->
+            <div class="form-group">
+              <label for="user_id">Empleado</label>
+              <div class="input-group">
+                <input formControlName="user_id" type="text" class="form-control" id="user_id" required readonly />
+                <div class="input-group-append">
+                  <button class="btn btn-outline-secondary" type="button" (click)="openListarEmpleadosModal()">Seleccionar</button>
                 </div>
               </div>
             </div>
-            <div class="col-md-6">
-              <div class="form-group">
-                <label for="totalLiquid">Total Líquido</label>
-                <input formControlName="totalLiquid" type="number" class="form-control" id="totalLiquid" />
-                <div *ngIf="formNomina.get('totalLiquid')?.invalid && formNomina.get('totalLiquid')?.touched">
-                  <small *ngIf="formNomina.get('totalLiquid')?.hasError('required')" style="color: red">
-                    El total líquido es requerido
-                  </small>
-                </div>
-              </div>
-              <!-- Tabla listar empleados -->
-              <!-- Modal para listar empleados -->
-              <div class="form-group">
-                <label for="user_id">Empleado</label>
-                <div class="input-group">
-                  <input formControlName="user_id" type="text" class="form-control" id="user_id" required readonly />
-                  <div class="input-group-append">
-                    <button class="btn btn-outline-secondary" type="button" (click)="openListarEmpleadosModal()">Seleccionar</button>
+            <div
+              class="modal fade"
+              id="listarEmpleadosModal"
+              tabindex="-1"
+              role="dialog"
+              aria-labelledby="listarEmpleadosLabel"
+              aria-hidden="true"
+              [ngClass]="{ show: listarEmpleadosModalVisible }"
+              [ngStyle]="{ display: listarEmpleadosModalVisible ? 'block' : 'none', opacity: listarEmpleadosModalVisible ? '1' : '0' }" >
+              <div class="modal-dialog modal-lg" role="document">
+                <div class="modal-content">
+                  <div class="modal-header">
+                    <h5 class="modal-title" id="listarEmpleadosLabel">Seleccionar Empleado</h5>
+                  </div>
+                  <div class="modal-body">
+                    <input type="text" class="form-control mb-3" [(ngModel)]="busquedaEmpleado" placeholder="Buscar empleado..." />
+                    <table class="table table-striped">
+                      <thead>
+                        <tr>
+                          <th>Nombre</th>
+                          <th>Código</th>
+                          <th>Acción</th>
+                        </tr>
+                      </thead>
+                      <tbody>
+                        <tr *ngFor="let empleado of empleadosFiltrados">
+                          <td>{{ empleado.firstname + ' ' + empleado.lastname }}</td>
+                          <td>{{ empleado.codeEmployee }}</td>
+                          <td>
+                            <button type="button" class="btn btn-success btn-sm" (click)="seleccionarEmpleado(empleado)">Seleccionar</button>
+                          </td>
+                        </tr>
+                      </tbody>
+                    </table>
+                  </div>
+                  <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" (click)="closeListarEmpleadosModal()">Cerrar</button>
                   </div>
                 </div>
               </div>
-              <div
-                class="modal fade"
-                id="listarEmpleadosModal"
-                tabindex="-1"
-                role="dialog"
-                aria-labelledby="listarEmpleadosLabel"
-                aria-hidden="true"
-                [ngClass]="{ show: listarEmpleadosModalVisible }"
-                [ngStyle]="{ display: listarEmpleadosModalVisible ? 'block' : 'none', opacity: listarEmpleadosModalVisible ? '1' : '0' }"
-              >
-                <div class="modal-dialog modal-lg" role="document">
-                  <div class="modal-content">
-                    <div class="modal-header">
-                      <h5 class="modal-title" id="listarEmpleadosLabel">Seleccionar Empleado</h5>
-                    </div>
-                    <div class="modal-body">
-                      <input type="text" class="form-control mb-3" [(ngModel)]="busquedaEmpleado" placeholder="Buscar empleado..." />
-                      <table class="table table-striped">
-                        <thead>
-                          <tr>
-                            <th>Nombre</th>
-                            <th>Código</th>
-                            <th>Acción</th>
-                          </tr>
-                        </thead>
-                        <tbody>
-                          <tr *ngFor="let empleado of empleadosFiltrados">
-                            <td>{{ empleado.firstname + ' ' + empleado.lastname }}</td>
-                            <td>{{ empleado.codeEmployee }}</td>
-                            <td>
-                              <button class="btn btn-success btn-sm" (click)="seleccionarEmpleado(empleado)">Seleccionar</button>
-                            </td>
-                          </tr>
-                        </tbody>
-                      </table>
-                    </div>
-                    <div class="modal-footer">
-                      <button type="button" class="btn btn-secondary" (click)="closeListarEmpleadosModal()">Cerrar</button>
-                    </div>
-                  </div>
+            </div>
+            <!-- Totals -->
+            <div class="row">
+              <div class="col-md-6">
+                <div class="form-group">
+                  <label for="totalGross">Total Bruto</label>
+                  <input formControlName="totalGross" type="number" class="form-control" id="totalGross" [disabled]="true" readonly />
+                  <!-- <div *ngIf="formNomina.get('totalGross')?.invalid && formNomina.get('totalGross')?.touched">
+                    <small *ngIf="formNomina.get('totalGross')?.hasError('required')" style="color: red">El total bruto es requerido</small>
+                  </div> -->
+                </div>
+                <div class="form-group">
+                  <label for="totalIncome">Total Ingresos</label>
+                  <input formControlName="totalIncome" type="number" class="form-control" id="totalIncome" [disabled]="true" readonly />
+                  <!-- <div *ngIf="formNomina.get('totalIncome')?.invalid && formNomina.get('totalIncome')?.touched">
+                    <small *ngIf="formNomina.get('totalIncome')?.hasError('required')" style="color: red">
+                      El total de ingresos es requerido
+                    </small>
+                  </div> -->
+                </div>
+              </div>
+              <div class="col-md-6">
+                <div class="form-group">
+                  <label for="totalEgress">Total Egresos</label>
+                  <input formControlName="totalEgress" type="number" class="form-control" id="totalEgress" [disabled]="true" readonly />
+                  <!-- <div *ngIf="formNomina.get('totalEgress')?.invalid && formNomina.get('totalEgress')?.touched">
+                    <small *ngIf="formNomina.get('totalEgress')?.hasError('required')" style="color: red">
+                      El total de egresos es requerido
+                    </small>
+                  </div> -->
+                </div>
+                <div class="form-group">
+                  <label for="totalLiquid">Total Líquido</label>
+                  <input formControlName="totalLiquid" type="number" class="form-control" id="totalLiquid" [disabled]="true" readonly />
+                  <!-- <div *ngIf="formNomina.get('totalLiquid')?.invalid && formNomina.get('totalLiquid')?.touched">
+                    <small *ngIf="formNomina.get('totalLiquid')?.hasError('required')" style="color: red">
+                      El total líquido es requerido
+                    </small>
+                  </div> -->
                 </div>
               </div>
             </div>
 
             <!-- Tabla de detalles de nómina -->
             <div class="form-group">
-              <button type="button" class="btn btn-primary mb-3 margin-right" (click)="openAgregarRubroModal()">Agregar Rubro</button>
+              <button type="button" class="btn btn-primary mb-3 margin-right" (click)="openModalRubro()">Agregar Rubro</button>
               <button type="button" class="btn btn-secondary mb-3" (click)="calcularRubros()">Calcular Rubros</button>
               <table class="table table-bordered">
                 <thead>
@@ -156,7 +171,10 @@
                     <td>{{ detalle.type == 0 ? 'Egreso' : 'Ingreso' }}</td>
                     <td>{{ detalle.monto | currency }}</td>
                     <td>
-                      <button class="btn btn-danger btn-sm" (click)="eliminarDetalle(detalle.id)">Eliminar</button>
+                      <button type="button" class="btn btn-warning mb-3 btn-sm" (click)="openModalRubro(detalle)">
+                        <i class="fa fa-pencil-alt"></i>
+                        Editar</button>
+                      <button type="button" class="btn btn-danger btn-sm" (click)="eliminarRubro(detalle.id)">Eliminar</button>
                     </td>
                   </tr>
                 </tbody>
@@ -208,8 +226,8 @@
                         </select>
                       </div>
                       <div class="modal-footer">
-                        <button type="button" class="btn btn-secondary" (click)="closeAgregarRubroModal()">Cerrar</button>
-                        <button type="submit" class="btn btn-primary">Agregar Rubro</button>
+                        <button type="button" class="btn btn-secondary" (click)="closeModalRubro()">Cerrar</button>
+                        <button type="submit" class="btn btn-primary" [disabled]="formDetalleNomina.invalid" >{{ esNuevoDetalleNomina ? 'Guardar' : 'Actualizar' }}</button>
                       </div>
                     </form>
                   </div>
@@ -217,6 +235,7 @@
               </div>
             </div>
           </div>
+          <!-- TODO: Boton de calcular horas extras -->
           <div class="modal-footer">
             <button type="button" class="btn btn-secondary" (click)="closeModal()">Cerrar</button>
             <button type="submit" class="btn btn-primary" [disabled]="formNomina.invalid">

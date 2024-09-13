@@ -25,6 +25,7 @@ export class NominaComponent implements OnInit {
   detallesNomina: IDetalleNomina[] = [];
   detalleNominaSeleccionado: IDetalleNomina | null = null;
   agregarRubroModalVisible: boolean = false;
+  esNuevoDetalleNomina: boolean = true;
 
   modalVisible: boolean = false;
   esNuevaNomina: boolean = true;
@@ -43,6 +44,7 @@ export class NominaComponent implements OnInit {
     periodName: new FormControl('', Validators.required),
     start: new FormControl('', Validators.required),
     finish: new FormControl('', Validators.required),
+    detail: new FormControl(''),
     totalGross: new FormControl(0),
     totalIncome: new FormControl(0),
     totalEgress: new FormControl(0),
@@ -78,10 +80,11 @@ export class NominaComponent implements OnInit {
 
   // Listar detalles nómina
   listarDetallesNomina(nomina_id: string): void {
+    if (!nomina_id) return;
+
     this.detalleNominaService.todos(nomina_id).subscribe({
       next: data => {
         this.detallesNomina = data;
-        console.log(data);
       },
       error: error => console.log('Error al obtener los detalles nómina:', error)
     })
@@ -104,8 +107,21 @@ export class NominaComponent implements OnInit {
   }
 
   // Modal detalles nómina
-  openAgregarRubroModal(): void {
+  openModalRubro(detalleNomina?: IDetalleNomina): void {
+    this.esNuevoDetalleNomina = !detalleNomina;
+    this.detalleNominaSeleccionado = detalleNomina || null;
     this.agregarRubroModalVisible = true;
+
+    if (detalleNomina) {
+      // Asignar los valores del detalle nomina al formulario
+      this.formDetalleNomina.patchValue({
+        ...detalleNomina,
+      });
+    } else {
+      // Resetea el formulario para una nueva nómina
+      this.formDetalleNomina.reset();
+      this.formDetalleNomina.patchValue({ nomina_id: this.nominaSeleccionada?.id });
+    }
   }
 
   closeListarEmpleadosModal(): void {
@@ -114,24 +130,83 @@ export class NominaComponent implements OnInit {
     this.filtrarEmpleados();
   }
 
-  closeAgregarRubroModal(): void {
+  closeModalRubro(): void {
     this.agregarRubroModalVisible = false;
+    this.detalleNominaSeleccionado = null;
     // this.listarDetallesNomina();
   }
 
   // Eliminar detalle
-  eliminarDetalle(detalle_id: string): void {
-
+  eliminarRubro(detalle_id: string): void {
+    Swal.fire({
+      title: 'Confirmación',
+      text: '¿Está seguro de que deseas eliminar este rubro?',
+      icon: 'warning',
+      showCancelButton: true,
+      confirmButtonColor: '#d33',
+      cancelButtonColor: '#3085d6',
+      confirmButtonText: 'Eliminar',
+      cancelButtonText: 'Cancelar'
+    }).then((result) => {
+      if(result.isConfirmed) {
+        this.detalleNominaService.eliminar(detalle_id).subscribe({
+          next: () => {
+            Swal.fire('Rubro', 'Rubro eliminado exitosamente', 'success');
+            this.listarDetallesNomina(this.nominaSeleccionada?.id ?? '');
+          },
+          error: error => console.log('Error al eliminar la posicion', error)
+        });
+      }
+    });
   }
 
   // Calcular rubros
   calcularRubros(): void {
-
+    Swal.fire({
+      title: '¿Estás seguro?',
+      text: 'No podrás agregar más remuneraciones o deducciones ya que son necesarios para el calculo de los rubros.',
+      icon: 'warning',
+      showCancelButton: true,
+      confirmButtonText: 'Sí, eliminar',
+      cancelButtonText: 'Cancelar'
+    }).then((result) => {
+      if (result.isConfirmed) {
+        if (!this.nominaSeleccionada) {
+          this.grabar();
+        }
+      }
+    });
   }
 
   // Grabra rubro
   grabarRubro(): void {
+    if (this.formDetalleNomina.invalid) {
+      this.formDetalleNomina.markAllAsTouched();
+      Swal.fire('Error', 'Todos los campos para el rubro son requeridos', 'error')
+      return;
+    }
 
+    const detalleNominaData: IDetalleNomina = this.formDetalleNomina.value as IDetalleNomina;
+
+    if (this.esNuevoDetalleNomina) {
+      this.detalleNominaService.insertar(detalleNominaData).subscribe({
+        next: data => {
+          this.closeModalRubro();
+          // Swal.fire('Éxito', 'Rubro creado correctamente', 'success');
+          this.listarDetallesNomina(this.nominaSeleccionada?.id ?? '');
+        },
+        error: () => Swal.fire('Error', 'Error al crear el rubro', 'error')
+      });
+    } else {
+      this.detalleNominaService.actualizar(detalleNominaData).subscribe({
+        next: () => {
+          this.closeModalRubro();
+          this.listarDetallesNomina(this.nominaSeleccionada?.id ?? '');
+          Swal.fire('Éxito', 'Rubro actualizado correctamente', 'success');
+        },
+        error: () => Swal.fire('Error', 'Error al actualizar el rubro', 'error')
+      });
+    }
   }
 
   seleccionarEmpleado(empleado: Empleado): void {
@@ -172,6 +247,8 @@ export class NominaComponent implements OnInit {
     } else {
       // Resetea el formulario para una nueva nómina
       this.formNomina.reset();
+      this.detallesNomina = [];
+      this.listarDetallesNomina('');
     }
   }
 
@@ -192,6 +269,7 @@ export class NominaComponent implements OnInit {
   grabar(): void {
     if (this.formNomina.invalid) {
       this.formNomina.markAllAsTouched();
+      Swal.fire('Error', 'Todos los campos para nómina son requeridos', 'error')
       return;
     }
 
@@ -199,10 +277,12 @@ export class NominaComponent implements OnInit {
 
     if (this.esNuevaNomina) {
       this.nominaService.insertar(nominaData).subscribe({
-        next: () => {
+        next: data => {
+          this.nominaSeleccionada = JSON.parse(data); // Trabajar con datos de la nómina
           this.obtenerNominas();
-          this.closeModal();
-          Swal.fire('Éxito', 'Nómina creada correctamente', 'success');
+          // this.closeModal();
+          // Swal.fire('Éxito', 'Nómina creada correctamente', 'success');
+          // this.obtenerNominas();
         },
         error: () => Swal.fire('Error', 'Error al crear la nómina', 'error')
       });

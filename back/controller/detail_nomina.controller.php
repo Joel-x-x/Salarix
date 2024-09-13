@@ -8,27 +8,27 @@ require_once("../config/cors.php");
 $DetailNomina = new DetailNomina();
 
 switch ($_GET["op"]) {
-    /*TODO: Procedimiento para listar todos los registros de una nómina específica */
+        /*TODO: Procedimiento para listar todos los registros de una nómina específica */
     case 'todos':
-      $nomina_id = $_POST["nomina_id"];
-      
-      if ($nomina_id) {
-          $datos = $DetailNomina->todos($nomina_id);
-          
-          echo json_encode($datos);
-      } else {
-          echo json_encode([
-              "status" => "404", // 404 Bad Request
-              "message" => "El id de la nómina es requerido."
-          ]);
-      }
-      break;
+        $nomina_id = $_POST["nomina_id"];
 
-    /*TODO: Procedimiento para listar un registro */
+        if ($nomina_id) {
+            $datos = $DetailNomina->todos($nomina_id);
+
+            echo json_encode($datos);
+        } else {
+            echo json_encode([
+                "status" => "404", // 404 Bad Request
+                "message" => "El id de la nómina es requerido."
+            ]);
+        }
+        break;
+
+        /*TODO: Procedimiento para listar un registro */
     case 'uno':
         $id = $_POST["id"];
         $datos = $DetailNomina->uno($id);
-        
+
         echo json_encode($datos);
         break;
 
@@ -51,7 +51,7 @@ switch ($_GET["op"]) {
         }
         break;
 
-    /*TODO: Procedimiento para actualizar */
+        /*TODO: Procedimiento para actualizar */
     case 'actualizar':
         $id = $_POST["id"];
         $name = $_POST["name"];
@@ -68,7 +68,23 @@ switch ($_GET["op"]) {
             echo json_encode([
                 "status" => "404", // 404 Bad Request
                 "message" => "El id es requerido.",
-                "data" => null    
+                "data" => null
+            ]);
+        }
+        break;
+
+        /*TODO: Procedimiento para eliminar un registro */
+    case 'eliminar':
+        $id = $_POST["id"];
+
+        if ($id) {
+            $datos = $DetailNomina->eliminar($id);
+            echo json_encode($datos);
+        } else {
+            echo json_encode([
+                "status" => "404", // 404 Bad Request
+                "message" => "El id es requerido para eliminar.",
+                "data" => null
             ]);
         }
         break;
@@ -81,4 +97,3 @@ switch ($_GET["op"]) {
         ]);
         break;
 }
-?>

@@ -2,7 +2,8 @@
 
 require_once '../config/conexion.php';
 
-class DetailNomina {
+class DetailNomina
+{
 
     /*TODO: Procedimiento para insertar un detalle de nómina*/
     public function insertar($name, $detail, $type, $monto, $isBonus, $nomina_id)
@@ -11,20 +12,20 @@ class DetailNomina {
         $con = $con->ProcedimientoConectar();
         $cadena = "INSERT INTO detail_nomina (name, detail, type, monto, isBonus, nomina_id) 
                    VALUES ('$name', '$detail', '$type', '$monto', '$isBonus', '$nomina_id')";
-    
+
         if (mysqli_query($con, $cadena)) {
             // Obtener el UUID del último registro insertado
             $idQuery = "SELECT id FROM detail_nomina WHERE nomina_id = '$nomina_id' ORDER BY created DESC LIMIT 1";
             $result = mysqli_query($con, $idQuery);
             $id = null;
-    
+
             if ($result && mysqli_num_rows($result) > 0) {
                 $row = mysqli_fetch_assoc($result);
                 $id = $row['id'];
             }
-    
+
             $con->close(); // Cerrar la conexión antes de retornar
-    
+
             return [
                 "status" => "201", // 201 Created
                 "message" => "Detalle de nómina creado.",
@@ -139,13 +140,13 @@ class DetailNomina {
         try {
             $con = new ClaseConectar();
             $con = $con->ProcedimientoConectar();
-    
+
             // Preparar y ejecutar la consulta SQL
             $cadena = "SELECT *
                        FROM detail_nomina 
                        WHERE nomina_id = '$nomina_id'";
             $resultado = mysqli_query($con, $cadena);
-    
+
             // Verificar si la consulta devolvió resultados
             if ($resultado && mysqli_num_rows($resultado) > 0) {
                 // Obtener todos los detalles como un array
@@ -153,7 +154,7 @@ class DetailNomina {
                 while ($row = mysqli_fetch_assoc($resultado)) {
                     $detalles[] = $row;
                 }
-    
+
                 $con->close(); // Cerrar la conexión antes de retornar
                 return [
                     "status" => "200", // 200 OK
@@ -180,5 +181,55 @@ class DetailNomina {
             ];
         }
     }
-    
+
+    /*TODO: Procedimiento para eliminar un detalle de nómina*/
+    public function eliminar($id)
+    {
+        try {
+            $con = new ClaseConectar();
+            $con = $con->ProcedimientoConectar();
+
+            // Preparar la consulta SQL para eliminar
+            $cadena = "DELETE FROM detail_nomina WHERE id = '$id'";
+
+            // Ejecutar la consulta
+            if (mysqli_query($con, $cadena)) {
+                // Verificar si la consulta afectó alguna fila
+                if (mysqli_affected_rows($con) > 0) {
+                    $con->close(); // Cerrar la conexión antes de retornar
+                    return [
+                        "status" => "200", // 200 OK
+                        "message" => "Detalle de nómina eliminado.",
+                        "data" => [
+                            "id" => $id
+                        ],
+                    ];
+                } else {
+                    $con->close(); // Cerrar la conexión si no se afectó ninguna fila
+                    return [
+                        "status" => "404", // 404 Not Found
+                        "message" => "Detalle de nómina no encontrado.",
+                        "data" => null,
+                    ];
+                }
+            } else {
+                $con->close(); // Cerrar la conexión en caso de error
+                return [
+                    "status" => "500", // 500 Internal Server Error
+                    "message" => "Error inesperado, no se pudo eliminar el detalle de nómina.",
+                    "data" => null,
+                ];
+            }
+        } catch (Exception $e) {
+            // Manejar excepciones y errores
+            if (isset($con)) {
+                $con->close(); // Cerrar la conexión en caso de error
+            }
+            return [
+                "status" => "500", // 500 Internal Server Error
+                "message" => 'Error al procesar la solicitud: ' . $e->getMessage(),
+                "data" => null,
+            ];
+        }
+    }
 }

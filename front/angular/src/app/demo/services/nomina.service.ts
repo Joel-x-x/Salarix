@@ -1,3 +1,4 @@
+import { data } from './../../fack-db/series-data';
 import { HttpClient, HttpHeaders } from '@angular/common/http';
 import { Injectable } from '@angular/core';
 import { Observable, throwError } from 'rxjs';
@@ -51,7 +52,7 @@ export class NominaService {
       .pipe(
         map(response => {
           if (response.status === '201') {
-            return response.message; // Suponemos que el mensaje contiene algún dato relevante
+            return response.data;
           } else {
             return throwError(() => new Error(response.message));
           }
@@ -81,8 +82,9 @@ private mapNominaToFormData(nomina: INomina): FormData {
   const formData = new FormData();
   formData.append('id', nomina.id ?? '');
   formData.append('periodName', nomina.periodName ?? '');
-  formData.append('start', nomina.start); // Asegúrate de convertir la fecha a un formato de cadena adecuado
-  formData.append('finish', nomina.finish); // Asegúrate de convertir la fecha a un formato de cadena adecuado
+  formData.append('start', nomina.start);
+  formData.append('finish', nomina.finish);
+  formData.append('detail', nomina.detail);
   formData.append('totalGross', nomina.totalGross?.toString() ?? '');
   formData.append('totalIncome', nomina.totalIncome?.toString() ?? '');
   formData.append('totalEgress', nomina.totalEgress?.toString() ?? '');
