@@ -4,7 +4,7 @@ export interface INomina {
   detail: string;
   start: string; // Fecha de inicio
   finish: string; // Fecha de fin
-  totalGross?: number; // Total bruto
+  totalProvision?: number; // Total bruto
   totalIncome?: number; // Total ingresos
   totalEgress?: number; // Total egresos
   totalLiquid?: number; // Total líquido

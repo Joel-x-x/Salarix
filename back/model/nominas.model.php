@@ -55,7 +55,7 @@ class Nomina
     }
 
     /* Procedimiento para actualizar una nómina */
-    public function actualizar($id, $periodName, $start, $finish, $detail)
+    public function actualizar($id, $periodName, $start, $finish, $detail, $totalProvision, $totalIncome, $totalEgress, $totalLiquid, $user_id)
     {
         $con = new ClaseConectar();
         $con = $con->ProcedimientoConectar();
@@ -75,6 +75,21 @@ class Nomina
         }
         if (!empty($detail)) {
             $fields[] = "detail = '$detail'";
+        }
+        if (!empty($totalProvision)) {
+            $fields[] = "totalProvision = '$totalProvision'";
+        }
+        if (!empty($totalIncome)) {
+            $fields[] = "totalIncome = '$totalIncome'";
+        }
+        if (!empty($totalEgress)) {
+            $fields[] = "totalEgress = '$totalEgress'";
+        }
+        if (!empty($totalLiquid)) {
+            $fields[] = "totalLiquid = '$totalLiquid'";
+        }
+        if (!empty($user_id)) {
+            $fields[] = "user_id = '$user_id'";
         }
 
         // Si no hay campos para actualizar, retornar un error
@@ -107,6 +122,21 @@ class Nomina
             if (!empty($detail)) {
                 $responseArray["detail"] = $detail;
             }
+            if (!empty($totalProvision)) {
+                $responseArray["totalProvision"] = $totalProvision;
+            }
+            if (!empty($totalIncome)) {
+                $responseArray["totalIncome"] = $totalIncome;
+            }
+            if (!empty($totalEgress)) {
+                $responseArray["totalEgress"] = $totalEgress;
+            }
+            if (!empty($totalLiquid)) {
+                $responseArray["totalLiquid"] = $totalLiquid;
+            }
+            if(!empty($user_id)) {
+                $responseArray["user_id"] = $user_id;
+            }
 
             // Respuesta
             return [
@@ -133,7 +163,7 @@ class Nomina
             $con = $con->ProcedimientoConectar();
 
             // Preparar la consulta SQL
-            $cadena = "SELECT id, periodName, start, finish, detail FROM nomina WHERE id='$id'";
+            $cadena = "SELECT * FROM nomina WHERE id='$id'";
             $datos = mysqli_query($con, $cadena);
 
             // Verificar si la consulta devolvió resultados
@@ -176,7 +206,7 @@ class Nomina
             $con = $con->ProcedimientoConectar();
 
             // Preparar y ejecutar la consulta SQL
-            $cadena = "SELECT id, periodName, start, finish, detail FROM nomina";
+            $cadena = "SELECT * FROM nomina";
             $resultado = mysqli_query($con, $cadena);
 
             // Verificar si la consulta devolvió resultados

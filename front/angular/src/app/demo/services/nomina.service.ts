@@ -85,7 +85,7 @@ private mapNominaToFormData(nomina: INomina): FormData {
   formData.append('start', nomina.start);
   formData.append('finish', nomina.finish);
   formData.append('detail', nomina.detail);
-  formData.append('totalGross', nomina.totalGross?.toString() ?? '');
+  formData.append('totalProvision', nomina.totalProvision?.toString() ?? '');
   formData.append('totalIncome', nomina.totalIncome?.toString() ?? '');
   formData.append('totalEgress', nomina.totalEgress?.toString() ?? '');
   formData.append('totalLiquid', nomina.totalLiquid?.toString() ?? '');

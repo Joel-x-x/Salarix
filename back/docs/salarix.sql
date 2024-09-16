@@ -150,7 +150,7 @@ CREATE TABLE `nomina` (
   `start` date NOT NULL,
   `finish` date NOT NULL,
   `detail` text,
-  `totalGross` double DEFAULT NULL,
+  `totalProvision` double DEFAULT NULL,
   `totalIncome` double DEFAULT NULL,
   `totalEgress` double DEFAULT NULL,
   `totalLiquid` double DEFAULT NULL,

@@ -112,10 +112,10 @@
             <div class="row">
               <div class="col-md-6">
                 <div class="form-group">
-                  <label for="totalGross">Total Bruto</label>
-                  <input formControlName="totalGross" type="number" class="form-control" id="totalGross" [disabled]="true" readonly />
-                  <!-- <div *ngIf="formNomina.get('totalGross')?.invalid && formNomina.get('totalGross')?.touched">
-                    <small *ngIf="formNomina.get('totalGross')?.hasError('required')" style="color: red">El total bruto es requerido</small>
+                  <label for="totalProvision">Total Provision</label>
+                  <input formControlName="totalProvision" type="number" class="form-control" id="totalProvision" [disabled]="true" readonly />
+                  <!-- <div *ngIf="formNomina.get('totalProvision')?.invalid && formNomina.get('totalProvision')?.touched">
+                    <small *ngIf="formNomina.get('totalProvision')?.hasError('required')" style="color: red">El total bruto es requerido</small>
                   </div> -->
                 </div>
                 <div class="form-group">
@@ -153,6 +153,7 @@
             <!-- Tabla de detalles de nómina -->
             <div class="form-group">
               <button type="button" class="btn btn-primary mb-3 margin-right" (click)="openModalRubro()">Agregar Rubro</button>
+              <button type="button" class="btn btn-secondary mb-3 margin-right" (click)="calcularIngresos()">Calcular ingresos</button>
               <button type="button" class="btn btn-secondary mb-3" (click)="calcularRubros()">Calcular Rubros</button>
               <table class="table table-bordered">
                 <thead>
@@ -235,7 +236,7 @@
               </div>
             </div>
           </div>
-          <!-- TODO: Boton de calcular horas extras -->
+
           <div class="modal-footer">
             <button type="button" class="btn btn-secondary" (click)="closeModal()">Cerrar</button>
             <button type="submit" class="btn btn-primary" [disabled]="formNomina.invalid">
@@ -261,7 +262,7 @@
             <th>Empleado</th>
             <th>Fecha de Inicio</th>
             <th>Fecha de Fin</th>
-            <th>Total Bruto</th>
+            <th>Total Provisiones</th>
             <th>Total Ingresos</th>
             <th>Total Egresos</th>
             <th>Total Líquido</th>
@@ -280,7 +281,7 @@
             <td>{{ getEmpleadoNombre(nomina.user_id ?? '') }}</td>
             <td>{{ nomina.start }}</td>
             <td>{{ nomina.finish }}</td>
-            <td>{{ nomina.totalGross }}</td>
+            <td>{{ nomina.totalProvision }}</td>
             <td>{{ nomina.totalIncome }}</td>
             <td>{{ nomina.totalEgress }}</td>
             <td>{{ nomina.totalLiquid }}</td>

@@ -66,7 +66,7 @@ class SalaryPlan {
                 $con->close();
                 return [
                     "status" => "404",
-                    "message" => "No se encontró el plan de salario.",
+                    "message" => "No se encontró el plan de salarial.",
                     "data" => null,
                 ];
             }

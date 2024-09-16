@@ -3,9 +3,11 @@ error_reporting(0);
 
 /*TODO: Requerimientos */
 require_once("../model/detail_nomina.model.php");
+require_once("../service/rubros.service.php");
 require_once("../config/cors.php");
 
 $DetailNomina = new DetailNomina();
+$RubroService = new RubrosService();
 
 switch ($_GET["op"]) {
         /*TODO: Procedimiento para listar todos los registros de una nómina específica */
@@ -87,6 +89,22 @@ switch ($_GET["op"]) {
                 "data" => null
             ]);
         }
+        break;
+        /*TODO: Crear rubro de horas extras */
+    case 'calcular-ingresos':
+        $user_id = $_POST['user_id'];
+        $nomina_id = $_POST['nomina_id'];
+        
+        $datos = $RubroService->calcularIngresos($user_id, $nomina_id);
+        echo json_encode($datos);
+        break;
+
+    case 'calcular-rubros':
+        $user_id = $_POST['user_id'];
+        $nomina_id = $_POST['nomina_id'];
+
+        $datos = $RubroService->calcularRubros($user_id, $nomina_id);
+        echo json_encode($datos);
         break;
 
     default:

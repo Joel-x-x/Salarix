@@ -9,7 +9,7 @@ require_once("../model/registers.model.php");
 class RubrosService
 {
 
-  public function calcularSueldoBruto($user_id, $nomina_id)
+  public function calcularIngresos($user_id, $nomina_id)
   {
     // Obtener la nomina
     $nominaModel = new Nomina();
@@ -24,10 +24,10 @@ class RubrosService
     $detailNominaModel = new DetailNomina();
     $detailNomina = $detailNominaModel->todos($nomina_id);
 
-    if ($detailNomina['status'] !== '200') {
-      // Caso de error
-      return $detailNomina;
-    }
+    // if ($detailNomina['status'] !== '200') {
+    //   // Caso de error
+    //   return $detailNomina;
+    // }
 
     // Filtrar los detalles que tengan isBonus como true o 1
     $detallesFiltrados = array_filter($detailNomina['data'], function ($detalle) {
@@ -77,8 +77,25 @@ class RubrosService
     // Sumar valor de horas extras al sueldo bruto
     $sueldoBruto = $sueldoBruto + $valorHorasExtraordinarias + $valorHorasExtraordinariasNocturnas;
 
+    // Crear el rubro de horas extras solo en caso de que no sean 0
+    if (($valorHorasExtraordinarias + $valorHorasExtraordinariasNocturnas) > 0) {
+      $detailNominaModel->insertar('Horas extras', 'Tiempo adicional de trabajo que un empleado realiza fuera de su jornada laboral ordinaria establecida por la ley o por contrato.', 1, $valorHorasExtraordinarias + $valorHorasExtraordinariasNocturnas, 1, $nomina_id);
+    }
+
+    // Actualizar los ingresos totales de la nómina
+    $nomina = $nominaModel->actualizar($nomina_id, '', '', '', '', '', round($sueldoBruto, 2), '', '', '');
+
+    // Mostrar mensaje de error
+    if ($nomina['status'] !== '200') {
+      return $nomina;
+    }
+
     // retornar sueldo bruto
-    return (float)number_format($sueldoBruto, 2);
+    return [
+      'status' => '200',
+      'message' => 'Ingresos calculados',
+      'data' => (float)number_format($sueldoBruto, 2)
+    ];
   }
 
   // Calcular valor por hora en base al sueldo bruto
@@ -87,7 +104,7 @@ class RubrosService
     return $sueldoBruto / 160; // 40h por semana x 4 semanas 160 horas totales al mes
   }
 
-  public function validarPlanSalarial($user_id, $nomina_id)
+  public function calcularRubros($user_id, $nomina_id)
   {
     $con = new ClaseConectar();
     $con = $con->ProcedimientoConectar();
@@ -124,9 +141,9 @@ class RubrosService
       $formula = $ultimaFormula['data'];
 
       // Obtener el sueldo bruto
-      $sueldoBruto = $this->calcularSueldoBruto($user_id, $nomina_id);
-      echo $sueldoBruto;
-      echo "<br>";
+      // $sueldoBruto = $this->calcularIngresos($user_id, $nomina_id)['data'];
+      // echo $sueldoBruto;
+      // echo "<br>";
 
       // Obtener la nomina
       $nominaModel = new Nomina();
@@ -136,6 +153,9 @@ class RubrosService
       if ($nomina['status'] !== '200') {
         return $nomina;
       }
+
+      // Sueldo bruto
+      $sueldoBruto = $nomina['data']['totalIncome'];
 
       // Obtener plan salarial del empleado
       $planSalarialModel = new SalaryPlan();
@@ -151,18 +171,12 @@ class RubrosService
       $registros = $registroModel->listarRegistrosPorEmpleadoFechas($user_id, $nomina['data']['start'], $nomina['data']['finish']);
 
       // Mostrar mensaje de error
-      if ($registros['status'] !== '200') {
-        return $registros; // Retorna mensaje de error
-      }
+      // if ($registros['status'] !== '200') {
+      //   return $registros; // Retorna mensaje de error
+      // }
 
       // Obtener los detalles de la nómina
       $detailNominaModel = new DetailNomina();
-      $detailNomina = $detailNominaModel->todos($nomina_id);
-
-      if ($detailNomina['status'] !== '200') {
-        // Caso de error
-        return $detailNomina;
-      }
 
       // Validaciones según los booleanos del plan salarial
       // TODO: pediente por agregar sql
@@ -202,7 +216,7 @@ class RubrosService
       if ($plan['apep_included']) {
         $apep = $formula['apep']; // Valor de Aporte personal %
         $valorApep = $sueldoBruto * ($apep / 100);
-        
+
         $detailNominaModel->insertar('Aporte personal', 'Aporte del empleado que destina a financiar los beneficios de la seguridad social, como atención médica, pensiones, seguro de invalidez, entre otros.', 0, $valorApep, 0, $nomina_id);
       }
 
@@ -214,10 +228,50 @@ class RubrosService
         $detailNominaModel->insertar('Extensión de salud por Cónyugue', 'Prestación ofrecida por la empresa, permitiendo que el conyúgue de un empleado también acceda a servicios de atención médica a través del sistema de salud del empleado.', 0, $valorEscp, 0, $nomina_id);
       }
 
+      // Traer los detalles nómina
+      $detailNomina = $detailNominaModel->todos($nomina_id);
+
+      if ($detailNomina['status'] !== '200') {
+        // Caso de error
+        return $detailNomina;
+      }
+
+      // Calcular egresos y provisiones
+      // Filtrar detalles
+      $egresosTotales = 0;
+      $provisionesTotales = 0;
+
+      array_walk($detailNomina['data'], function ($detalle) use (&$egresosTotales, &$provisionesTotales) {
+        if ($detalle['type'] == 0) {
+          // Egresos
+          $egresosTotales += (float) $detalle['monto'];
+        }
+
+        if ($detalle['type'] == 1 && $detalle['isBonus'] == 0) {
+          // Calcular provisiones
+          $provisionesTotales += (float) $detalle['monto'];
+        }
+      });
+
+      // echo "Egresos Totales: $egresosTotales\n";
+      // echo "Provisiones Totales: $provisionesTotales\n";
+
+      // Calcular sueldo liquido
+      $liquidoTotal = $sueldoBruto - $egresosTotales;
+
+      // echo "Liquido total: $liquidoTotal\n";
+
+      // Actualizar los ingresos totales de la nómina
+      $nomina = $nominaModel->actualizar($nomina_id, '', '', '', '', round($provisionesTotales, 2), '', round($egresosTotales, 2), round($liquidoTotal, 2), '');
+
       return [
         "status" => "200",
-        "message" => "Validaciones completadas.",
-        "data" => $plan,
+        "message" => "Rubros creados.",
+        "data" => [
+          "totalProvision" => round($provisionesTotales, 2),
+          "totalEgress" => round($egresosTotales, 2),
+          "totalLiquid" => round($liquidoTotal, 2),
+        ],
       ];
     } else {
       $con->close();
