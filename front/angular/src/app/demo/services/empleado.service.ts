@@ -30,7 +30,7 @@ export class EmpleadoService {
   }
 
   // Obtener un empleado por ID
-  uno(id: number): Observable<Empleado> {
+  uno(id: string): Observable<Empleado> {
     const formData = new FormData();
     formData.append('id', id.toString());
     return this.http.post<any>(`${this.apiUrl}uno`, formData).pipe(

@@ -46,7 +46,7 @@ export class NominaService {
   }
 
   // Crear una nueva nómina
-  insertar(nomina: INomina): Observable<string> {
+  insertar(nomina: INomina): Observable<INomina> {
     const formData = this.mapNominaToFormData(nomina);
     return this.http.post<any>(`${this.apiUrl}insertar`, formData)
       .pipe(
@@ -62,7 +62,7 @@ export class NominaService {
   }
 
   // Actualizar una nómina existente
-  actualizar(nomina: INomina): Observable<string> {
+  actualizar(nomina: INomina): Observable<INomina> {
     const formData = this.mapNominaToFormData(nomina);
     return this.http.post<any>(`${this.apiUrl}actualizar`, formData)
       .pipe(

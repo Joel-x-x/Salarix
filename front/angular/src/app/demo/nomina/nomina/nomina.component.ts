@@ -1,16 +1,16 @@
+import { INomina } from './../../interfaces/INomina';
 import { IDetalleNomina } from './../../interfaces/IDetalleNomina';
 import { Empleado } from './../../interfaces/IEmpleado';
 import { DetalleNominaService } from './../../services/detalle-nomina.service';
 import { NominaService } from './../../services/nomina.service';
 import { Component, OnInit, PipeTransform } from '@angular/core';
 import { FormControl, FormGroup, ReactiveFormsModule, Validators } from '@angular/forms';
-import { INomina } from '../../interfaces/INomina';
 import { EmpleadoService } from '../../services/empleado.service';
 import { CommonModule } from '@angular/common';
 import { RouterLink } from '@angular/router';
 import { SharedModule } from 'src/app/theme/shared/shared.module';
 import Swal from 'sweetalert2';
-import { isEmpty } from 'lodash';
+import { PdfComponent } from '../../utilities/pdf/pdf.component';
 
 @Component({
   selector: 'app-nomina',
@@ -22,6 +22,7 @@ import { isEmpty } from 'lodash';
 export class NominaComponent implements OnInit {
   nominas: INomina[] = [];
   nominaSeleccionada: INomina | null = null;
+  disabledButton: boolean = true;
   // Detalle nomina
   detallesNomina: IDetalleNomina[] = [];
   detalleNominaSeleccionado: IDetalleNomina | null = null;
@@ -69,6 +70,23 @@ export class NominaComponent implements OnInit {
   ngOnInit(): void {
     this.obtenerNominas();
     this.listarEmpleados();
+  }
+
+  /*╔══════════════════════════════════════════════════╗
+    ║               Imprimir nómina                    ║
+    ╚══════════════════════════════════════════════════╝*/
+
+  imprimirNomina(nomina: INomina): void {
+    const pdf: PdfComponent = new PdfComponent();
+
+    // ➤ Listar detalles
+    this.listarDetallesNomina(nomina.id ?? '');
+
+    // ➤ Método pdf consulta empleado
+    this.empleadoService.uno(nomina.user_id ?? '').subscribe(data => {
+      const empleado = data;
+      pdf.nomina(nomina, this.detallesNomina, empleado);
+    })
   }
 
   // Listar todas las nóminas
@@ -179,9 +197,9 @@ export class NominaComponent implements OnInit {
       cancelButtonText: 'Cancelar'
     }).then((result) => {
       if (result.isConfirmed) {
-        if (!this.nominaSeleccionada) {
-          this.grabarAutoNomina();
-        }
+        // if (!this.nominaSeleccionada) {
+          // this.nominaSeleccionada = this.grabarAutoNomina();
+        // }
 
         this.detalleNominaService.calcularRubros(this.nominaSeleccionada?.user_id ?? '', this.nominaSeleccionada?.id ?? '').subscribe({
           next: (data) => {
@@ -220,13 +238,14 @@ export class NominaComponent implements OnInit {
       cancelButtonText: 'Cancelar'
     }).then((result) => {
       if (result.isConfirmed) {
-        if (!this.nominaSeleccionada) {
-          this.grabarAutoNomina();
-        }
+        // if (!this.nominaSeleccionada) {
+          // this.nominaSeleccionada = this.grabarAutoNomina();
+        // }
+
+        // console.log(this.nominaSeleccionada);
         // console.log('user: ' + this.nominaSeleccionada?.user_id + ' nomina: ' + this.nominaSeleccionada?.id);
         this.detalleNominaService.calcularSueldoIngresos(this.nominaSeleccionada?.user_id ?? '', this.nominaSeleccionada?.id ?? '').subscribe({
           next: data => {
-            console.log(data);
             this.formNomina.patchValue({ totalIncome: parseFloat(data) });
             this.listarDetallesNomina(this.nominaSeleccionada?.id ?? '');
           },
@@ -296,6 +315,7 @@ export class NominaComponent implements OnInit {
     this.modalVisible = true;
 
     if (nomina) {
+      this.disabledButton = false;
       this.nominaSeleccionada = nomina;
       // Asignar los valores del nomina al formulario
       this.formNomina.patchValue({
@@ -328,10 +348,11 @@ export class NominaComponent implements OnInit {
     this.empleadoSeleccionado = null;
     this.detallesNomina = [];
     this.formNomina.reset();
+    this.disabledButton = true;
   }
 
   // Insertar automaticamente para poder hacer los calculos
-  grabarAutoNomina(): void {
+  grabarAutoNomina(): any {
     if (this.formNomina.invalid) {
       this.formNomina.markAllAsTouched();
       Swal.fire('Error', 'Todos los campos para nómina son requeridos', 'error')
@@ -339,11 +360,12 @@ export class NominaComponent implements OnInit {
     }
 
     const nominaData: INomina = this.formNomina.value as INomina;
+    nominaData.user_id = this.empleadoSeleccionado?.id;
 
     this.nominaService.insertar(nominaData).subscribe({
       next: data => {
-        this.nominaSeleccionada = JSON.parse(data); // Trabajar con datos de la nómina
         this.obtenerNominas();
+        return data; // Trabajar con datos de la nómina
         // this.closeModal();
         // Swal.fire('Éxito', 'Nómina creada correctamente', 'success');
         // this.obtenerNominas();
@@ -361,11 +383,11 @@ export class NominaComponent implements OnInit {
     }
 
     const nominaData: INomina = this.formNomina.value as INomina;
-
+    nominaData.user_id = this.empleadoSeleccionado?.id;
     if (this.esNuevaNomina) {
       this.nominaService.insertar(nominaData).subscribe({
         next: data => {
-          this.nominaSeleccionada = JSON.parse(data); // Trabajar con datos de la nómina
+          this.nominaSeleccionada = data; // Trabajar con datos de la nómina
           this.obtenerNominas();
           this.closeModal();
           Swal.fire('Éxito', 'Nómina creada correctamente', 'success');
@@ -374,7 +396,7 @@ export class NominaComponent implements OnInit {
         error: () => Swal.fire('Error', 'Error al crear la nómina', 'error')
       });
     } else {
-      nominaData.user_id = this.empleadoSeleccionado?.id;
+      // nominaData.user_id = this.empleadoSeleccionado?.id;
       this.nominaService.actualizar(nominaData).subscribe({
         next: () => {
           this.obtenerNominas();

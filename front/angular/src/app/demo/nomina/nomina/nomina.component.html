@@ -152,9 +152,9 @@
 
             <!-- Tabla de detalles de nómina -->
             <div class="form-group">
-              <button type="button" class="btn btn-primary mb-3 margin-right" (click)="openModalRubro()">Agregar Rubro</button>
-              <button type="button" class="btn btn-secondary mb-3 margin-right" (click)="calcularIngresos()">Calcular ingresos</button>
-              <button type="button" class="btn btn-secondary mb-3" (click)="calcularRubros()">Calcular Rubros</button>
+              <button type="button" class="btn btn-primary mb-3 margin-right" (click)="openModalRubro()" [disabled]="disabledButton">Agregar Rubro</button>
+              <button type="button" class="btn btn-secondary mb-3 margin-right" (click)="calcularIngresos()" [disabled]="disabledButton">Calcular ingresos</button>
+              <button type="button" class="btn btn-secondary mb-3" (click)="calcularRubros()" [disabled]="disabledButton">Calcular Rubros</button>
               <table class="table table-bordered">
                 <thead>
                   <tr>
@@ -268,25 +268,29 @@
             <th>Total Líquido</th>
           </tr>
         </thead>
-        <tbody>
-          <tr *ngFor="let nomina of nominas; let i = index">
-            <th scope="row">{{ i + 1 }}</th>
-            <td class="text-center">
-              <button class="btn btn-warning btn-sm" (click)="openModal(nomina)">
-                <i class="fa fa-pencil-alt"></i>
-                Editar
-              </button>
-            </td>
-            <td>{{ nomina.periodName }}</td>
-            <td>{{ getEmpleadoNombre(nomina.user_id ?? '') }}</td>
-            <td>{{ nomina.start }}</td>
-            <td>{{ nomina.finish }}</td>
-            <td>{{ nomina.totalProvision }}</td>
-            <td>{{ nomina.totalIncome }}</td>
-            <td>{{ nomina.totalEgress }}</td>
-            <td>{{ nomina.totalLiquid }}</td>
-          </tr>
-        </tbody>
+        @if(nominas.length > 0) {
+          <tbody>
+            <tr *ngFor="let nomina of nominas; let i = index">
+              <th scope="row">{{ i + 1 }}</th>
+              <td class="text-center">
+                <button title="Editar" class="btn btn-link" (click)="openModal(nomina)">
+                  <i class="fa fa-pencil-alt"></i>
+                </button>
+                <button title="Imprimir" class="btn btn-link" (click)="imprimirNomina(nomina)">
+                  <i class="fa fa-print"></i>
+                </button>
+              </td>
+              <td>{{ nomina.periodName }}</td>
+              <td>{{ getEmpleadoNombre(nomina.user_id ?? '') }}</td>
+              <td>{{ nomina.start }}</td>
+              <td>{{ nomina.finish }}</td>
+              <td>{{ nomina.totalProvision }}</td>
+              <td>{{ nomina.totalIncome }}</td>
+              <td>{{ nomina.totalEgress }}</td>
+              <td>{{ nomina.totalLiquid }}</td>
+            </tr>
+          </tbody>
+        }
       </table>
     </div>
   </app-card>

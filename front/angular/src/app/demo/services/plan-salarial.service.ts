@@ -51,7 +51,6 @@ export class SalaryPlanService {
     return this.http.post<any>(`${this.apiUrl}insertar`, formData)
       .pipe(
         map(response => {
-          console.log(response);
           if (response.status === '201') {
             return response.message; // Suponemos que el mensaje contiene algún dato relevante
           } else {

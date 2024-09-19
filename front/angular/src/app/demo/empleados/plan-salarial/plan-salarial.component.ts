@@ -53,10 +53,11 @@ export class PlanSalarialComponent implements OnInit {
     private salaryPlanService: SalaryPlanService,
     private empleadoService: EmpleadoService,
     private posicionService: PositionService
-  ) {}
+  ) { }
 
   ngOnInit(): void {
     this.listarPlanesSalariales();
+    console.log(this.planesSalariales.length == 0);
     this.listarEmpleados();
     this.listarPosiciones();
   }
@@ -64,7 +65,12 @@ export class PlanSalarialComponent implements OnInit {
   // Listar todos los planes salariales
   listarPlanesSalariales(): void {
     this.salaryPlanService.todos().subscribe({
-      next: (data) => this.planesSalariales = data,
+      next: (data) => {
+        console.log(data);
+        if(data !== null) {
+          this.planesSalariales = data
+        }
+      },
       error: (error) => console.error('Error al obtener los planes salariales', error)
     });
   }
@@ -75,6 +81,7 @@ export class PlanSalarialComponent implements OnInit {
       next: (data) => {
         this.empleados = data;
         this.empleadosFiltrados = data;
+        console.log(this.empleadosFiltrados);
       },
       error: (error) => console.error('Error al obtener los empleados', error)
     });
@@ -194,17 +201,17 @@ export class PlanSalarialComponent implements OnInit {
     }
   }
 
-    // Obtener el nombre del empleado basado en su ID
-    getEmpleadoNombre(userId: string): string {
-      const empleado = this.empleados.find(e => e.id === userId);
-      return empleado ? `${empleado.firstname} ${empleado.lastname}` : '';
-    }
+  // Obtener el nombre del empleado basado en su ID
+  getEmpleadoNombre(userId: string): string {
+    const empleado = this.empleados.find(e => e.id === userId);
+    return empleado ? `${empleado.firstname} ${empleado.lastname}` : '';
+  }
 
-    // Obtener el nombre de la posición basado en su ID
-    getPosicionNombre(positionId: string): string {
-      const posicion = this.posiciones.find(p => p.id === positionId);
-      return posicion ? posicion.name : '';
-    }
+  // Obtener el nombre de la posición basado en su ID
+  getPosicionNombre(positionId: string): string {
+    const posicion = this.posiciones.find(p => p.id === positionId);
+    return posicion ? posicion.name : '';
+  }
 
   // Cerrar modal
   closeModal(): void {
