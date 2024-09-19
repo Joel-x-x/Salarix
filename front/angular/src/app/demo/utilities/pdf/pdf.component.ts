@@ -23,7 +23,6 @@ export class PdfComponent implements OnInit {
     ╚══════════════════════════════════════════════════╝*/
   nomina(nomina: INomina, detalles: IDetalleNomina[], empleado: Empleado): void {
     const doc = new jsPDF();
-
     // ➤ Title
     const title = "Reporte Nómina";
     doc.setFontSize(16);
@@ -51,7 +50,7 @@ export class PdfComponent implements OnInit {
       doc.text(label, xLabel, yPos);
       doc.setFont("Helvetica", "normal");
       doc.text(value, xValue, yPos);
-      yPos += 10; // Move to the next line
+      yPos += 7; // Move to the next line
     };
 
     drawLabelValue("Periodo:", nomina.periodName, xLabel, xValue);
@@ -77,44 +76,89 @@ export class PdfComponent implements OnInit {
     doc.text("Descripción:", 25, yPos);
     doc.setFont("Helvetica", "normal");
     doc.text(nomina.detail, 60, yPos);
-
-    // ➤ Rubros
     yPos += 10;
 
-    // Ejemplo de Rubros
-    const rubros = [
-      { titulo: "Ingresos",
-        datos: [{
-          descripcion: "Sueldo Base",
-          monto: "1200.00"
-        },
-        {
-          descripcion: "Horas Extras",
-          monto: "300.00" }
-        ]
-      }
-    ];
+    // ➤ Separation line
+    doc.setDrawColor(0, 0, 0); // Black color for line
+    doc.setLineWidth(0.5);
+    doc.line(20, yPos, 185, yPos); // Draw horizontal line from x=20 to x=190
+    yPos += 10; // Espacio adicional después de la línea de separación
 
-    rubros.forEach(rubro => {
-      // Título del Rubro
+    // Page High
+    const pageHeight = doc.internal.pageSize.height;
+
+    // ➤ Check if the content exced the limit of the page
+    const checkPageOverflow = (currentYPos: number) => {
+      if (currentYPos >= pageHeight - 20) { // Dejando un margen de 20
+        doc.addPage(); // Añadir nueva página
+        yPos = 20; // Reiniciar posición yPos en la nueva página
+      }
+    };
+
+    // ➤ Rubros
+    detalles.forEach(detalle => {
+      checkPageOverflow(yPos);
+      // ➤ Title of rubro
       doc.setFillColor(238, 240, 242); // Light grey background for section title
       doc.roundedRect(20, yPos, 165, 10, 1, 1, 'F');
       doc.setFontSize(10);
       doc.setFont("Helvetica", "bold");
       doc.setTextColor(0, 0, 0);
-      doc.text(rubro.titulo, 30, yPos + 7); // Título del rubro
+      doc.text(detalle.name, 30, yPos + 7); // Title of rubro
+      // ➤ Type of rubro
+      let tipoRubro = '';
+      if (detalle.type == 0) {
+        tipoRubro = '- Egreso';
+      } else if (detalle.type == 1 && detalle.isBonus == 1) {
+        tipoRubro = '+ Ingreso';
+      } else if (detalle.type == 1 && detalle.isBonus == 0) {
+        tipoRubro = '+ Provisión';
+      }
+      doc.text(tipoRubro, 145, yPos + 7);
 
       yPos += 15; // Espacio para el contenido del rubro
 
-      // Contenido del Rubro
-      rubro.datos.forEach(dato => {
-        doc.setFont("Helvetica", "normal");
-        doc.text(dato.descripcion, 30, yPos);
-        doc.text(dato.monto, 160, yPos, { align: 'right' }); // Monto alineado a la derecha
-        yPos += 10; // Espacio entre cada dato del rubro
+      // ➤ Rubro content
+      // Texto para el título de la descripción
+      doc.setFont("Helvetica", "normal");
+      doc.text('Descripción:', 30, yPos);
+
+      const maxWidth = 100;
+
+      // Divide el texto largo en líneas según el ancho máximo
+      const detalleLargo: string[] = doc.splitTextToSize(detalle.detail, maxWidth);
+
+      // Imprime cada línea de texto ajustada al ancho, alineada a la derecha
+      detalleLargo.forEach(line => {
+        doc.text(line, 80, yPos);
+        yPos += 3; // Ajusta el espacio entre líneas según sea necesario
       });
 
+      yPos += 10;
+      doc.setFont("Helvetica", "normal");
+      doc.text('Monto', 30, yPos);
+      doc.text((Math.round(detalle.monto * 100) / 100) + '', 160, yPos, { align: 'right' });
+      yPos += 10;
+
     });
+
+    yPos += 20;
+    // Longitud de las líneas de firma
+    const lineLength = 35;
+
+    // ➤ Firma Conforme
+    doc.setFontSize(10);
+    doc.text("Firma Conforme:", 20, yPos - 5); // Título para la firma
+    doc.line(20, yPos + 10, 30 + lineLength, yPos + 10); // Línea para la firma
+    doc.text("C.I.: 1234567890", 20, yPos + 15); // Campo C.I. debajo de la línea
+
+    // ➤ Firma Gerente
+    doc.text("Firma Gerente:", 80, yPos - 5); // Título para la firma
+    doc.line(80, yPos + 10, 90 + lineLength, yPos + 10); // Línea para la firma
+
+    // ➤ Firma Contador
+    doc.text("Firma Contador:", 140, yPos - 5); // Título para la firma
+    doc.line(140, yPos + 10, 150 + lineLength, yPos + 10); // Línea para la firma
 
     // ➤ Save PDF
     doc.save("reporte_nomina.pdf");

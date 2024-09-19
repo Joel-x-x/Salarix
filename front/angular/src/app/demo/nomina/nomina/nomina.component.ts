@@ -79,13 +79,14 @@ export class NominaComponent implements OnInit {
   imprimirNomina(nomina: INomina): void {
     const pdf: PdfComponent = new PdfComponent();
 
-    // ➤ Listar detalles
-    this.listarDetallesNomina(nomina.id ?? '');
-
     // ➤ Método pdf consulta empleado
     this.empleadoService.uno(nomina.user_id ?? '').subscribe(data => {
-      const empleado = data;
-      pdf.nomina(nomina, this.detallesNomina, empleado);
+      const empleado: Empleado = data;
+
+      this.detalleNominaService.todos(nomina.id ?? '').subscribe( data => {
+        const detalles: IDetalleNomina[] = data;
+        pdf.nomina(nomina, detalles, empleado);
+      })
     })
   }
 
