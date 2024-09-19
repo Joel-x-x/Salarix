@@ -17,6 +17,76 @@ export class PdfComponent implements OnInit {
 
   ngOnInit() { }
 
+  /*╔══════════════════════════════════════════════════╗
+  ║          Reporte nóminas por periodo             ║
+  ╚══════════════════════════════════════════════════╝*/
+  nominasPeriodo(nominas: INomina[], start: string, finish: string) {
+    const doc = new jsPDF();
+
+    // ➤ Obtener totales
+    let totalNominas = 0;
+    let totalProvision = 0;
+    let totalIngreso = 0;
+    let totalEgesos = 0;
+    let totalLiquid = 0;
+    nominas.forEach(nomina => {
+      totalNominas ++;
+      totalProvision += nomina.totalProvision ?? 0;
+      totalIngreso += nomina.totalIncome ?? 0;
+      totalEgesos += nomina.totalEgress ?? 0;
+      totalLiquid += nomina.totalLiquid ?? 0;
+    });
+
+    // ➤ Title
+    const title = "Reporte Nóminas";
+    doc.setFontSize(16);
+    doc.setFont("Helvetica", "bold");
+    doc.text(title, this.calcularXCentrado(title), 10);
+
+    // ➤ Add background for title
+    doc.setFillColor(238, 240, 242);
+    doc.roundedRect(75 - 2, 10 - 6, 70, 10, 2, 2, 'F');
+    doc.setTextColor(0, 0, 0);
+    doc.text(title, this.calcularXCentrado(title), 10);
+
+    // ➤ General information
+    doc.setFontSize(10);
+    doc.setFont("Helvetica", "bold");
+    doc.setTextColor(0, 0, 0);
+    let xLabel = 25;
+    let xValue = 60;
+    let yPos = 25; // Starting Y position for the content
+
+    // ➤ Define a function to format text with bold labels and background
+    const drawLabelValue = (label: string, value: string, xLabel: number, xValue: number) => {
+      doc.setFont("Helvetica", "normal");
+      doc.text(label, xLabel, yPos);
+      doc.setFont("Helvetica", "normal");
+      doc.text(value, xValue, yPos);
+      yPos += 7; // Move to the next line
+    };
+
+    // ➤ Column 1
+    drawLabelValue("Periodo:", start + " - " + finish, xLabel, xValue);
+    drawLabelValue("Total nóminas:", totalNominas + '', xLabel, xValue);
+    // ➤ Financial Information
+    xLabel = 115;
+    xValue = 150;
+    yPos = 25;
+
+    // ➤ Column 2
+    drawLabelValue("Total en provisiones:", totalProvision + '', xLabel, xValue);
+    drawLabelValue("Total de ingresos:", totalIngreso + '', xLabel, xValue);
+    drawLabelValue("Total de egresos:", totalEgesos + '', xLabel, xValue);
+    drawLabelValue("Total de Líquido:", totalLiquid + '', xLabel, xValue);
+
+    // ➤ Separation line
+    doc.setDrawColor(0, 0, 0); // Black color for line
+    doc.setLineWidth(0.5);
+    doc.line(20, yPos, 185, yPos); // Draw horizontal line from x=20 to x=190
+    yPos += 10; // Espacio adicional después de la línea de separación
+
+  }
 
   /*╔══════════════════════════════════════════════════╗
     ║                Reporte nómina                    ║
@@ -29,7 +99,7 @@ export class PdfComponent implements OnInit {
     doc.setFont("Helvetica", "bold");
     doc.text(title, this.calcularXCentrado(title), 10);
 
-    // Add background for title
+    // ➤ Add background for title
     doc.setFillColor(238, 240, 242);
     doc.roundedRect(75 - 2, 10 - 6, 70, 10, 2, 2, 'F');
     doc.setTextColor(0, 0, 0);
@@ -40,8 +110,8 @@ export class PdfComponent implements OnInit {
     // doc.setFillColor(238, 240, 242);
     // doc.roundedRect(20, 25, 165, 65, 1, 1, 'F');
     doc.setTextColor(0, 0, 0);
-    const xLabel = 25;
-    const xValue = 60;
+    let xLabel = 25;
+    let xValue = 60;
     let yPos = 25; // Starting Y position for the content
 
     // Define a function to format text with bold labels and background
@@ -53,16 +123,22 @@ export class PdfComponent implements OnInit {
       yPos += 7; // Move to the next line
     };
 
+    // ➤ Column 1
     drawLabelValue("Periodo:", nomina.periodName, xLabel, xValue);
     drawLabelValue("Fecha de Inicio:", nomina.start, xLabel, xValue);
     drawLabelValue("Fecha de Fin:", nomina.finish, xLabel, xValue);
     drawLabelValue("Empleado:", empleado.firstname + " " + empleado.lastname, xLabel, xValue);
+
     // ➤ Financial Information
+    xLabel = 115;
+    xValue = 150;
     yPos = 25;
-    drawLabelValue("Total Provisión:", nomina.totalProvision + '', 115, 150);
-    drawLabelValue("Total Ingresos:", nomina.totalIncome + '', 115, 150);
-    drawLabelValue("Total Egresos:", nomina.totalEgress + '', 115, 150);
-    drawLabelValue("Total Líquido:", nomina.totalLiquid + '', 115, 150);
+
+    // ➤ Column 2
+    drawLabelValue("Total Provisión:", nomina.totalProvision + '', xLabel, xValue);
+    drawLabelValue("Total Ingresos:", nomina.totalIncome + '', xLabel, xValue);
+    drawLabelValue("Total Egresos:", nomina.totalEgress + '', xLabel, xValue);
+    drawLabelValue("Total Líquido:", nomina.totalLiquid + '', xLabel, xValue);
 
     // ➤ Separation line
     doc.setDrawColor(0, 0, 0); // Black color for line
@@ -166,7 +242,6 @@ export class PdfComponent implements OnInit {
   }
 
   // ➤ Calculo posicion central tomando en cuenta el texto
-
   calcularXCentrado(text: string): number {
     const doc = new jsPDF();
     const pageWidth = doc.internal.pageSize.getWidth();
@@ -176,3 +251,5 @@ export class PdfComponent implements OnInit {
   }
 
 }
+
+// ➤ Haber papa de aqui te falta agregar el power BI, el login, los usuarios con sus roles y la gestión de estos roles, y agregar el crud para formulas.

@@ -1,0 +1,95 @@
+<div class="container mt-4">
+  <h2>Reportes</h2>
+
+  <div class="row">
+    <!-- Formulario 1 -->
+    <div class="col-md-6">
+      <div class="card mb-3">
+        <div class="card-header">
+          Reporte 1
+        </div>
+        <div class="card-body">
+          <form [formGroup]="reportForm1" (ngSubmit)="onSubmit(1)">
+            <div class="mb-3">
+              <label for="startDate1" class="form-label">Fecha de Inicio</label>
+              <input type="date" id="startDate1" class="form-control" formControlName="startDate" required>
+            </div>
+            <div class="mb-3">
+              <label for="endDate1" class="form-label">Fecha de Fin</label>
+              <input type="date" id="endDate1" class="form-control" formControlName="endDate" required>
+            </div>
+            <button type="submit" class="btn btn-primary">Generar Reporte</button>
+          </form>
+        </div>
+      </div>
+    </div>
+
+    <!-- Formulario 2 -->
+    <div class="col-md-6">
+      <div class="card mb-3">
+        <div class="card-header">
+          Reporte 2
+        </div>
+        <div class="card-body">
+          <form [formGroup]="reportForm2" (ngSubmit)="onSubmit(2)">
+            <div class="mb-3">
+              <label for="startDate2" class="form-label">Fecha de Inicio</label>
+              <input type="date" id="startDate2" class="form-control" formControlName="startDate" required>
+            </div>
+            <div class="mb-3">
+              <label for="endDate2" class="form-label">Fecha de Fin</label>
+              <input type="date" id="endDate2" class="form-control" formControlName="endDate" required>
+            </div>
+            <button type="submit" class="btn btn-primary">Generar Reporte</button>
+          </form>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div class="row">
+    <!-- Formulario 3 -->
+    <div class="col-md-6">
+      <div class="card mb-3">
+        <div class="card-header">
+          Reporte 3
+        </div>
+        <div class="card-body">
+          <form [formGroup]="reportForm3" (ngSubmit)="onSubmit(3)">
+            <div class="mb-3">
+              <label for="startDate3" class="form-label">Fecha de Inicio</label>
+              <input type="date" id="startDate3" class="form-control" formControlName="startDate" required>
+            </div>
+            <div class="mb-3">
+              <label for="endDate3" class="form-label">Fecha de Fin</label>
+              <input type="date" id="endDate3" class="form-control" formControlName="endDate" required>
+            </div>
+            <button type="submit" class="btn btn-primary">Generar Reporte</button>
+          </form>
+        </div>
+      </div>
+    </div>
+
+    <!-- Formulario 4 -->
+    <div class="col-md-6">
+      <div class="card mb-3">
+        <div class="card-header">
+          Reporte 4
+        </div>
+        <div class="card-body">
+          <form [formGroup]="reportForm4" (ngSubmit)="onSubmit(4)">
+            <div class="mb-3">
+              <label for="startDate4" class="form-label">Fecha de Inicio</label>
+              <input type="date" id="startDate4" class="form-control" formControlName="startDate" required>
+            </div>
+            <div class="mb-3">
+              <label for="endDate4" class="form-label">Fecha de Fin</label>
+              <input type="date" id="endDate4" class="form-control" formControlName="endDate" required>
+            </div>
+            <button type="submit" class="btn btn-primary">Generar Reporte</button>
+          </form>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
