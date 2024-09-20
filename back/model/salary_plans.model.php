@@ -83,13 +83,13 @@ class SalaryPlan {
     }
 
     // Método para insertar un nuevo plan de salario
-    public function insertar($position_id, $baseSalary, $description, $checkin, $checkout, $esc, $esc_included, $cp_included, $app_included, $dts_included, $dcs_included, $frp_included, $apep_included, $user_id)
+    public function insertar($position_id, $baseSalary, $description, $checkin, $checkout, $esc_included, $cp_included, $app_included, $dts_included, $dcs_included, $frp_included, $apep_included, $user_id)
     {
         $con = new ClaseConectar();
         $con = $con->ProcedimientoConectar();
 
-        $cadena = "INSERT INTO salary_plans (position_id, baseSalary, description, checkin, checkout, esc, esc_included, cp_included, app_included, dts_included, dcs_included, frp_included, apep_included, user_id) 
-                   VALUES ('$position_id', '$baseSalary', '$description', '$checkin', '$checkout', '$esc', '$esc_included', '$cp_included', '$app_included', '$dts_included', '$dcs_included', '$frp_included', '$apep_included', '$user_id')";
+        $cadena = "INSERT INTO salary_plans (position_id, baseSalary, description, checkin, checkout, esc_included, cp_included, app_included, dts_included, dcs_included, frp_included, apep_included, user_id) 
+                   VALUES ('$position_id', '$baseSalary', '$description', '$checkin', '$checkout', '$esc_included', '$cp_included', '$app_included', '$dts_included', '$dcs_included', '$frp_included', '$apep_included', '$user_id')";
 
         if (mysqli_query($con, $cadena)) {
             $id = mysqli_insert_id($con); 
@@ -108,7 +108,6 @@ class SalaryPlan {
                     "description" => $description,
                     "checkin" => $checkin,
                     "checkout" => $checkout,
-                    "esc" => $esc,
                     "esc_included" => $esc_included,
                     "cp_included" => $cp_included,
                     "app_included" => $app_included,

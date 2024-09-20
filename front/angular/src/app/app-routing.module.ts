@@ -71,6 +71,10 @@ const routes: Routes = [
       {
         path: 'nomina',
         loadComponent: () => import('./demo/nomina/nomina/nomina.component').then(m => m.NominaComponent)
+      },
+      {
+        path: 'reportes',
+        loadComponent: () => import('./demo/reportes/reportes.component').then(m => m.ReportesComponent)
       }
     ]
   },

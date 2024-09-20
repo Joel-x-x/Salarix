@@ -6,14 +6,14 @@ class Nomina
 {
 
     /* Procedimiento para insertar una nómina */
-    public function insertar($periodName, $start, $finish, $detail)
+    public function insertar($periodName, $start, $finish, $detail, $user_id)
     {
         $con = new ClaseConectar();
         $con = $con->ProcedimientoConectar();
 
         // Preparar la consulta SQL
-        $cadena = "INSERT INTO nomina (periodName, start, finish, detail) 
-                   VALUES ('$periodName', '$start', '$finish', '$detail')";
+        $cadena = "INSERT INTO nomina (periodName, start, finish, detail, user_id) 
+                   VALUES ('$periodName', '$start', '$finish', '$detail', '$user_id')";
 
         // Ejecutar la consulta
         if (mysqli_query($con, $cadena)) {
@@ -34,7 +34,8 @@ class Nomina
                         "periodName" => $periodName,
                         "start" => $start,
                         "finish" => $finish,
-                        "detail" => $detail
+                        "detail" => $detail,
+                        "user_id" => $user_id,
                     ],
                 ];
             } else {

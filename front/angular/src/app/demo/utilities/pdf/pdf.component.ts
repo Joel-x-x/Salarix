@@ -1,8 +1,11 @@
 import { Component, OnInit } from '@angular/core';
 import jsPDF from 'jspdf';
+import { applyPlugin } from 'jspdf-autotable'
+applyPlugin(jsPDF)
 import { INomina } from '../../interfaces/INomina';
 import { IDetalleNomina } from '../../interfaces/IDetalleNomina';
 import { Empleado } from '../../interfaces/IEmpleado';
+import { IReporteNomina, IReporteRegistro } from '../../interfaces/IReporte';
 
 @Component({
   selector: 'app-pdf',
@@ -18,23 +21,131 @@ export class PdfComponent implements OnInit {
   ngOnInit() { }
 
   /*╔══════════════════════════════════════════════════╗
-  ║          Reporte nóminas por periodo             ║
-  ╚══════════════════════════════════════════════════╝*/
-  nominasPeriodo(nominas: INomina[], start: string, finish: string) {
+    ║          Reporte registros por periodo           ║
+    ╚══════════════════════════════════════════════════╝*/
+  registroPeriodo(registros: IReporteRegistro[], start: string, finish: string) {
     const doc = new jsPDF();
 
     // ➤ Obtener totales
-    let totalNominas = 0;
-    let totalProvision = 0;
-    let totalIngreso = 0;
-    let totalEgesos = 0;
-    let totalLiquid = 0;
+    // let totalregistros: number = 0.0;
+    let totalHorasOrdinarias: number = 0.0;
+    let totalHorasExtraordinarias: number = 0.0;
+    let totalHorasNocturnasExtraordinarias: number = 0.0;
+
+    registros.forEach(registro => {
+      // Asegúrate de que cada valor sea un número antes de sumar
+      totalHorasOrdinarias += parseFloat(registro.ordinary_time != null ? registro.ordinary_time.toString() : '0') || 0;
+      totalHorasExtraordinarias += parseFloat(registro.overtime != null ? registro.overtime.toString() : '0') || 0;
+      totalHorasNocturnasExtraordinarias += parseFloat(registro.night_overtime != null ? registro.night_overtime.toString() : '0') || 0;
+    });
+
+
+    // ➤ Title
+    const title = "Reporte Registros";
+    doc.setFontSize(16);
+    doc.setFont("Helvetica", "bold");
+    doc.text(title, this.calcularXCentrado(title), 10);
+
+    // ➤ Add background for title
+    doc.setFillColor(238, 240, 242);
+    doc.roundedRect(75 - 2, 10 - 6, 70, 10, 2, 2, 'F');
+    doc.setTextColor(0, 0, 0);
+    doc.text(title, this.calcularXCentrado(title), 10);
+
+    // ➤ General information
+    doc.setFontSize(10);
+    doc.setFont("Helvetica", "bold");
+    doc.setTextColor(0, 0, 0);
+    let xLabel = 25;
+    let xValue = 60;
+    let yPos = 25; // Starting Y position for the content
+
+    // ➤ Define a function to format text with bold labels and background
+    const drawLabelValue = (label: string, value: string, xLabel: number, xValue: number) => {
+      doc.setFont("Helvetica", "normal");
+      doc.text(label, xLabel, yPos);
+      doc.setFont("Helvetica", "normal");
+      doc.text(value, xValue, yPos);
+      yPos += 7; // Move to the next line
+    };
+
+    // ➤ Column 1
+    drawLabelValue("Periodo:", start + " - " + finish, xLabel, xValue);
+    // drawLabelValue("Total nóminas:", totalregistros + '', xLabel, xValue);
+    drawLabelValue("Horas ordinarias:", totalHorasOrdinarias + '', xLabel, xValue);
+    // ➤ Financial Information
+    xLabel = 115;
+    xValue = 150;
+    yPos = 25;
+
+    // ➤ Column 2
+    drawLabelValue("Horas extraordinarias:", totalHorasExtraordinarias + '', xLabel, xValue);
+    drawLabelValue("Horas nocturnas extraordinarias:", totalHorasNocturnasExtraordinarias + '', xLabel, 167);
+
+    // ➤ Table
+    // Encabezado de la tabla
+    const tableColumn = [
+      '#', 'Entrada', 'Salida',
+      'Horas ordinarias', 'Horas extraordinarias', 'Horas noct. extraordinarias',
+      'Empleado'
+    ];
+
+    // Datos de la tabla
+    const tableRows: any[] = [];
+
+    registros.forEach((registro, index) => {
+      const registroData = [
+        index + 1, // Número de fila
+        registro.start, // Fecha de inicio
+        registro.finish, // Fecha de fin
+        registro.ordinary_time, // Total Provisión
+        registro.overtime, // Total Ingresos
+        registro.night_overtime, // Total Egresos
+        `${registro.firstname} ${registro.lastname}`, // Empleado
+      ];
+      tableRows.push(registroData);
+    });
+
+    // Generar la tabla en el PDF
+    (doc as any).autoTable({
+      head: [tableColumn],
+      body: tableRows,
+      startY: 40, // Posición de inicio de la tabla en el eje Y
+      theme: 'striped', // Tema de la tabla
+      headStyles: { fillColor: [64, 153, 255], textColor: [0, 0, 0] }, // Color del encabezado
+      styles: { cellPadding: 3, fontSize: 10 }, // Estilos de la tabla
+      margin: { top: 20 },
+    });
+
+
+    // ➤ Save PDF
+    doc.save("registro_nomina.pdf");
+  }
+
+  /*╔══════════════════════════════════════════════════╗
+    ║          Reporte nóminas por periodo             ║
+    ╚══════════════════════════════════════════════════╝*/
+  nominasPeriodo(nominas: IReporteNomina[], start: string, finish: string) {
+    const doc = new jsPDF();
+    // require('jspdf-autotable');
+
+    console.log(nominas);
+
+    // ➤ Obtener totales
+    let totalNominas: number = 0.0;
+    let totalProvision: number = 0.0;
+    let totalIngreso: number = 0.0;
+    let totalEgesos: number = 0.0;
+    let totalLiquid: number = 0.0;
+
     nominas.forEach(nomina => {
-      totalNominas ++;
-      totalProvision += nomina.totalProvision ?? 0;
-      totalIngreso += nomina.totalIncome ?? 0;
-      totalEgesos += nomina.totalEgress ?? 0;
-      totalLiquid += nomina.totalLiquid ?? 0;
+      totalNominas++;
+
+      // Asegúrate de que cada valor sea un número antes de sumar
+      totalProvision += parseFloat(nomina.totalProvision.toString()) || 0;
+      totalIngreso += parseFloat(nomina.totalIncome.toString()) || 0;
+      totalEgesos += parseFloat(nomina.totalEgress.toString()) || 0;
+      totalLiquid += parseFloat(nomina.totalLiquid.toString()) || 0;
     });
 
     // ➤ Title
@@ -69,6 +180,7 @@ export class PdfComponent implements OnInit {
     // ➤ Column 1
     drawLabelValue("Periodo:", start + " - " + finish, xLabel, xValue);
     drawLabelValue("Total nóminas:", totalNominas + '', xLabel, xValue);
+    drawLabelValue("Total de ingresos:", totalIngreso + '', xLabel, xValue);
     // ➤ Financial Information
     xLabel = 115;
     xValue = 150;
@@ -76,16 +188,49 @@ export class PdfComponent implements OnInit {
 
     // ➤ Column 2
     drawLabelValue("Total en provisiones:", totalProvision + '', xLabel, xValue);
-    drawLabelValue("Total de ingresos:", totalIngreso + '', xLabel, xValue);
     drawLabelValue("Total de egresos:", totalEgesos + '', xLabel, xValue);
-    drawLabelValue("Total de Líquido:", totalLiquid + '', xLabel, xValue);
+    drawLabelValue("Total Líquido:", totalLiquid + '', xLabel, xValue);
 
-    // ➤ Separation line
-    doc.setDrawColor(0, 0, 0); // Black color for line
-    doc.setLineWidth(0.5);
-    doc.line(20, yPos, 185, yPos); // Draw horizontal line from x=20 to x=190
-    yPos += 10; // Espacio adicional después de la línea de separación
+    // ➤ Table
+    // Encabezado de la tabla
+    const tableColumn = [
+      '#', 'Periodo', 'Fecha Inicio', 'Fecha Fin',
+      'Empleado', 'Total Provisión', 'Total Ingresos',
+      'Total Egresos', 'Total Líquido'
+    ];
 
+    // Datos de la tabla
+    const tableRows: any[] = [];
+
+    nominas.forEach((reporte, index) => {
+      const reporteData = [
+        index + 1, // Número de fila
+        reporte.periodName, // Nombre del periodo
+        reporte.start, // Fecha de inicio
+        reporte.finish, // Fecha de fin
+        `${reporte.firstname} ${reporte.lastname}`, // Empleado
+        (Math.round(reporte.totalProvision * 100) / 100), // Total Provisión
+        (Math.round(reporte.totalIncome * 100) / 100), // Total Ingresos
+        (Math.round(reporte.totalEgress * 100) / 100), // Total Egresos
+        (Math.round(reporte.totalLiquid * 100) / 100), // Total Líquido
+      ];
+      tableRows.push(reporteData);
+    });
+
+    // Generar la tabla en el PDF
+    (doc as any).autoTable({
+      head: [tableColumn],
+      body: tableRows,
+      startY: 50, // Posición de inicio de la tabla en el eje Y
+      theme: 'striped', // Tema de la tabla
+      headStyles: { fillColor: [64, 153, 255], textColor: [0, 0, 0] }, // Color del encabezado
+      styles: { cellPadding: 3, fontSize: 10 }, // Estilos de la tabla
+      margin: { top: 20 },
+    });
+
+
+    // ➤ Save PDF
+    doc.save("reporte_nomina.pdf");
   }
 
   /*╔══════════════════════════════════════════════════╗
