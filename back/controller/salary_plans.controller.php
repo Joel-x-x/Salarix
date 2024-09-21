@@ -32,7 +32,6 @@ switch ($_GET["op"]) {
     $description = $_POST['description'] ?? null;
     $checkin = $_POST['checkin'] ?? null;
     $checkout = $_POST['checkout'] ?? null;
-    $esc = $_POST['esc'] ?? null;
     $esc_included = $_POST['esc_included'] ?? false;
     $cp_included = $_POST['cp_included'] ?? false;
     $app_included = $_POST['app_included'] ?? false;
@@ -43,7 +42,7 @@ switch ($_GET["op"]) {
     $user_id = $_POST['user_id'] ?? null;
 
     if ($position_id && $baseSalary && $checkin && $user_id) {
-      $data = $salaryPlan->insertar($position_id, $baseSalary, $description, $checkin, $checkout, $esc, $esc_included, $cp_included, $app_included, $dts_included, $dcs_included, $frp_included, $apep_included, $user_id);
+      $data = $salaryPlan->insertar($position_id, $baseSalary, $description, $checkin, $checkout, $esc_included, $cp_included, $app_included, $dts_included, $dcs_included, $frp_included, $apep_included, $user_id);
       echo json_encode($data);
     } else {
       echo json_encode([

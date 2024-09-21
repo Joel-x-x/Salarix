@@ -40,9 +40,10 @@ switch ($_GET["op"]) {
         $start = $_POST["start"] ?? null;
         $finish = $_POST["finish"] ?? null;
         $detail = $_POST["detail"] ?? null;
+        $user_id = $_POST["user_id"] ?? null;
 
         if ($periodName && $start && $finish) {
-            $data = $Nominas->insertar($periodName, $start, $finish, $detail);
+            $data = $Nominas->insertar($periodName, $start, $finish, $detail, $user_id);
             echo json_encode($data);
         } else {
             echo json_encode([

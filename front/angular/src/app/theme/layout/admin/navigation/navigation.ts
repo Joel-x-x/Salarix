@@ -183,6 +183,23 @@ export const NavigationItems: NavigationItem[] = [
     ]
   },
   {
+    id: 'Reportes',
+    title: 'Reportes',
+    type: 'group',
+    icon: 'icon-group',
+    children: [
+      {
+        id: 'reportes',
+        title: 'Reportes',
+        type: 'item',
+        url: '/reportes',
+        icon: 'feather icon-clipboard',
+        target: false,
+        breadcrumbs: true
+      }
+    ]
+  },
+  {
     id: 'Authentication',
     title: 'Authentication',
     type: 'group',

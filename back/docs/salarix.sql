@@ -16,6 +16,8 @@
 /*!40111 SET @OLD_SQL_NOTES=@@SQL_NOTES, SQL_NOTES=0 */;
 
 CREATE SCHEMA railway;
+CHARACTER SET utf8mb4
+COLLATE utf8mb4_unicode_ci;
 USE railway;
 --
 -- Table structure for table `departments`
