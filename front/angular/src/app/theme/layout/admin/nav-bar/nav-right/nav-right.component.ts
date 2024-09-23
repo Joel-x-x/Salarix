@@ -1,3 +1,4 @@
+import { UsuarioService } from './../../../../../demo/services/usuario.service';
 // Angular Import
 import { Component } from '@angular/core';
 import { animate, style, transition, trigger } from '@angular/animations';
@@ -28,9 +29,13 @@ export class NavRightComponent {
   friendId!: number;
 
   // constructor
-  constructor() {
+  constructor(private usuarioService: UsuarioService) {
     this.visibleUserList = false;
     this.chatMessage = false;
+  }
+
+  logout(): void {
+    this.usuarioService.logout();
   }
 
   // public method

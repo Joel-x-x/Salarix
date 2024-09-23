@@ -96,7 +96,7 @@ public function actualizar($id, $firstname, $lastname, $email, $role, $password,
     if (!empty($identification)) {
         $fields[] = "identification = '$identification'";
     }
-    if (!is_null($sex)) { // `sex` es un booleano, por lo que puede ser false
+    if (!empty($sex)) { // `sex` es un booleano, por lo que puede ser false
         $fields[] = "sex = '$sex'";
     }
     if (!empty($address)) {
@@ -258,15 +258,14 @@ public function actualizar($id, $firstname, $lastname, $email, $role, $password,
     }
     
 
-    public function todos()
-    {
+    public function todos() {
         try {
             // Crear una nueva conexión
             $con = new ClaseConectar();
             $con = $con->ProcedimientoConectar();
     
             // Preparar y ejecutar la consulta SQL
-            $cadena = "SELECT id, firstname, lastname, email, role, created, updated, status FROM users WHERE role <> 'EMPLEADO'";
+            $cadena = "SELECT id, firstname, lastname, email, role, created, updated, status FROM users WHERE role <> 'EMPLEADO' AND role <> 'SUPERADMINISTRADOR'";
             $resultado = mysqli_query($con, $cadena);
     
             // Verificar si la consulta devolvió resultados
@@ -308,12 +307,10 @@ public function actualizar($id, $firstname, $lastname, $email, $role, $password,
     
 
     /*TODO: Procedimiento logear al usuario */
-    public function login($email)
-    {
+    public function login($email, $password) {
         $response = [
             "status" => "500", // Default error status
-            "message" => "Error al procesar la solicitud.",
-            "data" => null,
+            "message" => "Error al procesar la solicitud."
         ];
     
         try {
@@ -328,13 +325,22 @@ public function actualizar($id, $firstname, $lastname, $email, $role, $password,
             $resultado = $stmt->get_result();
             
             if ($resultado->num_rows > 0) {
-                // Obtener datos del usuario
+                // Obtener datos password
                 $datos = $resultado->fetch_assoc();
-                $response = [
-                    "status" => "200", // OK
-                    "message" => "Inicio de sesión exitoso.",
-                    "data" => $datos,
-                ];
+
+                $passwordBDD = $datos['password'];
+
+                if(password_verify($password, $passwordBDD)) {
+                    $response = [
+                        "status" => "200", // OK
+                        "message" => "Inicio de sesión exitoso.",
+                        "data" => $datos,
+                    ];
+                } else {
+                    $response["status"] = "404";
+                    $response["message"] = "Credenciales incorrectas.";
+                }
+                
             } else {
                 $response["message"] = "Correo electrónico no encontrado.";
             }
