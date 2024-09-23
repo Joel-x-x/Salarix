@@ -7,7 +7,7 @@ import { RouterLink } from '@angular/router';
 import { SharedModule } from 'src/app/theme/shared/shared.module';
 import { UsuarioService } from '../../services/usuario.service';
 import Swal from 'sweetalert2';
-import { IUsuario } from '../../interfaces/IUsuario';
+import { IUsuarioActualizar } from '../../interfaces/IUsuario';
 
 @Component({
   selector: 'app-empleado',
@@ -81,8 +81,8 @@ export class EmpleadoComponent implements OnInit {
     } else {
       empleado.id = this.empleadoSeleccionado?.id;
       empleado.sex = 1;
-      const usuario: IUsuario= this.convertirAUsuario(empleado);
-      
+      const usuario: IUsuarioActualizar = this.convertirAUsuario(empleado);
+
       console.log(usuario);
       this.usuarioService.actualizarUsuario(usuario).subscribe({
         next: () => {
@@ -96,9 +96,9 @@ export class EmpleadoComponent implements OnInit {
   }
 
   // Función para convertir Empleado a Usuario
-convertirAUsuario(empleado: Empleado): IUsuario {
+convertirAUsuario(empleado: Empleado): IUsuarioActualizar {
   return {
-    id: empleado.id,
+    id: empleado.id ?? '',
     firstname: empleado.firstname,
     lastname: empleado.lastname,
     email: empleado.email,
@@ -158,7 +158,7 @@ convertirAUsuario(empleado: Empleado): IUsuario {
       cancelButtonText: 'Cancelar'
     }).then((result) => {
       if (result.isConfirmed) {
-        this.usuarioService.cambiarEstadoUsuario(id).subscribe({
+        this.usuarioService.eliminar(id).subscribe({
           next: () => {
             Swal.fire('Empleado', 'Empleado eliminado con éxito.', 'success');
             this.listarEmpleados();
