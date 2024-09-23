@@ -155,15 +155,15 @@ export const NavigationItems: NavigationItem[] = [
         target: false,
         breadcrumbs: true
       },
-      {
-        id: 'vacaciones',
-        title: 'Vacaciones',
-        type: 'item',
-        url: '/vacaciones',
-        icon: 'feather icon-link-2',
-        target: false,
-        breadcrumbs: true
-      }
+      // {
+      //   id: 'vacaciones',
+      //   title: 'Vacaciones',
+      //   type: 'item',
+      //   url: '/vacaciones',
+      //   icon: 'feather icon-link-2',
+      //   target: false,
+      //   breadcrumbs: true
+      // }
     ]
   },
   {
